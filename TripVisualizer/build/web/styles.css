@@ -1,0 +1,43 @@
+.legSegmentDesc {
+    text-align: center;
+}
+
+
+
+.filterPanel .filterDesc {
+    font-weight: bold;
+}
+
+/* not selected */
+.filterPanel .panelContent {
+    border-top: grey dashed 1px;
+    padding-top: 3px;
+    margin-top: 2px;
+}
+
+.filterPanel {
+    border: grey dashed 1px;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.filterPanel .panelControl {
+    background-color: #BFBFBF;
+    min-width: 200px;
+    text-align: center;
+}
+
+/* selected */
+.activePanel {
+    border: green solid 1px;
+}
+
+.activePanel .panelContent {
+    border-top: green solid 1px;
+}
+
+.activePanel .panelControl {
+    background-color: #BEF202;
+}
+
+
