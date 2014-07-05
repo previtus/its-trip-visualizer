@@ -41,7 +41,6 @@ try {
     String USER = connection.USER;
     String PASS = connection.PASS;
     Connection conn = DriverManager.getConnection(URL, USER, PASS);
-
     helperClass.requestHandler R = new helperClass.requestHandler(request);
 
     // BUILD QUERY
@@ -70,8 +69,6 @@ try {
     // FILTERING BY ACTIVITY (trip)
     if (R.isSet("from_act")) {
         whereCondition.append("t.from_activity LIKE ? AND ");
-        //whereCondition.append("t.from_activity LIKE %?% AND ");
-        //valuesForConditions.add(request.getParameter("trans_type"));
         valuesForConditions.add("%"+request.getParameter("from_act")+"%");
         types.add(helperClass.VarTypes.StrVar);
         needToDelLastChar = true;
@@ -83,13 +80,44 @@ try {
         needToDelLastChar = true;
     }
     
-    //t.to_activity LIKE '%WORK%'
-    
     // FILTERING BY TRANSPORT TYPE (leg)
     if (R.isSet("trans_type")) {
         whereCondition.append("l.type = ? AND ");
         valuesForConditions.add(request.getParameter("trans_type"));
         types.add(helperClass.VarTypes.StrVar);
+        needToDelLastChar = true;
+    }
+    
+    // FILTERING BY AGENT INFO (agent)
+    // information in: age, age_val, gender, education, maritalStatus, economicalActivity, driveLicence, ptCard
+    // in table:
+/*  
+    age integer,
+    gender character varying,
+    education character varying,
+    marital_status character varying,
+    economic_activity character varying,
+    drivers_licence boolean,
+    pt_discount_card boolean
+*/
+    
+    if (R.isSet("age") && R.isSet("age_val") && R.isInt("age_val")) {
+        String comparator = "";
+        String comparatorFromClient = request.getParameter("age");
+        if (comparatorFromClient.equals("lt")) {
+            comparator = "<";
+        } else if (comparatorFromClient.equals("gt")) {
+            comparator = ">";
+        } else if (comparatorFromClient.equals("eq")) {
+            comparator = "=";
+        } else {
+            // well this shouldn't happen ...
+            comparator = "=";
+        }
+        
+        whereCondition.append("a.age "+comparator+" ? AND ");
+        valuesForConditions.add(request.getParameter("age_val"));
+        types.add(helperClass.VarTypes.IntVar);
         needToDelLastChar = true;
     }
     
