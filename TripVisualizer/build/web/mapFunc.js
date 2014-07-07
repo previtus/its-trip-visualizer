@@ -130,6 +130,14 @@ $(document).ready(function() {
                     processTripData(data);
                 });
     }
+    
+    function getMultipleTrips(dataToBeSent) {
+        $.post("getFilteredData.jsp", dataToBeSent)
+                .done(function(data) {
+                    //recieve response
+                    $(".tempServerResponse").text($.trim(data));
+                });
+    }
 
     // BUTTON REACTIONS:
     $("#ButtonFromServer").click(function() {
@@ -196,11 +204,7 @@ $(document).ready(function() {
 
 
         //send it
-        $.post("getFilteredData.jsp", dataToBeSent)
-                .done(function(data) {
-                    //recieve response
-                    $(".tempServerResponse").text($.trim(data));
-                });
+        getMultipleTrips(dataToBeSent);
     });
 
 
