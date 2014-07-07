@@ -10,7 +10,8 @@
 <%
     boolean error = false;
     boolean debug_output_request = false;
-    boolean debug_output_query = false;
+    boolean debug_output_query = true;
+    boolean timer = true;
     
     if (debug_output_request) {
         JSONObject tmpJson = new JSONObject();
@@ -39,7 +40,7 @@
     }
 
     if (!error) {
-        try {
+        //try {
             //####### CREATE CONNECTION #######
             String URL = connection.URL;
             String USER = connection.USER;
@@ -51,7 +52,7 @@
             ArrayList<helperClass.VarTypes> types = new ArrayList<helperClass.VarTypes>();
             StringBuilder whereCondition = new StringBuilder();
             ArrayList<String> valuesForConditions = new ArrayList<String>();
-            boolean needToDelLastChar = false;
+            boolean addedAtLeastOneCondition = false;
 
             // FILTERING BY ID 
             // trip_id and agent_id wont be used ...
@@ -60,14 +61,14 @@
                 whereCondition.append("t.trip_id = ? AND ");
                 valuesForConditions.add(request.getParameter("trip_id"));
                 types.add(helperClass.VarTypes.IntVar);
-                needToDelLastChar = true;
+                addedAtLeastOneCondition = true;
             }
 
             if (R.isSet("agent_id")) {
                 whereCondition.append("a.agent_id = ? AND ");
                 valuesForConditions.add(request.getParameter("agent_id"));
                 types.add(helperClass.VarTypes.StrVar);
-                needToDelLastChar = true;
+                addedAtLeastOneCondition = true;
             }
 
             // FILTERING BY ACTIVITY (trip)
@@ -75,13 +76,13 @@
                 whereCondition.append("t.from_activity LIKE ? AND ");
                 valuesForConditions.add("%"+request.getParameter("from_act")+"%");
                 types.add(helperClass.VarTypes.StrVar);
-                needToDelLastChar = true;
+                addedAtLeastOneCondition = true;
             }
             if (R.isSet("to_act")) {
                 whereCondition.append("t.to_activity LIKE ? AND ");
                 valuesForConditions.add("%"+request.getParameter("to_act")+"%");
                 types.add(helperClass.VarTypes.StrVar);
-                needToDelLastChar = true;
+                addedAtLeastOneCondition = true;
             }
 
             // FILTERING BY TRANSPORT TYPE (leg)
@@ -89,7 +90,7 @@
                 whereCondition.append("l.type = ? AND ");
                 valuesForConditions.add(request.getParameter("trans_type"));
                 types.add(helperClass.VarTypes.StrVar);
-                needToDelLastChar = true;
+                addedAtLeastOneCondition = true;
             }
 
             // FILTERING BY AGENT INFO (agent)
@@ -122,15 +123,25 @@
                 whereCondition.append("a.age "+comparator+" ? AND ");
                 valuesForConditions.add(request.getParameter("age_val"));
                 types.add(helperClass.VarTypes.IntVar);
-                needToDelLastChar = true;
+                addedAtLeastOneCondition = true;
             }
 
             // gender
             if (R.isSet("gender")) {
                 whereCondition.append("a.gender = ? AND ");
-                valuesForConditions.add(request.getParameter("gender"));
+                
+                String genderStr = request.getParameter("gender");
+                if (genderStr.equals("M")) {
+                    valuesForConditions.add("MALE");
+                } else if (genderStr.equals("F")) {
+                    valuesForConditions.add("FEMALE");
+                } else {
+                    // well this shouldn't happen ...
+                    valuesForConditions.add("FEMALE");
+                }
+                
                 types.add(helperClass.VarTypes.StrVar);
-                needToDelLastChar = true;
+                addedAtLeastOneCondition = true;
             }
 
             // education
@@ -138,7 +149,7 @@
                 whereCondition.append("a.education = ? AND ");
                 valuesForConditions.add(request.getParameter("education"));
                 types.add(helperClass.VarTypes.StrVar);
-                needToDelLastChar = true;
+                addedAtLeastOneCondition = true;
             }
 
             // marital_status
@@ -146,7 +157,7 @@
                 whereCondition.append("a.marital_status = ? AND ");
                 valuesForConditions.add(request.getParameter("maritalStatus"));
                 types.add(helperClass.VarTypes.StrVar);
-                needToDelLastChar = true;
+                addedAtLeastOneCondition = true;
             }
 
             // economic_activity
@@ -154,7 +165,7 @@
                 whereCondition.append("a.economic_activity = ? AND ");
                 valuesForConditions.add(request.getParameter("economicalActivity"));
                 types.add(helperClass.VarTypes.StrVar);
-                needToDelLastChar = true;
+                addedAtLeastOneCondition = true;
             }
 
             // drivers_licence
@@ -162,7 +173,7 @@
                 whereCondition.append("a.drivers_licence = ? AND ");
                 valuesForConditions.add(request.getParameter("driveLicence"));
                 types.add(helperClass.VarTypes.BooVar);
-                needToDelLastChar = true;
+                addedAtLeastOneCondition = true;
             }
 
             // pt_discount_card
@@ -170,64 +181,81 @@
                 whereCondition.append("a.pt_discount_card = ? AND ");
                 valuesForConditions.add(request.getParameter("ptCard"));
                 types.add(helperClass.VarTypes.BooVar);
-                needToDelLastChar = true;
+                addedAtLeastOneCondition = true;
             }
 
-            if (needToDelLastChar) whereCondition.setLength(whereCondition.length()-5); // | AND | has length 5
+            if (addedAtLeastOneCondition) whereCondition.setLength(whereCondition.length()-5); // | AND | has length 5
 
             if (debug_output_query) {
-                out.print("\n\n|");
-                out.print(whereCondition.toString());
-                out.print("|\n\n");
+                System.out.print("\n\n|");
+                System.out.print(whereCondition.toString());
+                System.out.print("|\n\n");
             }
             
-            PreparedStatement preparedCommonForTrip = conn.prepareStatement("SELECT DISTINCT "
-                + "a.*, t.trip_id, t.end_time, t.start_time, t.from_activity, t.to_activity "
-                + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id WHERE "
-                //+ "t.trip_id=?"
-                + whereCondition.toString()
-            );
-            PreparedStatement preparedAllLegs = conn.prepareStatement("SELECT "
-                + "t.trip_id, l.end_time as l_end_time, l.start_time as l_start_time, l.type, ST_AsGeoJSON(path) as geojsonPath "
-                + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id WHERE "
-                //+ "t.trip_id=?"
-                + whereCondition.toString()
-            );
-            for (int i = 1; i < valuesForConditions.size()+1; i++) {
-                String var = valuesForConditions.get(i-1);
-                switch (types.get(i-1)) {
-                    case IntVar:
-                        preparedCommonForTrip.setInt(i, Integer.parseInt( var ));
-                        preparedAllLegs.setInt(i, Integer.parseInt( var ));
-                        break;
-                    case BooVar:
-                        if (var.equals("T")) {
-                            preparedCommonForTrip.setBoolean(i, true);
-                            preparedAllLegs.setBoolean(i, true);
-                        } else {
-                            preparedCommonForTrip.setBoolean(i, false);
-                            preparedAllLegs.setBoolean(i, false);
-                        }
-                        break;
-                    default: //default is string
-                        preparedCommonForTrip.setString(i, var);
-                        preparedAllLegs.setString(i, var);
-                        break;
+            PreparedStatement preparedCommonForTrip;
+            PreparedStatement preparedAllLegs;
+            if (!addedAtLeastOneCondition) {
+                // No needs to add conditions...
+                preparedCommonForTrip = conn.prepareStatement("SELECT DISTINCT "
+                    + "a.*, t.trip_id, t.end_time, t.start_time, t.from_activity, t.to_activity "
+                    + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id"
+                );
+                preparedAllLegs = conn.prepareStatement("SELECT "
+                    + "t.trip_id, l.end_time as l_end_time, l.start_time as l_start_time, l.type, ST_AsGeoJSON(path) as geojsonPath "
+                    + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id"
+                );
+            } else {
+                preparedCommonForTrip = conn.prepareStatement("SELECT DISTINCT "
+                    + "a.*, t.trip_id, t.end_time, t.start_time, t.from_activity, t.to_activity "
+                    + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id WHERE "
+                    //+ "t.trip_id=?"
+                    + whereCondition.toString()
+                );
+                preparedAllLegs = conn.prepareStatement("SELECT "
+                    + "t.trip_id, l.end_time as l_end_time, l.start_time as l_start_time, l.type, ST_AsGeoJSON(path) as geojsonPath "
+                    + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id WHERE "
+                    //+ "t.trip_id=?"
+                    + whereCondition.toString()
+                );
+                
+                for (int i = 1; i < valuesForConditions.size()+1; i++) {
+                    String var = valuesForConditions.get(i-1);
+                    switch (types.get(i-1)) {
+                        case IntVar:
+                            preparedCommonForTrip.setInt(i, Integer.parseInt( var ));
+                            preparedAllLegs.setInt(i, Integer.parseInt( var ));
+                            break;
+                        case BooVar:
+                            if (var.equals("T")) {
+                                preparedCommonForTrip.setBoolean(i, true);
+                                preparedAllLegs.setBoolean(i, true);
+                            } else {
+                                preparedCommonForTrip.setBoolean(i, false);
+                                preparedAllLegs.setBoolean(i, false);
+                            }
+                            break;
+                        default: //default is string
+                            preparedCommonForTrip.setString(i, var);
+                            preparedAllLegs.setString(i, var);
+                            break;
+                    }
                 }
             }
-
+            
             if (debug_output_query) {
                 String tmp_common = preparedCommonForTrip.toString();
                 String tmp_legs = preparedAllLegs.toString();
-                out.print(tmp_common);
-                out.print("\n\n");
-                out.print(tmp_legs);
+                System.out.print(tmp_common);
+                System.out.print("\n\n");
+                System.out.print(tmp_legs);
 
-                out.print("\n\n");
+                System.out.print("\n\n");
 
-                String[] splitTmp = tmp_common.split("WHERE");
-                out.print("... WHERE"+splitTmp[1]);
-                out.print("\n\n");
+                if (addedAtLeastOneCondition) {
+                    String[] splitTmp = tmp_common.split("WHERE");
+                    System.out.print("... WHERE"+splitTmp[1]);
+                    System.out.print("\n\n");
+                }
             }
 
             
@@ -267,9 +295,7 @@
             while (result_for_all_legs.next()) {
                 HashMap leg = new HashMap();
                 
-                System.out.print("columns_all_legs " + columns_all_legs+"\n");
                 for (int col = 0; col < columns_all_legs; col++) {
-                    System.out.print("col " + col+"\n");
                     String attribute = rsmd_all_legs.getColumnName(col + 1);
                     String value = result_for_all_legs.getString(col + 1);
                     leg.put(attribute, value);
@@ -285,14 +311,14 @@
                 tripObject.put("_legsLoaded", ""+numberOfLoadedLegs);
             }
             
-        } catch (SQLException es) {
+        /*} catch (SQLException es) {
             JSONObject errorJson = new JSONObject();
             errorJson.put("error", "Error while creating connection");
             errorJson.put("errorMessage", es.getMessage());
             error = true;
             out.print(errorJson);
             out.flush();  
-        }
+        }*/
     }
     
     if (!error) {

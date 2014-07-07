@@ -2,7 +2,6 @@ $(document).ready(function() {
     // JQUERY MAGICS
     // resize
     $(".leaflet-control-attribution").css("margin-right", "20px");
-    $("#map").resizable();
 
     // slider input TripId
     $("#tripId_slider").slider({

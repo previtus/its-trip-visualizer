@@ -30,9 +30,8 @@ function msecToTime(milliseconds) {
 }
 
 function rainbow(numOfSteps, step) {
+    // URL: http://blog.adamcole.ca/2011/11/simple-javascript-rainbow-color.html
     // This function generates vibrant, "evenly spaced" colours (i.e. no clustering). This is ideal for creating easily distinguishable vibrant markers in Google Maps and other apps.
-    // Adam Cole, 2011-Sept-14
-    // HSV to RBG adapted from: http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
     var r, g, b;
     var h = step / numOfSteps;
     var i = ~~(h * 6);
@@ -48,4 +47,27 @@ function rainbow(numOfSteps, step) {
     }
     var c = "#" + ("00" + (~ ~(r * 255)).toString(16)).slice(-2) + ("00" + (~ ~(g * 255)).toString(16)).slice(-2) + ("00" + (~ ~(b * 255)).toString(16)).slice(-2);
     return (c);
+}
+
+
+function ColorLuminance(hex, lum) {
+        // URL: http://www.sitepoint.com/javascript-generate-lighter-darker-color/
+        //  hex — a hex color value such as “#abc” or “#123456″ (the hash is optional)
+        //  lum — the luminosity factor, i.e. -0.1 is 10% darker, 0.2 is 20% lighter, etc.
+	// validate hex string
+	hex = String(hex).replace(/[^0-9a-f]/gi, '');
+	if (hex.length < 6) {
+		hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+	}
+	lum = lum || 0;
+
+	// convert to decimal and change luminosity
+	var rgb = "#", c, i;
+	for (i = 0; i < 3; i++) {
+		c = parseInt(hex.substr(i*2,2), 16);
+		c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
+		rgb += ("00"+c).substr(c.length);
+	}
+
+	return rgb;
 }
