@@ -100,7 +100,7 @@ try {
     drivers_licence boolean,
     pt_discount_card boolean
 */
-    
+    // age
     if (R.isSet("age") && R.isSet("age_val") && R.isInt("age_val")) {
         String comparator = "";
         String comparatorFromClient = request.getParameter("age");
@@ -121,7 +121,54 @@ try {
         needToDelLastChar = true;
     }
     
-
+    // gender
+    if (R.isSet("gender")) {
+        whereCondition.append("a.gender = ? AND ");
+        valuesForConditions.add(request.getParameter("gender"));
+        types.add(helperClass.VarTypes.StrVar);
+        needToDelLastChar = true;
+    }
+        
+    // education
+    if (R.isSet("education")) {
+        whereCondition.append("a.education = ? AND ");
+        valuesForConditions.add(request.getParameter("education"));
+        types.add(helperClass.VarTypes.StrVar);
+        needToDelLastChar = true;
+    }
+    
+    // marital_status
+    if (R.isSet("maritalStatus")) {
+        whereCondition.append("a.marital_status = ? AND ");
+        valuesForConditions.add(request.getParameter("maritalStatus"));
+        types.add(helperClass.VarTypes.StrVar);
+        needToDelLastChar = true;
+    }
+    
+    // economic_activity
+    if (R.isSet("economicalActivity")) {
+        whereCondition.append("a.economic_activity = ? AND ");
+        valuesForConditions.add(request.getParameter("economicalActivity"));
+        types.add(helperClass.VarTypes.StrVar);
+        needToDelLastChar = true;
+    }
+    
+    // drivers_licence
+    if (R.isSet("driveLicence")) {
+        whereCondition.append("a.drivers_licence = ? AND ");
+        valuesForConditions.add(request.getParameter("driveLicence"));
+        types.add(helperClass.VarTypes.BooVar);
+        needToDelLastChar = true;
+    }
+    
+    // pt_discount_card
+    if (R.isSet("ptCard")) {
+        whereCondition.append("a.pt_discount_card = ? AND ");
+        valuesForConditions.add(request.getParameter("ptCard"));
+        types.add(helperClass.VarTypes.BooVar);
+        needToDelLastChar = true;
+    }
+    
     if (needToDelLastChar) whereCondition.setLength(whereCondition.length()-5); // | AND | has length 5
     
     out.print("\n\n|");
@@ -135,12 +182,20 @@ try {
         + whereCondition.toString()
     );
     for (int i = 1; i < valuesForConditions.size()+1; i++) {
+        String var = valuesForConditions.get(i-1);
         switch (types.get(i-1)) {
             case IntVar:
-                prep.setInt(i, Integer.parseInt( valuesForConditions.get(i-1) ));
+                prep.setInt(i, Integer.parseInt( var ));
+                break;
+            case BooVar:
+                if (var.equals("T")) {
+                    prep.setBoolean(i, true);
+                } else {
+                    prep.setBoolean(i, false);
+                }
                 break;
             default: //default is string
-                prep.setString(i, valuesForConditions.get(i-1));
+                prep.setString(i, var);
                 break;
         }
     }
