@@ -1,7 +1,13 @@
-.legSegmentDesc {
-    text-align: center;
+.tripDesc {
+    text-align: left;
+    padding-bottom: 2px;
+    margin-bottom: 2px;
+    border-bottom: black dashed thin;
 }
 
+.tripDesc .tripDescDetails {
+    margin-left: 10px;
+}
 
 
 .filterPanel .filterDesc {
