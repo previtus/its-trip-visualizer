@@ -125,7 +125,7 @@
                     <!-- --filter by agent information-- -->
                     <div class="filterPanel">
                         <div class="panelControl">
-                            <input type="checkbox" name="filter_byAgentInfo_check" id="filter_byAgentInfo_check" value="ON" class="panelCheckbox" />
+                            <input type="checkbox" name="filter_byAgentInfo_check" id="filter_byAgentInfo_check" value="ON" checked="checked" class="panelCheckbox" /> <!--INITIAL VAL HAX-->
                             <label for="filter_byAgentInfo_check" class="filterDesc">Filter by agent information</label>
                             <input type="button" value="-" name="toggleButton" />
                         </div>
@@ -137,11 +137,11 @@
                                     <td>
                                         <select name="age" id="age"> 
                                             <!--<option value="-">?</option>-->
-                                            <option value="lt">&lt;</option>
-                                            <option value="eq" selected="selected">=</option>
+                                            <option value="lt" selected="selected">&lt;</option> <!--INITIAL VAL HAX-->
+                                            <option value="eq">=</option>
                                             <option value="gt">&gt;</option>
                                         </select>
-                                        <input type="text" name="age_val" id="age_val" value="" />
+                                        <input type="text" name="age_val" id="age_val" value="7" /> <!--INITIAL VAL HAX-->
                                     </td>
                                 </tr>
                                 

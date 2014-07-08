@@ -35,17 +35,26 @@ $(document).ready(function() {
     }
     
     function groupTop(e) {
-        var layer = e.target;
-        //console.log(layer);
-        layer.bringToFront();
+        var layerClicked = e.target;
+        
+        var Layer1 = layerClicked._pointerToLayer1_main;
+        var Layer2 = Layer1._pointerToLayer2_secondary;
+        var Layer3 = Layer1._pointerToLayer3_points
+        
+        Layer1.bringToFront();
+        Layer2.bringToFront();
+        Layer3.bringToFront();
     }
     function groupBot(e) {
-        var layer = e.target;
-        layer.bringToBack();
-    }
-    function groupClicked(e) {
-        var layer = e.target;
-        layer.bringToFront();
+        var layerClicked = e.target;
+        
+        var Layer1 = layerClicked._pointerToLayer1_main;
+        var Layer2 = Layer1._pointerToLayer2_secondary;
+        var Layer3 = Layer1._pointerToLayer3_points
+        
+        Layer3.bringToBack();
+        Layer2.bringToBack();
+        Layer1.bringToBack();
     }
     
     function visualizeGeoJSON(objJson, desc, useStyle, pointsJson) {
@@ -68,14 +77,20 @@ $(document).ready(function() {
         };
         
         var features = new L.featureGroup();
-        features.addLayer( new L.geoJson(lines,{ style: useStyle }) );
+        
+        var layer1_mainLine = new L.geoJson(lines,{ style: useStyle });
+        layer1_mainLine.isUserMarked = true;
+        layer1_mainLine._layerTypeMarker = 1;
+        features.addLayer( layer1_mainLine );
         
         // Secondary lines
         var thinnerStyle = useStyle;
             thinnerStyle.weight = weight_thinner;
             thinnerStyle.color = color_lighter;
             thinnerStyle.opacity = 1;
-        features.addLayer(new L.geoJson(lines,{ style: thinnerStyle }));
+        var layer2_secondaryLine = new L.geoJson(lines,{ style: thinnerStyle });
+        layer2_secondaryLine._layerTypeMarker = 2;
+        features.addLayer( layer2_secondaryLine );
         
         // Points
         var geojsonMarkerOptions = {
@@ -86,76 +101,122 @@ $(document).ready(function() {
             opacity: 1,
             fillOpacity: 0.8
         };
-        features.addLayer(new L.geoJson(points, {
-                pointToLayer: function (feature, latlng) {
-                    return L.circleMarker(latlng, geojsonMarkerOptions);
-                }
-            })
-        );
         
-        $.each(features._layers, function(i, layer) {
-            //console.log(i);
-            layer.isUserMade = true;
+        var layer3_points = new L.geoJson(points, {
+            pointToLayer: function (feature, latlng) {
+                return L.circleMarker(latlng, geojsonMarkerOptions);
+            }
         });
+        layer3_points._layerTypeMarker = 3;
+        features.addLayer( layer3_points );
         
+        features._pointerToLayer1_main = layer1_mainLine;
+        
+        layer1_mainLine._pointerToLayer2_secondary = layer2_secondaryLine;
+        layer1_mainLine._pointerToLayer3_points = layer3_points;
+        
+//        layer2_secondaryLine._pointerToLayer1_main = layer1_mainLine;
+//        layer3_points._pointerToLayer1_main = layer1_mainLine;
+                
         features
-            .bindPopup(desc)
-            //.on('click', groupClicked)
-            .on('mouseover', groupTop)
+            //.bindPopup(desc)
+            .on('click', mapClicked)
+            //.on('mouseover', groupTop)
             //.on('mouseout', groupBot)
             .addTo(map);
     }
 
-    // <SlightHorror>
-//    map.on('click', function(e) {
-//	//alert(e.latlng);
-//        
-//        var dxy = 200;
-//        //var southWest = L.latLng(e.latlng.lat - dxy, e.latlng.lng - dxy);
-//        //var northEast = L.latLng(e.latlng.lat + dxy, e.latlng.lng + dxy);
-//        //var bounds = L.latLngBounds(southWest, northEast);
-//        
-//        //console.log(map);
-//        var closeLayers = {};
-//        var ind = 1;
-//        
-//        $.each(map._layers, function(i, layer) {
-//            if (layer.isUserMade) {
-//                //console.log(layer);
-//                var brk = false;
-//                
-//                $.each(layer._layers, function(j, subLayer) {
-//                    if (subLayer.getLatLngs != null) {
-//                        var pointsT = subLayer.getLatLngs();
-//                        var points = pointsT[0];
-//                        
-//                        $.each(points, function(k, point) {
-//                            if (!brk) {
-//                                if (point.distanceTo(e.latlng) < dxy) {
-//                                    //console.log(point.distanceTo(e.latlng));
-//                                    //console.log(point);
-//                                    
-//                                    closeLayers["Lay"+ind] = layer;
-//                                    ind = ind+1;
-//                                    brk = true;
-//                                }
-//                            }
+    // map onclick processing
+    function mapClicked(e) {
+	//alert(e.latlng);
+        var clickPoint = e.latlng;
+        var DIST = 0.0025;
+        
+        //console.log(map);
+        var closeLayers = {};
+        var ind = 1;
+        
+        $.each(map._layers, function(i, layer) {
+            // only one layer with line will have this flag
+            if (layer.isUserMarked) {
+//                console.log("marked layer:");
+//                console.log(layer);
+                
+                var brk = false;
+                
+                $.each(layer._layers, function(j, subLayer) {
+                    if (subLayer.getLatLngs != null) {
+                        var pointsT = subLayer.getLatLngs();
+                        var points = pointsT[0];
+                        
+                        var firstPoint = points[0];
+                        var lastPoint = points[points.length-1];
+                        
+                        // check if we are in distanceTo first and last points
+//                        if (firstPoint.distanceTo(clickPoint) < DIST || lastPoint.distanceTo(clickPoint) < DIST) {
+//                            console.log("_Right next to first or last point: "+layer._leaflet_id);
 //                            
-//                        });
-//                        
-//                    }
-//                    
-//                });
-//                
-//            }
-//        });
-//        
-//        //console.log(closeLayers);
-//        $.each(closeLayers, function(i, closeLayer) {
-//            closeLayer.bringToFront();
-//        });
-//    });
-    // </SlightHorror>
+//                            closeLayers["Lay"+ind] = layer;
+//                            ind = ind+1;
+                                //return true; // = Continue $.each
+                                //return false; // = Break $.each
+//                        }
+                        
+                        // iterate through pairs of points
+                        for (k = 0; k < points.length-1; k++) {
+                            var pointA = points[k];
+                            var pointB = points[k+1];
+                            
+                            // dotLineLength(x, y, x0, y0, x1, y1, o)
+                            var distFromLine = dotLineLength(
+                                    clickPoint.lat, clickPoint.lng,
+                                    pointA.lat, pointA.lng,
+                                    pointB.lat, pointB.lng,
+                                    true
+                            );
+                            if (distFromLine < DIST) {
+//                                console.log("--")
+//                                console.log("_DIST: "+pointA.lat+", "+pointA.lng+" to "+clickPoint.lat +", "+ clickPoint.lng);
+//                                console.log("_DIST: "+pointB.lat+", "+pointB.lng+" to "+clickPoint.lat +", "+ clickPoint.lng);
+//                            
+//                                console.log("_Close to line of layer: "+layer._leaflet_id+", dist: "+distFromLine);
+                                closeLayers["Lay"+ind] = layer;
+                                ind = ind+1;
+                                return true; // = Continue $.each
+                                //return false; // = Break $.each
+                                //break;
+                            }
+                        }
+                        
+//                        console.log("---------------------");
+                    }
+                    
+                });
+                
+            }
+        });
+        
+        //console.log("_____________________________________________________");
+        
+        var debugStr = "Highlighted layers: ";
+        //console.log(closeLayers);
+        $.each(closeLayers, function(i, closeLayer) {
+            //closeLayer.bringToFront();
+            
+            var Layer1 = closeLayer;
+            var Layer2 = Layer1._pointerToLayer2_secondary;
+            var Layer3 = Layer1._pointerToLayer3_points
+
+            Layer1.bringToFront();
+            Layer2.bringToFront();
+            Layer3.bringToFront();
+            
+            debugStr += Layer1._leaflet_id + ", ";
+        });
+        
+        console.log(debugStr);
+    };
+    map.on('click', mapClicked);
 
     //processing
     function processMultipleTripsData(data) {
@@ -187,19 +248,36 @@ $(document).ready(function() {
                 var multiPointArray = "["; // store only first and last coordinate segment
                 var lineStrArr = "["; // store all coordinates to form MultiLine
                 
+                var FirstSegment = jQuery.parseJSON( trip._legs.leg0.geojsonpath ).coordinates;
+                multiPointArray += "["+FirstSegment[0]+"],"
+                
                 $.each(trip._legs, function(j, leg) {
                     var coordinates = jQuery.parseJSON(leg.geojsonpath).coordinates;
                     lineStrArr += JSON.stringify(coordinates) + ",";
                     
                     var first = coordinates[0];
                     var last = coordinates[ Object.keys(coordinates).length-1 ];
-                    multiPointArray += "["+first+","+last+"],"
+                    //multiPointArray += "["+first+","+last+"],"
+                    //multiPointArray += "["+first+"],"
+                    multiPointArray += "["+last+"],"
                 });
                 lineStrArr = lineStrArr.slice(0, -1);
                 lineStrArr += "]";
                 
                 multiPointArray = multiPointArray.slice(0, -1);
                 multiPointArray += "]";
+                
+                // <HAX> - print all points!
+//                console.log(jQuery.parseJSON(lineStrArr));
+//                var lineSegments = jQuery.parseJSON(lineStrArr);
+//                var allPoints = "[";
+//                for (k = 0; k < lineSegments.length; k++) {
+//                    var str = JSON.stringify( jQuery.parseJSON(lineStrArr)[k] );
+//                    allPoints += str.slice(1, -1) + ","; // without [, ]
+//                }
+//                allPoints = allPoints.slice(0, -1) + "]";
+//                multiPointArray = allPoints;
+                // </HAX>
                 
                 var desc = "<div class='tripSegmentDesc'><strong>" + commonProperties.agent_id + "</strong><br>"
                     + commonProperties.gender + " " + commonProperties.economic_activity + " " + commonProperties.education + "<br>"
@@ -236,8 +314,8 @@ $(document).ready(function() {
             }
         } else {
             // everything went ok...
-            //processPerLegSegment(jsonData);
-            processAsWholeTrip(jsonData);
+            processPerLegSegment(jsonData);
+            //processAsWholeTrip(jsonData);
         }
     }
     

@@ -1,0 +1,50 @@
+    // <SlightHorror>
+//    map.on('click', function(e) {
+//	//alert(e.latlng);
+//        
+//        var dxy = 200;
+//        //var southWest = L.latLng(e.latlng.lat - dxy, e.latlng.lng - dxy);
+//        //var northEast = L.latLng(e.latlng.lat + dxy, e.latlng.lng + dxy);
+//        //var bounds = L.latLngBounds(southWest, northEast);
+//        
+//        //console.log(map);
+//        var closeLayers = {};
+//        var ind = 1;
+//        
+//        $.each(map._layers, function(i, layer) {
+//            if (layer.isUserMade) {
+//                //console.log(layer);
+//                var brk = false;
+//                
+//                $.each(layer._layers, function(j, subLayer) {
+//                    if (subLayer.getLatLngs != null) {
+//                        var pointsT = subLayer.getLatLngs();
+//                        var points = pointsT[0];
+//                        
+//                        $.each(points, function(k, point) {
+//                            if (!brk) {
+//                                if (point.distanceTo(e.latlng) < dxy) {
+//                                    //console.log(point.distanceTo(e.latlng));
+//                                    //console.log(point);
+//                                    
+//                                    closeLayers["Lay"+ind] = layer;
+//                                    ind = ind+1;
+//                                    brk = true;
+//                                }
+//                            }
+//                            
+//                        });
+//                        
+//                    }
+//                    
+//                });
+//                
+//            }
+//        });
+//        
+//        //console.log(closeLayers);
+//        $.each(closeLayers, function(i, closeLayer) {
+//            closeLayer.bringToFront();
+//        });
+//    });
+    // </SlightHorror>
