@@ -1,5 +1,32 @@
 /* HELPER FUNCTIONS */
 
+function offsetArrayOfPoints(arr, off) {
+    var offarr = arr;
+    for (i = 0; i < offarr.length; i++) {
+        offarr[i][0] += off[0];
+        offarr[i][1] += off[1];
+    }
+    return offarr;
+}
+
+// slider input time period
+function msecToTime(milliseconds) {
+    var date = new Date(new Number(milliseconds));
+    var str = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    return str;
+}
+
+function offsetFromStrSeed(strSeed) {
+    Math.seedrandom(strSeed);
+    var a = (2*Math.random())-1;
+    var b = (2*Math.random())-1;
+    //var m = 0.0005; - good, except for big zoom
+    var m = 0.0002;
+
+    return [m*a,m*b];
+}
+
+// COLORS:
 function strHashCode (str) {
     var hash = 0;
     if (str.length == 0) return hash;
@@ -12,7 +39,7 @@ function strHashCode (str) {
 }
     
 function randomColorHexFromSeed(strSeed) {
-    var seed = strHashCode(strSeed)
+    var seed = strHashCode(strSeed);
     color = Math.floor((Math.abs(Math.sin(seed) * 16777215)) % 16777215);
     color = color.toString(16);
     // pad any colors shorter than 6 characters with leading 0s
@@ -20,13 +47,6 @@ function randomColorHexFromSeed(strSeed) {
         color = '0' + color;
     }
     return "#" + color;
-}
-
-// slider input time period
-function msecToTime(milliseconds) {
-    var date = new Date(new Number(milliseconds));
-    var str = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-    return str;
 }
 
 function rainbow(numOfSteps, step) {

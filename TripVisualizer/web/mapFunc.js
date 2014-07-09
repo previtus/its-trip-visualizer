@@ -51,12 +51,18 @@ $(document).ready(function() {
         Layer3.bringToFront();
         
         // change style
-        var tmpStyle = {
-            "color": "red",
-            "weight": 10,
-            "opacity": 0.8
-        };
-        Layer1.setStyle(tmpStyle);
+        var tmpStyle_L1 = window.mouseOverStyle;
+        Layer1.setStyle(tmpStyle_L1);
+        
+        var tmpStyle_L2 = window.mouseOverSecondaryStyle;
+        tmpStyle_L2.color = Layer1._tripProperties._colorCodingLight;
+        Layer2.setStyle(tmpStyle_L2);
+        
+        var tmpStyle_L3 = window.mouseOverMarkerStyle;
+        
+        tmpStyle_L3.color = Layer1._tripProperties._colorCoding;
+        tmpStyle_L3.fillColor = Layer1._tripProperties._colorCodingLight;
+        Layer3.setStyle(tmpStyle_L3);
     }
     function groupBot(e) {
         var layerClicked = e.target;
@@ -77,19 +83,29 @@ $(document).ready(function() {
 //        };
 //        Layer1.setStyle(tmpStyle);
         
-        var tmpStyle2 = window.defaultStyle;
-        tmpStyle2.color = Layer1._tripProperties._colorCoding;
-        Layer1.setStyle(tmpStyle2);
+        var styleDefault_L1 = window.defaultStyle;
+        styleDefault_L1.color = Layer1._tripProperties._colorCoding;
+        Layer1.setStyle(styleDefault_L1);
+        
+        var styleDefault_L2 = window.defaultSecondaryStyle;
+        styleDefault_L2.color = Layer1._tripProperties._colorCodingLight;
+        Layer2.setStyle(styleDefault_L2);
+        
+        var styleDefault_L3 = window.defaultMarkerStyle;
+        styleDefault_L3.color = Layer1._tripProperties._colorCoding;
+        styleDefault_L3.fillColor = Layer1._tripProperties._colorCodingLight;
+        Layer3.setStyle(styleDefault_L3);
     }
     
-    function visualizeGeoJSON(objJson, pointsJson, useStyle, jsonAllPoints, tripCommonProperties) {       
-        var color_starter = useStyle.color;
-        var color_lighter = ColorLuminance(useStyle.color, 0.8);
-        //var color_even_lighter = ColorLuminance(useStyle.color, .95);
+    function visualizeGeoJSON(objJson, pointsJson, jsonAllPoints, tripCommonProperties) {
+        var color_starter = randomColorHexFromSeed(tripCommonProperties.agent_id+tripCommonProperties.trip_id);
         
-        var weight_starter = useStyle.weight;
-        var weight_thinner = useStyle.weight * 0.55;
-        var weight_tmp = (weight_starter - weight_thinner)/2;
+        var useStyle = {};
+        useStyle.color = color_starter;
+        useStyle.weight = window.defaultStyle.weight;
+        useStyle.opacity = window.defaultStyle.opacity;
+        
+        var color_lighter = ColorLuminance(useStyle.color, 0.8);
         
         // Main lines
         var lines = {
@@ -108,12 +124,13 @@ $(document).ready(function() {
         layer1_mainLine._layerTypeMarker = 1;
         layer1_mainLine._tripProperties = tripCommonProperties;
         layer1_mainLine._tripProperties._colorCoding = color_starter;
+        layer1_mainLine._tripProperties._colorCodingLight = color_lighter;
         layer1_mainLine._allPoints = jsonAllPoints;
         features.addLayer( layer1_mainLine );
         
         // Secondary lines
         var thinnerStyle = useStyle;
-            thinnerStyle.weight = weight_thinner;
+            thinnerStyle.weight = window.defaultSecondaryStyle.weight;
             thinnerStyle.color = color_lighter;
             thinnerStyle.opacity = 1;
         var layer2_secondaryLine = new L.geoJson(lines,{ style: thinnerStyle });
@@ -121,14 +138,9 @@ $(document).ready(function() {
         features.addLayer( layer2_secondaryLine );
         
         // Points
-        var geojsonMarkerOptions = {
-            radius: weight_starter * 0.4,
-            fillColor: color_lighter,
-            color: color_starter,
-            weight: weight_tmp,
-            opacity: 1,
-            fillOpacity: 0.8
-        };
+        var geojsonMarkerOptions = window.defaultMarkerStyle;
+        geojsonMarkerOptions.fillColor = color_lighter;
+        geojsonMarkerOptions.color = color_starter;
         
         var layer3_points = new L.geoJson(points, {
             pointToLayer: function (feature, latlng) {
@@ -344,15 +356,24 @@ $(document).ready(function() {
                 var multiPointArray = "["; // store only first and last coordinate segment
                 var lineStrArr = "["; // store all coordinates to form MultiLine
                 
+                // Random offset with random string seed
+                var seedStr = tripCommonProperties.agent_id+" "+tripCommonProperties.trip_id;
+                var offset = offsetFromStrSeed(seedStr);
+                
                 var FirstSegment = jQuery.parseJSON( trip._legs.leg0.geojsonpath ).coordinates;
+                FirstSegment = offsetArrayOfPoints(FirstSegment,offset);
                 multiPointArray += "["+FirstSegment[0]+"],"
                 
                 $.each(trip._legs, function(j, leg) {
+                    // <offset?>
                     var coordinates = jQuery.parseJSON(leg.geojsonpath).coordinates;
+                    // coordinates is array of points
+                    coordinates = offsetArrayOfPoints(coordinates,offset);
+                    
                     lineStrArr += JSON.stringify(coordinates) + ",";
                     
                     var first = coordinates[0];
-                    var last = coordinates[ Object.keys(coordinates).length-1 ];
+                    var last = coordinates[ coordinates.length-1 ]; //var last = coordinates[ Object.keys(coordinates).length-1 ];
                     //multiPointArray += "["+first+","+last+"],"
                     //multiPointArray += "["+first+"],"
                     multiPointArray += "["+last+"],"
@@ -378,16 +399,7 @@ $(document).ready(function() {
                 var lineGeoData = multiLineStrToGeoJSON(lineStrArr)
                 var pointGeoData = multiPointStrToGeoJSON(multiPointArray);
                 
-                var color = randomColorHexFromSeed(tripCommonProperties.agent_id+tripCommonProperties.trip_id);
-                //var color = rainbow(numberOfTrips, i);
-                //alert(color);
-                var useStyle = {
-                    "color": color,
-                    "weight": 10,
-                    "opacity": 0.8
-                };
-                visualizeGeoJSON(lineGeoData, pointGeoData, useStyle, jsonAllPoints, tripCommonProperties);
-                
+                visualizeGeoJSON(lineGeoData, pointGeoData, jsonAllPoints, tripCommonProperties);
             });
         }
     }
