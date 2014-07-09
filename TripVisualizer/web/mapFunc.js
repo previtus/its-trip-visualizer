@@ -45,9 +45,18 @@ $(document).ready(function() {
         var Layer2 = Layer1._pointerToLayer2_secondary;
         var Layer3 = Layer1._pointerToLayer3_points
         
+        // bring it up
         Layer1.bringToFront();
         Layer2.bringToFront();
         Layer3.bringToFront();
+        
+        // change style
+        var tmpStyle = {
+            "color": "red",
+            "weight": 10,
+            "opacity": 0.8
+        };
+        Layer1.setStyle(tmpStyle);
     }
     function groupBot(e) {
         var layerClicked = e.target;
@@ -59,6 +68,18 @@ $(document).ready(function() {
         Layer3.bringToBack();
         Layer2.bringToBack();
         Layer1.bringToBack();
+        
+        // change style
+//        var tmpStyle = {
+//            "color": Layer1._tripProperties._colorCoding,
+//            "weight": 10,
+//            "opacity": 0.8
+//        };
+//        Layer1.setStyle(tmpStyle);
+        
+        var tmpStyle2 = window.defaultStyle;
+        tmpStyle2.color = Layer1._tripProperties._colorCoding;
+        Layer1.setStyle(tmpStyle2);
     }
     
     function visualizeGeoJSON(objJson, pointsJson, useStyle, jsonAllPoints, tripCommonProperties) {       
@@ -130,8 +151,8 @@ $(document).ready(function() {
         features
             //.bindPopup(desc)
             .on('click', mapClicked)
-            //.on('mouseover', groupTop)
-            //.on('mouseout', groupBot)
+            .on('mouseover', groupTop)
+            .on('mouseout', groupBot)
             .addTo(map);
     }
 
