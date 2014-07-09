@@ -22,9 +22,11 @@ $(document).ready(function() {
         values: [2262200, 85944980],
         slide: function(event, ui) {
             $("#timeRange").val(msecToTime(ui.values[0]) + " - " + msecToTime(ui.values[1]));
+            //$("#timeRange").val(ui.values[0] + " - " + ui.values[1]);
         }
     });
     $("#timeRange").val(msecToTime($("#timeRange_slider").slider("values", 0)) + " - " + msecToTime($("#timeRange_slider").slider("values", 1)));
+    //$("#timeRange").val($("#timeRange_slider").slider("values", 0) + " - " + $("#timeRange_slider").slider("values", 1));
 
     // filter panels toggle and enabling
     $(".filterPanel .panelControl input[name='toggleButton']").click(function() {

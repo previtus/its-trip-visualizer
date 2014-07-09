@@ -13,7 +13,7 @@
     boolean debug_output_query = true;
     boolean timer = true;
     
-    if (debug_output_request) {
+    if (debug_output_request || debug_output_query) {
         JSONObject tmpJson = new JSONObject();
 
         Map<String, String[]> parameters = request.getParameterMap();
@@ -21,8 +21,16 @@
             String val = request.getParameter(parameter);
             tmpJson.put(parameter, val);
         }
-        out.print(tmpJson);
-        out.flush();
+        
+        if (debug_output_request) {
+            out.print(tmpJson);
+            out.flush();
+        }
+        if (debug_output_query) {
+            System.out.print("\n|");
+            System.out.print(tmpJson.toString());
+            System.out.print("|\n");
+        }
     }
 
     // PREPARE STRUCTURE
@@ -55,8 +63,8 @@
             boolean addedAtLeastOneCondition = false;
 
             // FILTERING BY ID 
+            /*
             // trip_id and agent_id wont be used ...
-
             if (R.isSet("trip_id") && R.isInt("trip_id")) {
                 whereCondition.append("t.trip_id = ? AND ");
                 valuesForConditions.add(request.getParameter("trip_id"));
@@ -70,6 +78,7 @@
                 types.add(helperClass.VarTypes.StrVar);
                 addedAtLeastOneCondition = true;
             }
+            */
 
             // FILTERING BY ACTIVITY (trip)
             if (R.isSet("from_act")) {
@@ -183,7 +192,57 @@
                 types.add(helperClass.VarTypes.BooVar);
                 addedAtLeastOneCondition = true;
             }
+            
+            // FILTERING BY RECTANGULAR SELECTION
+            // in request: bound_a_lon, bound_a_lat, bound_b_lon, bound_b_lat
+            // http://postgis.org/docs/ST_Intersects.html
+            // - ST_MakeEnvelope(minLon, minLat, maxLon, maxLat, 4326)
+            if (R.isSet("bound_a_lon") && R.isSet("bound_a_lat") && R.isSet("bound_b_lon") && R.isSet("bound_b_lat")) {
+                // WRONG WAYS
+                // the ones which use bounding box of l.path
+                //whereCondition.append("l.path && ST_MakeEnvelope(?, ?, ?, ?, 4326) AND ");
+                //whereCondition.append("l.path @ ST_MakeEnvelope(?, ?, ?, ?, 4326) AND "); // if paths bounding box is inside selected rectangle
+                //whereCondition.append("l.path ~ ST_MakeEnvelope(?, ?, ?, ?, 4326) AND "); // if selected rect is inside of paths bounding box - not what we want
+                //whereCondition.append("ST_Contains(ST_MakeEnvelope(?, ?, ?, ?, 4326), l.path) AND ");
+                //whereCondition.append("Not ST_IsEmpty(ST_Buffer(ST_Intersection(l.path, ST_MakeEnvelope(?, ?, ?, ?, 4326)),0.0)) AND ");
+                
+                // precise intersection
+                //whereCondition.append("Not ST_IsEmpty(ST_Intersection(l.path, ST_MakeEnvelope(?, ?, ?, ?, 4326))) AND ");
+                // \ this works but is kinda slow ...
+                
+                // CORRECT WAY
+                // also proper intersection, but boolean -> ST_Intersects instead of ST_Intersection
+                whereCondition.append("ST_Intersects(l.path, ST_MakeEnvelope(?, ?, ?, ?, 4326)) AND ");
+                valuesForConditions.add(request.getParameter("bound_a_lon"));
+                valuesForConditions.add(request.getParameter("bound_a_lat"));
+                valuesForConditions.add(request.getParameter("bound_b_lon"));
+                valuesForConditions.add(request.getParameter("bound_b_lat"));
+                types.add(helperClass.VarTypes.DblVar);
+                types.add(helperClass.VarTypes.DblVar);
+                types.add(helperClass.VarTypes.DblVar);
+                types.add(helperClass.VarTypes.DblVar);
+                addedAtLeastOneCondition = true;
+            }
+            
+            // FILTERING BY TIME
+            // in request: time_start, time_end
+            // we can connect this either with legs or whole trips - I choose legs variant for now, to have more interesting results
+            if (R.isSet("time_start")) {
+                whereCondition.append("l.start_time > ? AND ");
+                valuesForConditions.add(request.getParameter("time_start"));
+                types.add(helperClass.VarTypes.IntVar);
+                addedAtLeastOneCondition = true;
+            }
+            
+            if (R.isSet("time_end")) {
+                whereCondition.append("l.end_time < ? AND ");
+                valuesForConditions.add(request.getParameter("time_end"));
+                types.add(helperClass.VarTypes.IntVar);
+                addedAtLeastOneCondition = true;
+            }
 
+            // --- end of filters ---
+            
             if (addedAtLeastOneCondition) whereCondition.setLength(whereCondition.length()-5); // | AND | has length 5
 
             if (debug_output_query) {
@@ -221,6 +280,10 @@
                 for (int i = 1; i < valuesForConditions.size()+1; i++) {
                     String var = valuesForConditions.get(i-1);
                     switch (types.get(i-1)) {
+                        case DblVar:
+                            preparedCommonForTrip.setDouble(i, Double.parseDouble( var ));
+                            preparedAllLegs.setDouble(i, Double.parseDouble( var ));
+                            break;
                         case IntVar:
                             preparedCommonForTrip.setInt(i, Integer.parseInt( var ));
                             preparedAllLegs.setInt(i, Integer.parseInt( var ));

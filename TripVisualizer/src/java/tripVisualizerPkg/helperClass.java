@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public class helperClass {
     public static enum VarTypes {
-        StrVar, IntVar, BooVar
+        StrVar, IntVar, BooVar, DblVar
     }
     
     public static boolean isStringInt(String str) {

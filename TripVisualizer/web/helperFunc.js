@@ -24,8 +24,8 @@ function randomColorHexFromSeed(strSeed) {
 
 // slider input time period
 function msecToTime(milliseconds) {
-    var date = new Date(milliseconds);
-    var str = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
+    var date = new Date(new Number(milliseconds));
+    var str = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     return str;
 }
 

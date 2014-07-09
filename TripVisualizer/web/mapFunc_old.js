@@ -1,29 +1,25 @@
 /* FUNCTIONS USED AFTER DOCUMENT LOADED */
+
 $(document).ready(function() {
     var debug = true;
 
     // INITIALIZATION:
-    var map = L.map('map').setView([49.198, 16.64], 13);
+    var map = L.map('map').setView([49.202, 16.577], 13);
     L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '<a href="http://openstreetmap.org">OpenStreetMap</a>',
         maxZoom: 18
     }).addTo(map);
     map.attributionControl.setPrefix('');
-    
-    map.boxZoom.disable();
 
-    // resizeable
-    $(".BOX_FILTERS").resizable({ handles: 's' });
-    $(".BOX_GRAPHS").resizable({ handles: 's' });
-//    $("#map").resizable({
-//        stop: function( event, ui ) {
-//            //console.log(ui.size);
-//            //ui.size.height ui.size.width
-//            $("#map").css("height",ui.size.height);
-//            $("#map").css("width",ui.size.width);
-//            map.invalidateSize();
-//        }
-//    });
+    $("#map").resizable({
+        stop: function( event, ui ) {
+            //console.log(ui.size);
+            //ui.size.height ui.size.width
+            $("#map").css("height",ui.size.height);
+            $("#map").css("width",ui.size.width);
+            map.invalidateSize();
+        }
+    });
 
     // visualization
     function visualizeGeoJSON0(objJson, desc) {
@@ -268,8 +264,7 @@ $(document).ready(function() {
                 legInfo = legInfo.slice(0,-3);
                 
                 var localDesc = "<div class='tripDesc'><strong style='color: "+TripInfo._colorCoding+";'>#"+TripInfo.trip_id+" "+ TripInfo.agent_id + "</strong><br>"
-                    + "<div class='tripDescDetails'><div style='text-align: center;'><small>" + msecToTime(TripInfo.start_time) + " to " + msecToTime(TripInfo.end_time) + "</small></div>"
-                    + TripInfo.gender + "; " + TripInfo.economic_activity + "; " + TripInfo.education + "<br>"
+                    + "<div class='tripDescDetails'>" + TripInfo.gender + "; " + TripInfo.economic_activity + "; " + TripInfo.education + "<br>"
                     + TripInfo.from_activity + " -> " + TripInfo.to_activity + "<br>"
                     + "<small>" + legInfo + "</small>"
                     + "</div></div>";
@@ -526,16 +521,12 @@ $(document).ready(function() {
     }
 
     $("#ButtonFilteredData").click(function() {
-        if ($("#autoReset").is(':checked')) {
-            clearMap();
-        }
-        
         //prepare data
         var dataToBeSent = {};
-//        if ($("#filter_byId_check").is(':checked')) {
-//            setIfNotEmpty(dataToBeSent, "agent_id", $("#agent_id").val());
-//            setIfNotEmpty(dataToBeSent, "trip_id", $("#trip_id").val());
-//        }
+        if ($("#filter_byId_check").is(':checked')) {
+            setIfNotEmpty(dataToBeSent, "agent_id", $("#agent_id").val());
+            setIfNotEmpty(dataToBeSent, "trip_id", $("#trip_id").val());
+        }
         
         if ($("#filter_byActiv_check").is(':checked')) {
             setIfSelected(dataToBeSent, "from_act", $("#from_act").val());
@@ -560,22 +551,6 @@ $(document).ready(function() {
             setIfSelected(dataToBeSent, "ptCard", $('input[name=ptCard]:checked').val());
         }
 
-        // add rectangle selection filter
-        setIfNotEmpty(dataToBeSent, "bound_a_lat", $("#BoundA_lat").val());
-        setIfNotEmpty(dataToBeSent, "bound_a_lon", $("#BoundA_lon").val());
-        setIfNotEmpty(dataToBeSent, "bound_b_lat", $("#BoundB_lat").val());
-        setIfNotEmpty(dataToBeSent, "bound_b_lon", $("#BoundB_lon").val());
-
-        // add time period filter
-        // $("#timeRange_slider").slider("values", 0)
-        // default values: min: 2262200, max: 85944980,
-        if ($("#timeRange_slider").slider("values", 0) > 2262200) {
-            dataToBeSent.time_start = $("#timeRange_slider").slider("values", 0);
-        }
-        if ($("#timeRange_slider").slider("values", 1) < 85944980) {
-            dataToBeSent.time_end = $("#timeRange_slider").slider("values", 1);
-        }
-        
 
         //send it
         getMultipleTrips(dataToBeSent);
