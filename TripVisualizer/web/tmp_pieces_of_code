@@ -48,3 +48,26 @@
 //        });
 //    });
     // </SlightHorror>
+
+--------------------------------------------
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xs-1 col-xs-offset-11">
+                        <div class="well well-sm BOX_GRAPHS"> <!-- style="overflow-x: scroll" -->
+                            <!-- --GRAPHS-- -->
+                            G<br>
+                            R<br>
+                            A<br>
+                            P<br>
+                            H<br>
+                            S
+                        </div>
+                        <!--<div class="col-xs-12">
+                             <div class="well well-sm">
+                                 FOOOOO I AM AT THE TOP
+                             </div>
+                        </div>-->
+                    </div>
+                </div>
+            </div>

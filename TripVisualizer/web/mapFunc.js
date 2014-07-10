@@ -544,6 +544,16 @@ $(document).ready(function() {
     $("#ButtonClearMap").click(function() {
         clearMap();
     });
+    
+    $("#ButtonUnselect").click(function() {
+        if (lastSelectedBox != null) {
+            map.removeLayer(lastSelectedBox);
+        }
+        $("#BoundA_lat").attr("value", "");
+        $("#BoundA_lon").attr("value", "");
+        $("#BoundB_lat").attr("value", "");
+        $("#BoundB_lon").attr("value", "");
+    });
 
     function setIfNotEmpty(object, name, value) {
         // use this with text field (text input)

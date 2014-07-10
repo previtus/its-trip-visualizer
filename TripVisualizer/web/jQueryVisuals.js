@@ -51,12 +51,5 @@ $(document).ready(function() {
     });
     $(":checkbox").change().change();
 
-    // select rectangle button
-    $("#ButtonRectangle").toggle(
-        function() {
-            $(this).css("color", "green");
-        }, function() {
-            $(this).css("color", "black");
-        }
-    );
+    
 });
