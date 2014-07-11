@@ -54,7 +54,7 @@
                 z-index: 999;
                 position: absolute;
                 right: 0;
-                bottom: 85px;
+                bottom: 95px;
                 
                 font-size: large;
                 height: 250px;
@@ -113,7 +113,7 @@
                 width: 100%;
                 /* Set the fixed height of the footer here */
                 height: 60px;
-                margin-bottom: 10px;
+                margin-bottom: 30px;
                 
                 z-index: 666;
             }
@@ -346,11 +346,11 @@
                             </div>
 
                             <!-- --hidden filter by shift-dragging selection-- -->
-                            <!--         hidden  -->
-                            <input type="text" name="BoundA_lat" id="BoundA_lat" value="" />
-                            <input type="text" name="BoundA_lon" id="BoundA_lon" value="" />
-                            <input type="text" name="BoundB_lat" id="BoundB_lat" value="" />
-                            <input type="text" name="BoundB_lon" id="BoundB_lon" value="" />
+                            <!--        text <-> hidden  -->
+                            <input type="hidden" name="BoundA_lat" id="BoundA_lat" value="" />
+                            <input type="hidden" name="BoundA_lon" id="BoundA_lon" value="" />
+                            <input type="hidden" name="BoundB_lat" id="BoundB_lat" value="" />
+                            <input type="hidden" name="BoundB_lon" id="BoundB_lon" value="" />
 
                             <div style="text-align: center; font-size: x-large;">
                                 ▷► <input style="font-size: x-large;" type="button" value="SHOW" id="ButtonFilteredData"/> ◄◁
@@ -455,6 +455,8 @@
                     <input type="button" value="Clear map" id="ButtonClearMap"/>
                     <input type="button" value="Cancel selection" id="ButtonUnselect"/>
                     <input type="button" value="Toggle graph" id="ButtonToggleGraphTMP"/>
+                    <br>
+                    Hint: use <kbd><kbd>shift</kbd> + <kbd>drag</kbd></kbd> for rectangular selection.
 <!--<em style="color: red">Temporary server response (accepted request parameters):</em>
 <pre class="tempServerResponse" style="border: red solid 1px;">
 (server response)
