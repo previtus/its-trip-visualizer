@@ -21,7 +21,7 @@ function offsetFromStrSeed(strSeed) {
     var a = (2*Math.random())-1;
     var b = (2*Math.random())-1;
     //var m = 0.0005; - good, except for big zoom
-    var m = 0.0002;
+    var m = 0.0001;
 
     return [m*a,m*b];
 }

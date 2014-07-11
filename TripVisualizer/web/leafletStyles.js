@@ -1,5 +1,5 @@
 // STYLES FOR LEAFLET
-var weightDefault = 10;
+var weightDefault = 5;
 var weightMouseOver = 15;
 
 var m1 = 0.55;
