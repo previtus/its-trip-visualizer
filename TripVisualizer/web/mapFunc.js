@@ -3,6 +3,8 @@ var STATS = {};
 STATS.Agents = {};
 STATS.Trips  = {};
 STATS.Legs   = {};
+// STATS holds redundant data (respectively copies of references pointing at the same data; pointers are redundant, yet data is not doubled)
+// however it gives us better structure for data parsing which we need* (*want) for creating statistics ...
 
 $(document).ready(function() {
     var debug = true;
@@ -313,19 +315,22 @@ $(document).ready(function() {
                 
                 // assigment of array or object is treated through reference pointer (thus all the data structures are not copied by these assignments...)
                 
-                // save to STATS.Trips (ignore legs and agent info in this as well ... we wont be using it and I want to prevent object cloning...)
+                // 1.) save to STATS.Trips (ignore legs and agent info in this as well ... we wont be using it and I want to prevent object cloning...)
                 var trip_id = trip.trip_id;
-//                // VAR A -> no cloning (which is + now), but mess
-//                STATS.Trips[trip_id] = trip; // wish I could make it a subset of this object without neccessity of cloning
-                // TODO >> test with using:
-                //  UNDERSCORE + code:
+                var agent_id = trip.agent_id;
+                // VAR A -> no cloning (which is + now), but mess
+                // STATS.Trips[trip_id] = trip; // wish I could make it a subset of this object without neccessity of cloning
                 // VAR B -> cloning (shallow one), but neat
                 STATS.Trips[trip_id] = _.pick(trip, 'trip_id', 'start_time', 'end_time', 'from_activity', 'to_activity', 'agent_id');
                 
+                // 2.) save to STATS.Legs
+                STATS.Legs[trip_id] = trip._legs;
                 
-                console.log(trip);
-                console.log(STATS.Trips[trip_id]);
-                
+                // 3.) save to STATS.Agents
+                //STATS.Agents[agent_id] = _.pick(trip, '');
+                if (STATS.Agents[agent_id] == null) {
+                    STATS.Agents[agent_id] = _.pick(trip, 'agent_id', 'age', 'gender', 'education', 'marital_status', 'economic_activity', 'drivers_licence', 'pt_discount_card');
+                }
                 /* ende-STATS */
 
                 
