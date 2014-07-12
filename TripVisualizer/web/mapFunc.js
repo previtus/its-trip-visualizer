@@ -1,11 +1,4 @@
 /* FUNCTIONS USED AFTER DOCUMENT LOADED */
-var STATS = {};
-STATS.Agents = {};
-STATS.Trips  = {};
-STATS.Legs   = {};
-// STATS holds redundant data (respectively copies of references pointing at the same data; pointers are redundant, yet data is not doubled)
-// however it gives us better structure for data parsing which we need* (*want) for creating statistics ...
-
 $(document).ready(function() {
     var debug = true;
 
@@ -281,6 +274,18 @@ $(document).ready(function() {
         STATS.Trips  = {};
         STATS.Legs   = {};
         
+        STATS.byAgentProp = {};
+        // init zeros
+        $.each(InitNamesForAgentProps, function(propName, propValues) {
+            STATS.byAgentProp[propName] = {};
+            for (i = 0; i < propValues.length; i++) {
+                // for example STATS.byAgentProp.gender.FEMALE = 0
+                var tmp = STATS.byAgentProp[propName];
+                tmp[ propValues[i] ] = 0;
+            }
+        });
+        console.log(STATS.byAgentProp);
+        
         var jsonData = jQuery.parseJSON(data);
         if (jsonData.hasOwnProperty("error")) {
             // report error
@@ -329,10 +334,46 @@ $(document).ready(function() {
                 // 3.) save to STATS.Agents
                 //STATS.Agents[agent_id] = _.pick(trip, '');
                 if (STATS.Agents[agent_id] == null) {
+                    // doesn't exist yet
                     STATS.Agents[agent_id] = _.pick(trip, 'agent_id', 'age', 'gender', 'education', 'marital_status', 'economic_activity', 'drivers_licence', 'pt_discount_card');
+                    STATS.Agents[agent_id]._trips = [trip_id];
+                    STATS.Agents[agent_id].ageCategory = countAgeCategoryFromAge(trip.age, numberOfAgeCategories);
+                    
+                    // BUILD ARRAYS OF USED VALUES of AGENT - with voluntary initialization
+                    // plus one to for example this structure STATS.byAgentProp.gender.FEMALE
+                    // parse through accepted properties
+                    $.each(InitNamesForAgentProps, function(propName, nevermind_initialyAcceptedValues) {
+                        var property = STATS.byAgentProp[propName];
+                        var value = trip[propName];
+                        if (property[value] == null) {
+                            // wasn't initiated
+                            property[value] = 1;
+                        } else {
+                            property[value] += 1;
+                        }
+                        
+                        // here we could build back-pointers to agents with these properties
+                        var propNameGroup = propName + "_pointers";
+                        
+                        if (STATS.byAgentProp[propNameGroup] == null) {
+                            STATS.byAgentProp[propNameGroup] = {};
+                        }
+                        var pointerArr = STATS.byAgentProp[propNameGroup];
+                        if (pointerArr[value] == null) {
+                            pointerArr[value] = [agent_id];
+                        } else {
+                            pointerArr[value].push(agent_id);
+                        }
+                        // \ end of that ... we probably won't use it anyway ...
+                    });
+                    
+                    
+                } else {
+                    STATS.Agents[agent_id]._trips.push(trip_id);
                 }
+                
                 /* ende-STATS */
-
+                
                 
                 
                 var multiPointArray = "["; // store only first and last coordinate segment
@@ -380,6 +421,9 @@ $(document).ready(function() {
                 
                 visualizeGeoJSON(lineGeoData, pointGeoData, jsonAllPoints, tripCommonProperties);
             });
+            
+            //console.log(STATS.Agents);
+            console.log(STATS.byAgentProp);
         }
     }
     
