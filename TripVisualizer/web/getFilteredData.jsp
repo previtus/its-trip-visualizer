@@ -48,7 +48,7 @@
     }
 
     if (!error) {
-        //try {
+        try {
             //####### CREATE CONNECTION #######
             String URL = connection.URL;
             String USER = connection.USER;
@@ -200,7 +200,7 @@
             if (R.isSet("bound_a_lon") && R.isSet("bound_a_lat") && R.isSet("bound_b_lon") && R.isSet("bound_b_lat")) {
                 // WRONG WAYS
                 // the ones which use bounding box of l.path
-                //whereCondition.append("l.path && ST_MakeEnvelope(?, ?, ?, ?, 4326) AND ");
+                whereCondition.append("l.path && ST_MakeEnvelope(?, ?, ?, ?, 4326) AND ");
                 //whereCondition.append("l.path @ ST_MakeEnvelope(?, ?, ?, ?, 4326) AND "); // if paths bounding box is inside selected rectangle
                 //whereCondition.append("l.path ~ ST_MakeEnvelope(?, ?, ?, ?, 4326) AND "); // if selected rect is inside of paths bounding box - not what we want
                 //whereCondition.append("ST_Contains(ST_MakeEnvelope(?, ?, ?, ?, 4326), l.path) AND ");
@@ -212,7 +212,8 @@
                 
                 // CORRECT WAY
                 // also proper intersection, but boolean -> ST_Intersects instead of ST_Intersection
-                whereCondition.append("ST_Intersects(l.path, ST_MakeEnvelope(?, ?, ?, ?, 4326)) AND ");
+                //whereCondition.append("ST_Intersects(l.path, ST_MakeEnvelope(?, ?, ?, ?, 4326)) AND ");
+                
                 valuesForConditions.add(request.getParameter("bound_a_lon"));
                 valuesForConditions.add(request.getParameter("bound_a_lat"));
                 valuesForConditions.add(request.getParameter("bound_b_lon"));
@@ -374,31 +375,22 @@
                 tripObject.put("_legsLoaded", ""+numberOfLoadedLegs);
             }
             
-        /*} catch (SQLException es) {
+        } catch (SQLException es) {
             JSONObject errorJson = new JSONObject();
             errorJson.put("error", "Error while creating connection");
             errorJson.put("errorMessage", es.getMessage());
             error = true;
             out.print(errorJson);
             out.flush();  
-        }*/
+        }
     }
     
     if (!error) {
         JSONObject json = new JSONObject();
         for (int i = 0; i < Trips.size(); i++) {
             HashMap h = Trips.get(i);
-            /*
-            HashMap<String, String> bar = new HashMap<String, String>();
-            bar.put("ekmek", "!!");
-            HashMap<String, HashMap<String,String>> foo = new HashMap<String, HashMap<String,String>>();
-            //foo.put("ekmek", "!!");
-            foo.put("leg1", bar);
-            h.put("legs", foo);
-            */
             String indexById = (String) h.get("trip_id");
             json.put(indexById, h);
-            
             
         }
         out.print(json);
