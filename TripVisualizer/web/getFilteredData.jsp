@@ -200,8 +200,8 @@
             if (R.isSet("bound_a_lon") && R.isSet("bound_a_lat") && R.isSet("bound_b_lon") && R.isSet("bound_b_lat")) {
                 // WRONG WAYS
                 // the ones which use bounding box of l.path
-                whereCondition.append("l.path && ST_MakeEnvelope(?, ?, ?, ?, 4326) AND ");
-                //whereCondition.append("l.path @ ST_MakeEnvelope(?, ?, ?, ?, 4326) AND "); // if paths bounding box is inside selected rectangle
+                //whereCondition.append("l.path && ST_MakeEnvelope(?, ?, ?, ?, 4326) AND ");
+                whereCondition.append("l.path @ ST_MakeEnvelope(?, ?, ?, ?, 4326) AND "); // if paths bounding box is inside selected rectangle
                 //whereCondition.append("l.path ~ ST_MakeEnvelope(?, ?, ?, ?, 4326) AND "); // if selected rect is inside of paths bounding box - not what we want
                 //whereCondition.append("ST_Contains(ST_MakeEnvelope(?, ?, ?, ?, 4326), l.path) AND ");
                 //whereCondition.append("Not ST_IsEmpty(ST_Buffer(ST_Intersection(l.path, ST_MakeEnvelope(?, ?, ?, ?, 4326)),0.0)) AND ");
@@ -213,6 +213,10 @@
                 // CORRECT WAY
                 // also proper intersection, but boolean -> ST_Intersects instead of ST_Intersection
                 //whereCondition.append("ST_Intersects(l.path, ST_MakeEnvelope(?, ?, ?, ?, 4326)) AND ");
+                
+                // GENERALY WE WANT
+                // whereCondition.append("l.path @ ST_MakeEnvelope(?, ?, ?, ?, 4326) AND "); // if paths bounding box is inside selected rectangle
+                // ... but it can't cut legs in halves, so it sometimes looks wierd...
                 
                 valuesForConditions.add(request.getParameter("bound_a_lon"));
                 valuesForConditions.add(request.getParameter("bound_a_lat"));
