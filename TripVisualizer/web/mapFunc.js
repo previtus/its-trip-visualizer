@@ -1,4 +1,9 @@
 /* FUNCTIONS USED AFTER DOCUMENT LOADED */
+var STATS = {};
+STATS.Agents = {};
+STATS.Trips  = {};
+STATS.Legs   = {};
+
 $(document).ready(function() {
     var debug = true;
 
@@ -328,6 +333,12 @@ $(document).ready(function() {
 
     //processing
     function processMultipleTripsData(data) {
+        // restart stats
+        STATS = {};
+        STATS.Agents = {};
+        STATS.Trips  = {};
+        STATS.Legs   = {};
+        
         var jsonData = jQuery.parseJSON(data);
         if (jsonData.hasOwnProperty("error")) {
             // report error
@@ -353,6 +364,32 @@ $(document).ready(function() {
             
             $.each(jsonData, function(i, trip) {
                 var tripCommonProperties = trip;
+                
+                /* STATS */
+                // for each trip:
+                //  - save pointer to trip to STATS.Trips.<trip_id> -> trip //without agent and leg info
+                //  - save leg info into array of legs STATS.Legs.<trip_id> -> [array of legs]
+                //  - save agent info into STATS.Agents.<agent_id> (don't override if we already have this Agent loaded)
+                
+                // assigment of array or object is treated through reference pointer (thus all the data structures are not copied by these assignments...)
+                
+                // save to STATS.Trips (ignore legs and agent info in this as well ... we wont be using it and I want to prevent object cloning...)
+                var trip_id = trip.trip_id;
+//                // VAR A -> no cloning (which is + now), but mess
+//                STATS.Trips[trip_id] = trip; // wish I could make it a subset of this object without neccessity of cloning
+                // TODO >> test with using:
+                //  UNDERSCORE + code:
+                // VAR B -> cloning (shallow one), but neat
+                STATS.Trips[trip_id] = _.pick(trip, 'trip_id', 'start_time', 'end_time', 'from_activity', 'to_activity', 'agent_id');
+                
+                
+                console.log(trip);
+                console.log(STATS.Trips[trip_id]);
+                
+                /* ende-STATS */
+
+                
+                
                 var multiPointArray = "["; // store only first and last coordinate segment
                 var lineStrArr = "["; // store all coordinates to form MultiLine
                 
