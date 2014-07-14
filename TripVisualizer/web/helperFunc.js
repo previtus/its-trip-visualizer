@@ -91,3 +91,7 @@ function ColorLuminance(hex, lum) {
 
 	return rgb;
 }
+
+function lighter(hex) {
+    return ColorLuminance(hex, 0.55);
+}

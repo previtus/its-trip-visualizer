@@ -21,6 +21,9 @@
                 padding:0px;
                 margin:0px;
             } 
+            #map {
+                height:50%;
+            } 
             #topLayer, #graphLayer {
                 position: absolute;
                 top: 1%;
@@ -125,6 +128,15 @@
         <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
         <script src="boot/js/bootstrap.min.js"></script>
         
+        <!-- CHOOSE ONE : Chart.js // Highcharts  -->
+        <script src="graph/Chart.min.js" type="text/javascript"></script>
+        <script src="graph/Chart.StackedBar.js" type="text/javascript"></script>
+        
+        <script src="http://code.highcharts.com/highcharts.js"></script>
+        <script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+        
+        
         <script src="http://underscorejs.org/underscore-min.js"></script>
                 
         <!--[if IE]>
@@ -141,6 +153,8 @@
         <script src="jQueryVisuals.js"></script>
         
         <script src="customLeafletControl.js"></script>
+        
+        <script src="graphFunc.js"></script>
         
     </head>
     <body>
@@ -356,7 +370,7 @@
                             <input type="hidden" name="BoundB_lon" id="BoundB_lon" value="" />
 
                             <div style="text-align: center; font-size: x-large;">
-                                ▷► <input style="font-size: x-large;" type="button" value="SHOW" id="ButtonFilteredData"/> ◄◁
+                                ▷► <input style="font-size: x-large;" class="btn btn-primary" type="button" value="SHOW" id="ButtonFilteredData"/> ◄◁
                             </div>
                             <input type="checkbox" name="autoReset" id="autoReset" value="ON" checked="checked" class="panelCheckbox" />
                             <label for="autoReset">automatic cleaning</label>
@@ -382,10 +396,10 @@
                 </div>
             </div>
         </div>-->
-        
+        <!--
         <div class="GraphButtonLayer">
             <div class="GraphLayerInner">
-                <!-- --GRAPHS-- -->
+                <!-- --GRAPHS-- --/> hbiadbasbsbudiaudnasndasndanduajkdnsjakdnkjsandkanjkd
                 <table>
                     <tr>
                         <td id="clickableArea">
@@ -449,15 +463,16 @@
                 </table>
             </div>
         </div>
-        
-        <div class="footer">
+        -->
+        <div class="NOTfooter">
             <div class="container">
                 <div class="well well-sm">
                     <!-- --FOOTER-- -->
                     <strong>Control panel:</strong><br>
-                    <input type="button" value="Clear map" id="ButtonClearMap"/>
-                    <input type="button" value="Cancel selection" id="ButtonUnselect"/>
-                    <input type="button" value="Toggle graph" id="ButtonToggleGraphTMP"/>
+                    <input type="button" class="btn btn-default" value="Clear map" id="ButtonClearMap"/>
+                    <input type="button" class="btn btn-default" value="Cancel selection" id="ButtonUnselect"/>
+                    <!--<input type="button" class="btn btn-default" value="Toggle graph" id="ButtonToggleGraphTMP"/>-->
+                    <input type="button" class="btn btn-default GRAPH_TMP" value="Generate graphs from current filters" id="ButtonGenGraphsTMP"/>
                     <br>
                     Hint: use <kbd><kbd>shift</kbd> + <kbd>drag</kbd></kbd> for rectangular selection.
 <!--<em style="color: red">Temporary server response (accepted request parameters):</em>
@@ -468,7 +483,7 @@
             </div>
         </div>
 
-        <script>
+<!--        <script>
             $(document).ready(function() {
                 $( "#ButtonToggleGraphTMP" ).click(function() {
                     $(".GraphButtonLayer #clickableArea").click();
@@ -497,7 +512,57 @@
                 /*$(".GraphButtonLayer #graphCarousel th").children().css("width", "150px");
                 $(".GraphButtonLayer #graphCarousel td").children().css("width", "150px");*/
             });
-        </script>
+        </script>-->
+
+<div class="container GRAPH_TMP">
+    <h2>Graphs beyond the reach of map:</h2>
+    <h3>Agent data:</h3>
+    
+    <div>
+        -- Chart.js example --<br>
         
+        <table border="1" style="width: 100%">
+            <tr>
+                <td>
+                    <h4>Gender distribution</h4>
+                    <canvas id="myPIE" width="200" height="200"></canvas>
+                </td>
+                <td>
+                    <h4>Leg type by trip</h4>
+                    <div>
+                        <canvas id="mySTOCK" height="300" width="600"></canvas>
+                        <div id="mySTOCK_leg" style="text-align: center"></div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+    
+    <div>
+        -- Highcharts example --<br>
+        <table border="1" style="width: 100%">
+            <tr>
+                <td>
+                    <h4>Gender distribution</h4>
+                    <div id="genderGraph" style="min-width: 310px; height: 200px; max-width: 600px; margin: 0 auto"></div>
+                </td>
+                <td>
+                    <h4>Leg type by trip</h4>
+                    <div id="legTypeGraph" style="min-width: 510px; height: 400px; margin: 0 auto"></div>
+                </td>
+            </tr>
+        </table>
+        
+        
+    </div>
+    
+</div>
+
+<script>
+$(document).ready(function() {
+    $(".GRAPH_TMP").show();
+});
+</script>
     </body>
 </html>

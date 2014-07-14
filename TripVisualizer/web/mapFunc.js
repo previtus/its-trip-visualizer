@@ -284,7 +284,7 @@ $(document).ready(function() {
                 tmp[ propValues[i] ] = 0;
             }
         });
-        console.log(STATS.byAgentProp);
+        //console.log(STATS.byAgentProp);
         
         var jsonData = jQuery.parseJSON(data);
         if (jsonData.hasOwnProperty("error")) {
@@ -424,6 +424,7 @@ $(document).ready(function() {
             
             //console.log(STATS.Agents);
             console.log(STATS.byAgentProp);
+            console.log(STATS.Legs);
         }
     }
     
