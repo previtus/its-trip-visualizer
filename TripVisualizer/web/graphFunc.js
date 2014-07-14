@@ -1,13 +1,17 @@
 $(document).ready(function() {
     $( "#ButtonGenGraphsTMP" ).click(function() {
-        fooGraphs_PIE_chart_dot_js();
-        fooGraphs_STACKED_chart_dot_js();
-        
-        fooGraphs_PIE_highcharts();
-        fooGraphs_STACKED_highcharts();
+        if (STATS.byAgentProp != null) {
+            //fooGraphs_PIE_chart_dot_js();
+            //fooGraphs_STACKED_chart_dot_js();
+
+            fooGraphs_PIE_highcharts();
+            //fooGraphs_STACKED_highcharts();
+        }
     });
 
     function fooGraphs_PIE_highcharts() {
+        $("genderGraph").css("height","300px");
+        
         var dataArr = [];
         for(var propertyName in STATS.byAgentProp.gender) {
             var propertyValue = STATS.byAgentProp.gender[propertyName];

@@ -9,10 +9,14 @@ function offsetArrayOfPoints(arr, off) {
     return offarr;
 }
 
+function minTwoDigits(n) {
+  return (n < 10 ? '0' : '') + n;
+}
+
 // slider input time period
 function msecToTime(milliseconds) {
     var date = new Date(new Number(milliseconds));
-    var str = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    var str = date.getHours() + ":" + minTwoDigits(date.getMinutes()) + ":" + minTwoDigits(date.getSeconds());
     return str;
 }
 
