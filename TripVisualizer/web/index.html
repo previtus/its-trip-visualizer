@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>TripVisualizer v0.0.0d</title>
+        <title>TripVisualizer v0.0.0e</title>
 
         <!--<link rel="stylesheet" href="leaflet/leaflet-0.7.3/leaflet.css" />
         <script src="leaflet/leaflet-0.7.3/leaflet.js" type="text/javascript"></script>-->
@@ -12,6 +12,8 @@
         <script src="leaflet/leaflet-0.8-dev-master/leaflet.js" type="text/javascript"></script>
         
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+        <link href="jquery/bootstrap-multiselect.css" rel="stylesheet">
+        
         <link rel="stylesheet" href="styles.css" />
         
         <link href="boot/css/bootstrap.min.css" rel="stylesheet">
@@ -35,9 +37,10 @@
 
         
         <!--<script src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0" type="text/javascript"></script>-->
-        <script src="//code.jquery.com/jquery-1.11.0.min.js" type="text/javascript"></script>
-        <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
-        <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js" type="text/javascript"></script>
+        <script src="http://code.jquery.com/jquery-1.11.0.min.js" type="text/javascript"></script>
+        <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
+        <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js" type="text/javascript"></script>
+        <script src="jquery/bootstrap-multiselect.js" type="text/javascript"></script>
         <script src="boot/js/bootstrap.min.js" type="text/javascript"></script>
         
         <script src="please.min.js" type="text/javascript"></script>
@@ -53,6 +56,12 @@
         </script>
         <![endif]-->
 
+        <script>
+            var detailLVL = 1;
+            // 1 only back line
+            // 2 backline + overline
+            // 3 backline + overline + points
+        </script>
         <script src="seedrandom.min.js"></script>
         <script src="helperFunc.js"></script>
         <script src="leafletStyles.js"></script>
@@ -119,28 +128,26 @@
                                         <tr>
                                             <td style="padding-right: 10px;"><label for="from_act">From activity</label></td>
                                             <td>
-                                                <select name="from_act" id="from_act" class="form-control input-sm">
-                                                    <option value="-">-- select --</option>
-                                                    <option value="SLEEP">SLEEP</option>
-                                                    <option value="WORK">WORK</option>
-                                                    <option value="SCHOOL">SCHOOL</option>
-                                                    <option value="LEISURE">LEISURE</option>
-                                                    <option value="SHOP_DAILY">SHOP_DAILY</option>
-                                                    <option value="SHOP_LONG">SHOP_LONG</option>
+                                                <select name="from_act" id="from_act" class="form-control input-sm multiselectCustom" multiple="multiple">
+                                                    <option value="SLEEP">Sleep</option>
+                                                    <option value="WORK">Work</option>
+                                                    <option value="SCHOOL">School</option>
+                                                    <option value="LEISURE">Leisure</option>
+                                                    <option value="SHOP_DAILY">Shop daily</option>
+                                                    <option value="SHOP_LONG">Shop long</option>
                                                 </select>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td><label for="to_act">To activity</label></td>
                                             <td>
-                                                <select name="to_act" id="to_act" class="form-control input-sm">
-                                                    <option value="-">-- select --</option>
-                                                    <option value="SLEEP">SLEEP</option>
-                                                    <option value="WORK">WORK</option>
-                                                    <option value="SCHOOL">SCHOOL</option>
-                                                    <option value="LEISURE">LEISURE</option>
-                                                    <option value="SHOP_DAILY">SHOP_DAILY</option>
-                                                    <option value="SHOP_LONG">SHOP_LONG</option>
+                                                <select name="to_act" id="to_act" class="form-control input-sm multiselectCustom" multiple="multiple">
+                                                    <option value="SLEEP">Sleep</option>
+                                                    <option value="WORK">Work</option>
+                                                    <option value="SCHOOL">School</option>
+                                                    <option value="LEISURE">Leisure</option>
+                                                    <option value="SHOP_DAILY">Shop daily</option>
+                                                    <option value="SHOP_LONG">Shop long</option>
                                                 </select>
                                             </td>
                                         </tr>
@@ -160,12 +167,11 @@
                                         <tr>
                                             <td style="padding-right: 10px;"><label for="trans_type">Type</label></td>
                                             <td>
-                                                <select name="trans_type" id="trans_type" class="form-control input-sm">
-                                                    <option value="-">-- select --</option>
-                                                    <option value="WALK">walk</option>
-                                                    <option value="TELEPORT">teleport</option>
-                                                    <option value="PT">public transport</option>
-                                                    <option value="CAR">car</option>
+                                                <select name="trans_type" id="trans_type" class="form-control input-sm multiselectCustom" multiple="multiple">
+                                                    <option value="WALK">Walk</option>
+                                                    <option value="TELEPORT">Teleport</option>
+                                                    <option value="PT">Public transport</option>
+                                                    <option value="CAR">Car</option>
                                                 </select>
                                             </td>
                                         </tr>
@@ -210,13 +216,12 @@
                                         <tr>
                                             <td><label for="education">education:</label></td>
                                             <td>
-                                                <select name="education" id="education" class="form-control input-sm">
-                                                    <option value="-">-- select --</option>
-                                                    <option value="BASIC">basic</option>
-                                                    <option value="SECONDARY_WITHOUT_FINAL_EXAM">secondary without final exam</option>
-                                                    <option value="SECONDARY_WITH_FINAL_EXAM">secondary with final exam</option>
-                                                    <option value="UNIVERSITY">university</option>
-                                                    <option value="HIGHER_PROFESSIONAL">higher professional</option>
+                                                <select name="education" id="education" class="form-control input-sm multiselectCustom" multiple="multiple">
+                                                    <option value="BASIC">Basic</option>
+                                                    <option value="SECONDARY_WITHOUT_FINAL_EXAM">Secondary without final exam</option>
+                                                    <option value="SECONDARY_WITH_FINAL_EXAM">Secondary with final exam</option>
+                                                    <option value="UNIVERSITY">University</option>
+                                                    <option value="HIGHER_PROFESSIONAL">Higher professional</option>
                                                     <option value="NULL">having "null"</option>
                                                 </select>
                                             </td>
@@ -226,12 +231,11 @@
                                         <tr>
                                             <td><label for="maritalStatus">marital status:</label></td>
                                             <td>
-                                                <select name="maritalStatus" id="maritalStatus" class="form-control input-sm">
-                                                    <option value="-">-- select --</option>
-                                                    <option value="MARRIED">MARRIED</option>
-                                                    <option value="SINGLE">SINGLE</option>
-                                                    <option value="DIVORCED">DIVORCED</option>
-                                                    <option value="WIDOWED">WIDOWED</option>
+                                                <select name="maritalStatus" id="maritalStatus" class="form-control input-sm multiselectCustom" multiple="multiple">
+                                                    <option value="MARRIED">Married</option>
+                                                    <option value="SINGLE">Single</option>
+                                                    <option value="DIVORCED">Divorced</option>
+                                                    <option value="WIDOWED">Widowed</option>
                                                 </select>
                                             </td>
                                         </tr>
@@ -240,12 +244,11 @@
                                         <tr>
                                             <td><label for="economicalActivity">economical activity:</label></td>
                                             <td>
-                                                <select name="economicalActivity" id="economicalActivity" class="form-control input-sm">
-                                                    <option value="-">-- select --</option>
-                                                    <option value="WORKING">WORKING</option>
-                                                    <option value="SECONDARY_SCHOOL">SECONDARY_SCHOOL</option>
-                                                    <option value="UNIVERSITY_STUDENT">UNIVERSITY_STUDENT</option>
-                                                    <option value="PRIMARY_SCHOOL">PRIMARY_SCHOOL</option>
+                                                <select name="economicalActivity" id="economicalActivity" class="form-control input-sm multiselectCustom" multiple="multiple">
+                                                    <option value="WORKING">Working</option>
+                                                    <option value="SECONDARY_SCHOOL">Secondary school</option>
+                                                    <option value="UNIVERSITY_STUDENT">University student</option>
+                                                    <option value="PRIMARY_SCHOOL">Primary school</option>
                                                 </select>
                                             </td>
                                         </tr>
@@ -292,10 +295,6 @@
                 </div>
             </div>
         </div>
-            
-            
-        
-        
         
 
 

@@ -44,3 +44,8 @@ window.defaultMarkerStyle = {
     opacity: 1,
     fillOpacity: 0.8
 };
+
+if (detailLVL == 1) {
+    // only primary line
+    window.defaultStyle.opacity = 1;
+}

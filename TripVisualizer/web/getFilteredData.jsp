@@ -1,3 +1,4 @@
+<%@page import="tripVisualizerPkg.helperClass.VarTypes"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.Map"%>
@@ -23,7 +24,7 @@
         }
         
         if (debug_output_request) {
-            out.print(tmpJson);
+            out.println(tmpJson);
             out.flush();
         }
         if (debug_output_query) {
@@ -60,7 +61,7 @@
             ArrayList<helperClass.VarTypes> types = new ArrayList<helperClass.VarTypes>();
             StringBuilder whereCondition = new StringBuilder();
             ArrayList<String> valuesForConditions = new ArrayList<String>();
-            boolean addedAtLeastOneCondition = false;
+            Boolean addedAtLeastOneCondition = false;
 
             // FILTERING BY ID 
             /*
@@ -81,27 +82,12 @@
             */
 
             // FILTERING BY ACTIVITY (trip)
-            if (R.isSet("from_act")) {
-                whereCondition.append("t.from_activity LIKE ? AND ");
-                valuesForConditions.add("%"+request.getParameter("from_act")+"%");
-                types.add(helperClass.VarTypes.StrVar);
-                addedAtLeastOneCondition = true;
-            }
-            if (R.isSet("to_act")) {
-                whereCondition.append("t.to_activity LIKE ? AND ");
-                valuesForConditions.add("%"+request.getParameter("to_act")+"%");
-                types.add(helperClass.VarTypes.StrVar);
-                addedAtLeastOneCondition = true;
-            }
-
+            addedAtLeastOneCondition = helperClass.MultiselectMacro(R, "from_act[]", "t.from_activity", true, whereCondition,valuesForConditions, types) || addedAtLeastOneCondition;
+            addedAtLeastOneCondition = helperClass.MultiselectMacro(R, "to_act[]", "t.to_activity", true, whereCondition,valuesForConditions, types) || addedAtLeastOneCondition;
+            
             // FILTERING BY TRANSPORT TYPE (leg)
-            if (R.isSet("trans_type")) {
-                whereCondition.append("l.type = ? AND ");
-                valuesForConditions.add(request.getParameter("trans_type"));
-                types.add(helperClass.VarTypes.StrVar);
-                addedAtLeastOneCondition = true;
-            }
-
+            addedAtLeastOneCondition = helperClass.MultiselectMacro(R, "trans_type[]", "l.type", false, whereCondition,valuesForConditions, types) || addedAtLeastOneCondition;
+            
             // FILTERING BY AGENT INFO (agent)
             // information in: age, age_val, gender, education, maritalStatus, economicalActivity, driveLicence, ptCard
             // in table:
@@ -154,28 +140,14 @@
             }
 
             // education
-            if (R.isSet("education")) {
-                whereCondition.append("a.education = ? AND ");
-                valuesForConditions.add(request.getParameter("education"));
-                types.add(helperClass.VarTypes.StrVar);
-                addedAtLeastOneCondition = true;
-            }
-
+            addedAtLeastOneCondition = helperClass.MultiselectMacro(R, "education[]", "a.education", false, whereCondition,valuesForConditions, types) || addedAtLeastOneCondition;
+            
             // marital_status
-            if (R.isSet("maritalStatus")) {
-                whereCondition.append("a.marital_status = ? AND ");
-                valuesForConditions.add(request.getParameter("maritalStatus"));
-                types.add(helperClass.VarTypes.StrVar);
-                addedAtLeastOneCondition = true;
-            }
+            addedAtLeastOneCondition = helperClass.MultiselectMacro(R, "maritalStatus[]", "a.marital_status", false, whereCondition,valuesForConditions, types) || addedAtLeastOneCondition;
 
             // economic_activity
-            if (R.isSet("economicalActivity")) {
-                whereCondition.append("a.economic_activity = ? AND ");
-                valuesForConditions.add(request.getParameter("economicalActivity"));
-                types.add(helperClass.VarTypes.StrVar);
-                addedAtLeastOneCondition = true;
-            }
+            addedAtLeastOneCondition = helperClass.MultiselectMacro(R, "economicalActivity[]", "a.economic_activity", false, whereCondition,valuesForConditions, types) || addedAtLeastOneCondition;
+
 
             // drivers_licence
             if (R.isSet("driveLicence")) {
@@ -251,6 +223,10 @@
             if (addedAtLeastOneCondition) whereCondition.setLength(whereCondition.length()-5); // | AND | has length 5
 
             if (debug_output_query) {
+                if (debug_output_request) {
+                    out.println(whereCondition.toString());
+                }
+                
                 System.out.print("\n\n|");
                 System.out.print(whereCondition.toString());
                 System.out.print("|\n\n");
@@ -323,6 +299,10 @@
                     String[] splitTmp = tmp_common.split("WHERE");
                     System.out.print("... WHERE"+splitTmp[1]);
                     System.out.print("\n\n");
+                    
+                    if (debug_output_request) {
+                        out.println("... WHERE"+splitTmp[1]);
+                    }
                 }
             }
 

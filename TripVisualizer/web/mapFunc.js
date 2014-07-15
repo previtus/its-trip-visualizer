@@ -1,14 +1,12 @@
 /* FUNCTIONS USED AFTER DOCUMENT LOADED */
 $(document).ready(function() {
-    var detailLVL = 1;
-    // 1 only back line
-    // 2 backline + overline
-    // 3 backline + overline + points
     var debug = true;
 
     // INITIALIZATION:
     var map = L.map('map').setView([49.198, 16.64], 13);    
-    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    
+    L.tileLayer('http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png', {
+    //L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '<a href="http://openstreetmap.org">OpenStreetMap</a>',
         maxZoom: 18
     }).addTo(map);
@@ -119,6 +117,11 @@ $(document).ready(function() {
         //console.log(color_starter);
         
         //var color_starter = randomColorHexFromSeed(tripCommonProperties.agent_id+tripCommonProperties.trip_id);
+        
+        // hax, only one line drawn, do it with the nicer color
+        if (detailLVL = 1) {
+            color_starter = ColorLuminance(color_starter, 0.8);
+        }
         
         var useStyle = {};
         useStyle.color = color_starter;
@@ -616,7 +619,7 @@ $(document).ready(function() {
     }
     function setIfSelected(object, name, value) {
         // use this with selection <select> or radio (radio input)
-        if (value !== "-") {
+        if (value !== "-" && value !== null) {
             object[name] = value;
         }
     }
@@ -636,6 +639,7 @@ $(document).ready(function() {
         if ($("#filter_byActiv_check").is(':checked')) {
             setIfSelected(dataToBeSent, "from_act", $("#from_act").val());
             setIfSelected(dataToBeSent, "to_act", $("#to_act").val());
+            //dataToBeSent.to_act = $("#to_act").val();
         }
 
         if ($("#filter_byTransportType_check").is(':checked')) {

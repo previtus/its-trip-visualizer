@@ -51,5 +51,8 @@ $(document).ready(function() {
     });
     $(":checkbox").change().change();
 
-    
+    $(".multiselectCustom").multiselect({
+        buttonClass: 'btn form-control',
+        includeSelectAllOption: true
+    });
 });
