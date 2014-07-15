@@ -20,6 +20,31 @@ function msecToTime(milliseconds) {
     return str;
 }
 
+function randColor(hue) {
+    
+    return $.Color({
+        hue: hue,
+        saturation: 0.9,
+        lightness: 0.4,
+        alpha: 1
+    }).toHexString();
+};
+
+function colorFromStrSeed(strSeed) {
+    // rig elections!
+    Math.seedrandom(strSeed);
+    //Math.seedrandom(Math.random());
+    /*return Please.make_color({
+        golden: false,
+        value: 0.5,
+        full_random:true
+    });*/
+    var hue = Math.random()*1000;
+    //console.log(hue);
+    
+    return randColor(hue);
+}
+
 function offsetFromStrSeed(strSeed) {
     Math.seedrandom(strSeed);
     var a = (2*Math.random())-1;

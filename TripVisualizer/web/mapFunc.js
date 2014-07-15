@@ -1,13 +1,26 @@
 /* FUNCTIONS USED AFTER DOCUMENT LOADED */
 $(document).ready(function() {
+    var detailLVL = 1;
+    // 1 only back line
+    // 2 backline + overline
+    // 3 backline + overline + points
     var debug = true;
 
     // INITIALIZATION:
-    var map = L.map('map').setView([49.198, 16.64], 13);
+    var map = L.map('map').setView([49.198, 16.64], 13);    
     L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '<a href="http://openstreetmap.org">OpenStreetMap</a>',
         maxZoom: 18
     }).addTo(map);
+    
+//    var layer = new L.StamenTileLayer("toner");
+//    var map = new L.Map("map", {
+//        center: new L.LatLng(49.198, 16.64),
+//        zoom: 13,
+//        maxZoom: 18
+//    });
+//    map.addLayer(layer);
+
     map.attributionControl.setPrefix('');
     
     map.boxZoom.disable();
@@ -42,55 +55,70 @@ $(document).ready(function() {
         var layerClicked = e.target;
         
         var Layer1 = layerClicked._pointerToLayer1_main;
-        var Layer2 = Layer1._pointerToLayer2_secondary;
-        var Layer3 = Layer1._pointerToLayer3_points
         
         // bring it up
         Layer1.bringToFront();
-        Layer2.bringToFront();
-        Layer3.bringToFront();
+        
+        if (detailLVL > 1) {
+            var Layer2 = Layer1._pointerToLayer2_secondary;
+            Layer2.bringToFront();
+            var tmpStyle_L2 = window.mouseOverSecondaryStyle;
+            tmpStyle_L2.color = Layer1._tripProperties._colorCodingLight;
+            Layer2.setStyle(tmpStyle_L2);
+        }
+        
+        if (detailLVL > 2) {
+            var Layer3 = Layer1._pointerToLayer3_points
+            Layer3.bringToFront();
+            var tmpStyle_L3 = window.mouseOverMarkerStyle;
+
+            tmpStyle_L3.color = Layer1._tripProperties._colorCoding;
+            tmpStyle_L3.fillColor = Layer1._tripProperties._colorCodingLight;
+            Layer3.setStyle(tmpStyle_L3);
+        }
         
         // change style
         var tmpStyle_L1 = window.mouseOverStyle;
         Layer1.setStyle(tmpStyle_L1);
-        
-        var tmpStyle_L2 = window.mouseOverSecondaryStyle;
-        tmpStyle_L2.color = Layer1._tripProperties._colorCodingLight;
-        Layer2.setStyle(tmpStyle_L2);
-        
-        var tmpStyle_L3 = window.mouseOverMarkerStyle;
-        
-        tmpStyle_L3.color = Layer1._tripProperties._colorCoding;
-        tmpStyle_L3.fillColor = Layer1._tripProperties._colorCodingLight;
-        Layer3.setStyle(tmpStyle_L3);
     }
     function groupBot(e) {
         var layerClicked = e.target;
         
         var Layer1 = layerClicked._pointerToLayer1_main;
-        var Layer2 = Layer1._pointerToLayer2_secondary;
-        var Layer3 = Layer1._pointerToLayer3_points
         
-        Layer3.bringToBack();
-        Layer2.bringToBack();
+        if (detailLVL > 2) {
+            var Layer3 = Layer1._pointerToLayer3_points
+            Layer3.bringToBack();
+            var styleDefault_L3 = window.defaultMarkerStyle;
+            styleDefault_L3.color = Layer1._tripProperties._colorCoding;
+            styleDefault_L3.fillColor = Layer1._tripProperties._colorCodingLight;
+            Layer3.setStyle(styleDefault_L3);
+        }
+        
+        if (detailLVL > 1) {
+            var Layer2 = Layer1._pointerToLayer2_secondary;
+            Layer2.bringToBack();
+            var styleDefault_L2 = window.defaultSecondaryStyle;
+            styleDefault_L2.color = Layer1._tripProperties._colorCodingLight;
+            Layer2.setStyle(styleDefault_L2);
+        }
+        
+        
         Layer1.bringToBack();
         
         var styleDefault_L1 = window.defaultStyle;
         styleDefault_L1.color = Layer1._tripProperties._colorCoding;
         Layer1.setStyle(styleDefault_L1);
         
-        var styleDefault_L2 = window.defaultSecondaryStyle;
-        styleDefault_L2.color = Layer1._tripProperties._colorCodingLight;
-        Layer2.setStyle(styleDefault_L2);
-        
-        var styleDefault_L3 = window.defaultMarkerStyle;
-        styleDefault_L3.color = Layer1._tripProperties._colorCoding;
-        styleDefault_L3.fillColor = Layer1._tripProperties._colorCodingLight;
-        Layer3.setStyle(styleDefault_L3);
     }
     
     function visualizeGeoJSON(objJson, pointsJson, jsonAllPoints, tripCommonProperties) {
-        var color_starter = randomColorHexFromSeed(tripCommonProperties.agent_id+tripCommonProperties.trip_id);
+        var color_seed = tripCommonProperties.agent_id+" "+tripCommonProperties.trip_id+JSON.stringify(objJson);
+        var color_starter = colorFromStrSeed(color_seed);
+        
+        //console.log(color_starter);
+        
+        //var color_starter = randomColorHexFromSeed(tripCommonProperties.agent_id+tripCommonProperties.trip_id);
         
         var useStyle = {};
         useStyle.color = color_starter;
@@ -120,33 +148,34 @@ $(document).ready(function() {
         layer1_mainLine._allPoints = jsonAllPoints;
         features.addLayer( layer1_mainLine );
         
-        // Secondary lines
-        var thinnerStyle = useStyle;
-            thinnerStyle.weight = window.defaultSecondaryStyle.weight;
-            thinnerStyle.color = color_lighter;
-            thinnerStyle.opacity = 1;
-        var layer2_secondaryLine = new L.geoJson(lines,{ style: thinnerStyle });
-        layer2_secondaryLine._layerTypeMarker = 2;
-        features.addLayer( layer2_secondaryLine );
-        
-        // Points
-        var geojsonMarkerOptions = window.defaultMarkerStyle;
-        geojsonMarkerOptions.fillColor = color_lighter;
-        geojsonMarkerOptions.color = color_starter;
-        
-        var layer3_points = new L.geoJson(points, {
-            pointToLayer: function (feature, latlng) {
-                return L.circleMarker(latlng, geojsonMarkerOptions);
-            }
-        });
-        layer3_points._layerTypeMarker = 3;
-        features.addLayer( layer3_points );
-        
+        if (detailLVL > 1) {
+            // Secondary lines
+            var thinnerStyle = useStyle;
+                thinnerStyle.weight = window.defaultSecondaryStyle.weight;
+                thinnerStyle.color = color_lighter;
+                thinnerStyle.opacity = 1;
+            var layer2_secondaryLine = new L.geoJson(lines,{ style: thinnerStyle });
+            layer2_secondaryLine._layerTypeMarker = 2;
+            features.addLayer( layer2_secondaryLine );
+            layer1_mainLine._pointerToLayer2_secondary = layer2_secondaryLine;
+        }
+        if (detailLVL > 2) {
+            // Points
+            var geojsonMarkerOptions = window.defaultMarkerStyle;
+            geojsonMarkerOptions.fillColor = color_lighter;
+            geojsonMarkerOptions.color = color_starter;
+
+            var layer3_points = new L.geoJson(points, {
+                pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, geojsonMarkerOptions);
+                }
+            });
+            layer3_points._layerTypeMarker = 3;
+            features.addLayer( layer3_points );
+            layer1_mainLine._pointerToLayer3_points = layer3_points;
+        }
+
         features._pointerToLayer1_main = layer1_mainLine;
-        
-        layer1_mainLine._pointerToLayer2_secondary = layer2_secondaryLine;
-        layer1_mainLine._pointerToLayer3_points = layer3_points;
-        
         features.__deleteable = true;
         
 //        layer2_secondaryLine._pointerToLayer1_main = layer1_mainLine;
@@ -226,13 +255,15 @@ $(document).ready(function() {
             var desc = ""
             for (i = 0; i < closeLayers.length; i++) {
                 var Layer1 = closeLayers[i];
-                var Layer2 = Layer1._pointerToLayer2_secondary;
-                var Layer3 = Layer1._pointerToLayer3_points
-
                 Layer1.bringToFront();
-                Layer2.bringToFront();
-                Layer3.bringToFront();
-
+                if (detailLVL > 1) {
+                    var Layer2 = Layer1._pointerToLayer2_secondary;
+                    Layer2.bringToFront();
+                }
+                if (detailLVL > 2) {
+                    var Layer3 = Layer1._pointerToLayer3_points;
+                    Layer3.bringToFront(); 
+                }
                 debugStr += Layer1._leaflet_id + " (distFromClick "+Layer1._lastDist+"; tripId: "+Layer1._tripProperties.trip_id+") \n";
 
                 // collect informations for description
