@@ -55,4 +55,6 @@ $(document).ready(function() {
         buttonClass: 'btn form-control',
         includeSelectAllOption: true
     });
+    
+    $("#exclusionSelect").buttonset();
 });

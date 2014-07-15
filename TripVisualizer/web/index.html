@@ -39,7 +39,7 @@
         <!--<script src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0" type="text/javascript"></script>-->
         <script src="http://code.jquery.com/jquery-1.11.0.min.js" type="text/javascript"></script>
         <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
-        <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js" type="text/javascript"></script>
+
         <script src="jquery/bootstrap-multiselect.js" type="text/javascript"></script>
         <script src="boot/js/bootstrap.min.js" type="text/javascript"></script>
         
@@ -49,6 +49,7 @@
         <script src="http://code.highcharts.com/modules/exporting.js" type="text/javascript"></script>
         
         <script src="http://underscorejs.org/underscore-min.js" type="text/javascript"></script>
+        <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
                 
         <!--[if IE]>
         <script type="text/javascript">
@@ -206,9 +207,11 @@
                                         <tr>
                                             <td>gender:</td>
                                             <td>
-                                                <input type="radio" name="gender" value="F" id="genderF"/> <label for="genderF">♀</label>
-                                                <input type="radio" name="gender" value="M" id="genderM"/> <label for="genderM">♂</label>
-                                                <input type="radio" name="gender" value="-" checked="checked" id="genderX"/> <label for="genderX">both</label>
+                                                 <div id="exclusionSelect">
+                                                    <input type="radio" id="genderX" value="-" name="gender" checked="checked"><label for="genderX">All</label>
+                                                    <input type="radio" id="genderF" value="F" name="gender"><label for="genderF">♀</label>
+                                                    <input type="radio" id="genderM" value="M" name="gender"><label for="genderM">♂</label>
+                                                </div>
                                             </td>
                                         </tr>
 
@@ -325,7 +328,18 @@
     <h4>Gender distribution</h4>
     <div id="genderGraph" style="min-width: 310px; height: 0px; max-width: 600px; margin: 0 auto"></div>
     
-    
+<form>
+	<div id="radio">
+		<input type="radio" id="radio1" name="radio"><label for="radio1">Choice 1</label>
+		<input type="radio" id="radio2" name="radio" checked="checked"><label for="radio2">Choice 2</label>
+		<input type="radio" id="radio3" name="radio"><label for="radio3">Choice 3</label>
+	</div>
+</form>
+ <script>
+$(function() {
+$( "#radio" ).buttonset();
+});
+</script>
 </div>
     </body>
 </html>
