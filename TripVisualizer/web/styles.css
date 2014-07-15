@@ -1,3 +1,5 @@
+/* Popup window styling */
+
 .tripDesc {
     text-align: left;
     padding-bottom: 2px;
@@ -9,6 +11,10 @@
     margin-left: 10px;
 }
 
+.leaflet-popup-content {
+    max-height: 250px;
+    overflow-y: scroll;
+}
 
 .filterPanel .filterDesc {
     font-weight: bold;
@@ -44,14 +50,4 @@
 
 .activePanel .panelControl {
     background-color: #BEF202;
-}
-
-
-/* hidden 
-#BoundA_lat, #BoundA_lon, #BoundB_lat, #BoundB_lon {
-    display: none;
-}*/
-
-.GRAPH_TMP {
-    display: none;
 }
