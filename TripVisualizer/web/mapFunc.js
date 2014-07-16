@@ -42,6 +42,9 @@ $(document).ready(function() {
     layerControl.addBaseLayer(googleMap, 'Google');
     layerControl.addBaseLayer(googleTerrain, 'Google Terrain');
     
+    // add permalink generation function
+    map.addControl(new L.Control.Permalink({text: 'Permalink', layers: layerControl}));
+    
     map.attributionControl.setPrefix('');
     map.boxZoom.disable();
 
