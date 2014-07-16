@@ -3,24 +3,46 @@ $(document).ready(function() {
     var debug = true;
 
     // INITIALIZATION:
-    var map = L.map('map').setView([49.198, 16.64], 13);    
+    var map = L.map('map', {
+        center: [49.198, 16.64],
+        zoom: 13
+    });
     
-    L.tileLayer('http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png', {
-    //L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '<a href="http://openstreetmap.org">OpenStreetMap</a>',
-        maxZoom: 18
-    }).addTo(map);
-    
-//    var layer = new L.StamenTileLayer("toner");
-//    var map = new L.Map("map", {
-//        center: new L.LatLng(49.198, 16.64),
-//        zoom: 13,
-//        maxZoom: 18
-//    });
-//    map.addLayer(layer);
+    var baseLayers = 
+            ['OpenStreetMap.Mapnik', 'OpenStreetMap.BlackAndWhite', 'OpenStreetMap.HOT', 
+             'OpenMapSurfer.Roads', 
+             'MapQuestOpen.OSM', 'Stamen.Toner',
+             'Esri.WorldImagery','HERE.hybridDay',
+             'MapBox.previtus.iplk86k9'
+            ],
+        overlays = [
+            /*'OpenWeatherMap.Clouds', 'OpenWeatherMap.PrecipitationClassic',
+            'OpenWeatherMap.PressureContour','OpenWeatherMap.Temperature',*/
+            'OpenMapSurfer.AdminBounds', 'Hydda.RoadsAndLabels'
+        ];
 
-    map.attributionControl.setPrefix('');
+    var layerControl = L.control.layers.provided(baseLayers, overlays).addTo(map);
     
+    // adding by hand
+    // MAPBOX MAPS
+    var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+            'Imagery © <a href="http://mapbox.com">Mapbox</a>';
+    var mbUrl = 'https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png';
+
+    var grayscale = L.tileLayer(mbUrl, {id: 'examples.map-20v6611k', attribution: mbAttr});
+    var color = L.tileLayer(mbUrl, {id: 'examples.map-i86knfo3', attribution: mbAttr});
+
+    layerControl.addBaseLayer(grayscale, 'Mapbox grayscale');
+    layerControl.addBaseLayer(color, 'Mapbox color');
+    // GOOGLE MAPS
+    var googleMap = new L.Google();
+    var googleTerrain = new L.Google('TERRAIN');
+
+    layerControl.addBaseLayer(googleMap, 'Google');
+    layerControl.addBaseLayer(googleTerrain, 'Google Terrain');
+    
+    map.attributionControl.setPrefix('');
     map.boxZoom.disable();
 
     // resizeable

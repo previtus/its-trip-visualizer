@@ -56,5 +56,5 @@ $(document).ready(function() {
         includeSelectAllOption: true
     });
     
-    $("#exclusionSelect").buttonset();
+    $(".exclusionSelect").buttonset();
 });

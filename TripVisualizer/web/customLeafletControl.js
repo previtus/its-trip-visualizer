@@ -78,20 +78,29 @@ L.Map.BoxZoomCustom = L.Handler.extend({
 	},
 
 	_finish: function () {
-		if (this._moved) {
+                //L.version - '0.7.3' nebo '0.8-dev'
+                
+                if (this._moved) {
 			this._pane.removeChild(this._box);
 			this._container.style.cursor = '';
 		}
-                
-                
 
 		L.DomUtil.enableTextSelection();
 		L.DomUtil.enableImageDrag();
 
-		L.DomEvent
-		    .off(document, 'mousemove', this._onMouseMove)
-		    .off(document, 'mouseup', this._onMouseUp)
-		    .off(document, 'keydown', this._onKeyDown);
+                if (L.version == '0.7.3') {
+                    L.DomEvent
+                        .off(document, 'mousemove', this._onMouseMove)
+                        .off(document, 'mouseup', this._onMouseUp)
+                        .off(document, 'keydown', this._onKeyDown);
+                } else {
+                    L.DomEvent.off(document, {
+                            contextmenu: L.DomEvent.stop,
+                            mousemove: this._onMouseMove,
+                            mouseup: this._onMouseUp,
+                            keydown: this._onKeyDown
+                    }, this);
+                }
 	},
 
 	_onMouseUp: function (e) {
