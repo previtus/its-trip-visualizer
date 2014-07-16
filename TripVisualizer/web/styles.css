@@ -1,5 +1,4 @@
 /* Popup window styling */
-
 .tripDesc {
     text-align: left;
     padding-bottom: 2px;
@@ -18,6 +17,11 @@
 
 .filterPanel .filterDesc {
     font-weight: bold;
+}
+
+/* multiselect aesthetics */
+.multiselect {
+    overflow: hidden;
 }
 
 /* not selected */
@@ -50,4 +54,14 @@
 
 .activePanel .panelControl {
     background-color: #BEF202;
+}
+
+/* etc */
+.filterPrediction {
+    text-align: center;
+    display: none;
+}
+
+#invisCheckbox {
+    display: none;
 }

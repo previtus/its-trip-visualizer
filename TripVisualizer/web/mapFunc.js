@@ -482,8 +482,8 @@ $(document).ready(function() {
             });
             
             //console.log(STATS.Agents);
-            console.log(STATS.byAgentProp);
-            console.log(STATS.Legs);
+            //console.log(STATS.byAgentProp);
+            //console.log(STATS.Legs);
         }
     }
     
@@ -606,6 +606,25 @@ $(document).ready(function() {
                     processMultipleTripsData(data);
                 });
     }
+    function getMultipleTripsExplore(dataToBeSent) {
+        $.post("getFilteredData.jsp", dataToBeSent)
+                .done(function(data) {
+                    //recieve response
+                    $(".tempServerResponse").text($.trim(data));
+                    processMultipleTripsDataExploration(data);
+                });
+    }
+    
+    function processMultipleTripsDataExploration(data) {
+        var jsonData = jQuery.parseJSON(data);
+        console.log(jsonData);
+        $(".filterPrediction").show();
+        $("#tripCount").text( jsonData.trips );
+        $("#agentCount").text( jsonData.agents );
+        $("#legCount").text( jsonData.legs );
+    }
+    
+    
 
     // BUTTON REACTIONS:
     $("#ButtonFromServer").click(function() {
@@ -634,6 +653,9 @@ $(document).ready(function() {
         $("#BoundA_lon").attr("value", "");
         $("#BoundB_lat").attr("value", "");
         $("#BoundB_lon").attr("value", "");
+        
+        $("#invisCheckbox").trigger('click');
+        $("#invisCheckbox").trigger('click');
     });
 
     function setIfNotEmpty(object, name, value) {
@@ -648,12 +670,8 @@ $(document).ready(function() {
             object[name] = value;
         }
     }
-
-    $("#ButtonFilteredData").click(function() {
-        if ($("#autoReset").is(':checked')) {
-            clearMap();
-        }
-        
+    
+    function collectDataFromForm(isExploratory) {
         //prepare data
         var dataToBeSent = {};
 //        if ($("#filter_byId_check").is(':checked')) {
@@ -700,10 +718,54 @@ $(document).ready(function() {
             dataToBeSent.time_end = $("#timeRange_slider").slider("values", 1);
         }
         
-
+        dataToBeSent.isExploratory = isExploratory;
         //send it
-        getMultipleTrips(dataToBeSent);
+        if (isExploratory) {
+            getMultipleTripsExplore(dataToBeSent);
+        } else {
+            getMultipleTrips(dataToBeSent);
+        }
+        
+        
+    }
+
+    $("#ButtonFilteredData").click(function() {
+        if ($("#autoReset").is(':checked')) {
+            clearMap();
+        }
+        collectDataFromForm(false);
     });
 
+    // Bind (Isaac) form change onto function
+    function onChange(e) {
+        //console.log(e);
+        //alert("Something changed ... i can smell it in the water!\n"+e);
+        
+        // CALL SCRIPT THAT WILL EVALUATE THE NUMBER OF Trips/Agents/Legs AFFECTED
+        collectDataFromForm(true);
+    }
 
+    $( "select" ).change(function (e) {
+        if (e.originalEvent) { // filter only user interaction
+            onChange(e);
+        }
+    });
+    $( "input" ).change(function (e) {
+        if (e.originalEvent) {
+            onChange(e);
+        }
+    });
+    
+    $(".multiselectCustom").multiselect({
+        buttonClass: 'btn form-control',
+        includeSelectAllOption: true,
+        numberDisplayed: 2,
+        onDropdownHide: function(element, checked) {
+            onChange(element);
+        }
+    });
+    
+    $(window).load(function() { 
+       onChange();
+    });
 });

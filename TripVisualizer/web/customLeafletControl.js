@@ -137,6 +137,8 @@ L.Map.BoxZoomCustom = L.Handler.extend({
                 $("#BoundA_lon").attr("value", start.lng);
                 $("#BoundB_lat").attr("value", end.lat);
                 $("#BoundB_lon").attr("value", end.lng);
+                
+                $("#invisCheckbox").trigger('click');
 	},
 
 	_onKeyDown: function (e) {

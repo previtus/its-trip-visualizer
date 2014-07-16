@@ -47,7 +47,8 @@
         out.print(errorJson);
         out.flush();
     }
-
+    Boolean isExploratory = Boolean.parseBoolean(request.getParameter("isExploratory"));
+    
     if (!error) {
         try {
             //####### CREATE CONNECTION #######
@@ -231,134 +232,182 @@
                 System.out.print(whereCondition.toString());
                 System.out.print("|\n\n");
             }
-            
-            PreparedStatement preparedCommonForTrip;
-            PreparedStatement preparedAllLegs;
-            if (!addedAtLeastOneCondition) {
-                // No needs to add conditions...
-                preparedCommonForTrip = conn.prepareStatement("SELECT DISTINCT "
-                    + "a.*, t.trip_id, t.end_time, t.start_time, t.from_activity, t.to_activity "
-                    + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id"
-                );
-                preparedAllLegs = conn.prepareStatement("SELECT "
-                    + "t.trip_id, l.end_time as l_end_time, l.start_time as l_start_time, l.type, ST_AsGeoJSON(path) as geojsonPath "
-                    + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id"
-                );
-            } else {
-                preparedCommonForTrip = conn.prepareStatement("SELECT DISTINCT "
-                    + "a.*, t.trip_id, t.end_time, t.start_time, t.from_activity, t.to_activity "
-                    + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id WHERE "
-                    //+ "t.trip_id=?"
-                    + whereCondition.toString()
-                );
-                preparedAllLegs = conn.prepareStatement("SELECT "
-                    + "t.trip_id, l.end_time as l_end_time, l.start_time as l_start_time, l.type, ST_AsGeoJSON(path) as geojsonPath "
-                    + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id WHERE "
-                    //+ "t.trip_id=?"
-                    + whereCondition.toString()
-                );
+            if (isExploratory) {
+                // only exploring how many agents/trips/legs will be affected
+                //out.println(whereCondition.toString());
+                String whereString = "";
+                if (addedAtLeastOneCondition) {
+                    whereString = "WHERE "+whereCondition.toString();
+                }
                 
+                PreparedStatement preparedAgregation = conn.prepareStatement("SELECT "
+                        + "count(DISTINCT A.agent_id), count(DISTINCT A.trip_id), count(A.trip_id) "
+                        + "FROM ( "
+                        + "SELECT a.agent_id, t.trip_id "
+                        + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id "
+                        + whereString
+                        + ") as A");
                 for (int i = 1; i < valuesForConditions.size()+1; i++) {
                     String var = valuesForConditions.get(i-1);
                     switch (types.get(i-1)) {
                         case DblVar:
-                            preparedCommonForTrip.setDouble(i, Double.parseDouble( var ));
-                            preparedAllLegs.setDouble(i, Double.parseDouble( var ));
+                            preparedAgregation.setDouble(i, Double.parseDouble( var ));
                             break;
                         case IntVar:
-                            preparedCommonForTrip.setInt(i, Integer.parseInt( var ));
-                            preparedAllLegs.setInt(i, Integer.parseInt( var ));
+                            preparedAgregation.setInt(i, Integer.parseInt( var ));
                             break;
                         case BooVar:
                             if (var.equals("T")) {
-                                preparedCommonForTrip.setBoolean(i, true);
-                                preparedAllLegs.setBoolean(i, true);
+                                preparedAgregation.setBoolean(i, true);
                             } else {
-                                preparedCommonForTrip.setBoolean(i, false);
-                                preparedAllLegs.setBoolean(i, false);
+                                preparedAgregation.setBoolean(i, false);
                             }
                             break;
                         default: //default is string
-                            preparedCommonForTrip.setString(i, var);
-                            preparedAllLegs.setString(i, var);
+                            preparedAgregation.setString(i, var);
                             break;
                     }
                 }
-            }
-            
-            if (debug_output_query) {
-                String tmp_common = preparedCommonForTrip.toString();
-                String tmp_legs = preparedAllLegs.toString();
-                System.out.print(tmp_common);
-                System.out.print("\n\n");
-                System.out.print(tmp_legs);
+                //out.println(preparedAgregation.toString());
+                
+                ResultSet res = preparedAgregation.executeQuery();
+                res.next();
+                
+                JSONObject json = new JSONObject();
+                json.put("agents", res.getString(1));
+                json.put("trips", res.getString(2));
+                json.put("legs", res.getString(3));
+                out.print(json);
+                out.flush();
+            } else {
+                PreparedStatement preparedCommonForTrip;
+                PreparedStatement preparedAllLegs;
+                if (!addedAtLeastOneCondition) {
+                    // No needs to add conditions...
+                    preparedCommonForTrip = conn.prepareStatement("SELECT DISTINCT "
+                        + "a.*, t.trip_id, t.end_time, t.start_time, t.from_activity, t.to_activity "
+                        + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id"
+                    );
+                    preparedAllLegs = conn.prepareStatement("SELECT "
+                        + "t.trip_id, l.end_time as l_end_time, l.start_time as l_start_time, l.type, ST_AsGeoJSON(path) as geojsonPath "
+                        + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id"
+                    );
+                } else {
+                    preparedCommonForTrip = conn.prepareStatement("SELECT DISTINCT "
+                        + "a.*, t.trip_id, t.end_time, t.start_time, t.from_activity, t.to_activity "
+                        + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id WHERE "
+                        //+ "t.trip_id=?"
+                        + whereCondition.toString()
+                    );
+                    preparedAllLegs = conn.prepareStatement("SELECT "
+                        + "t.trip_id, l.end_time as l_end_time, l.start_time as l_start_time, l.type, ST_AsGeoJSON(path) as geojsonPath "
+                        + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id WHERE "
+                        //+ "t.trip_id=?"
+                        + whereCondition.toString()
+                    );
 
-                System.out.print("\n\n");
-
-                if (addedAtLeastOneCondition) {
-                    String[] splitTmp = tmp_common.split("WHERE");
-                    System.out.print("... WHERE"+splitTmp[1]);
-                    System.out.print("\n\n");
-                    
-                    if (debug_output_request) {
-                        out.println("... WHERE"+splitTmp[1]);
+                    for (int i = 1; i < valuesForConditions.size()+1; i++) {
+                        String var = valuesForConditions.get(i-1);
+                        switch (types.get(i-1)) {
+                            case DblVar:
+                                preparedCommonForTrip.setDouble(i, Double.parseDouble( var ));
+                                preparedAllLegs.setDouble(i, Double.parseDouble( var ));
+                                break;
+                            case IntVar:
+                                preparedCommonForTrip.setInt(i, Integer.parseInt( var ));
+                                preparedAllLegs.setInt(i, Integer.parseInt( var ));
+                                break;
+                            case BooVar:
+                                if (var.equals("T")) {
+                                    preparedCommonForTrip.setBoolean(i, true);
+                                    preparedAllLegs.setBoolean(i, true);
+                                } else {
+                                    preparedCommonForTrip.setBoolean(i, false);
+                                    preparedAllLegs.setBoolean(i, false);
+                                }
+                                break;
+                            default: //default is string
+                                preparedCommonForTrip.setString(i, var);
+                                preparedAllLegs.setString(i, var);
+                                break;
+                        }
                     }
                 }
-            }
 
-            
-            //####### SEND QUERIES #######
-            
-            ResultSet result_common = preparedCommonForTrip.executeQuery();
-            ResultSet result_for_all_legs = preparedAllLegs.executeQuery();
-            
-            ResultSetMetaData rsmd_common = result_common.getMetaData();
-            ResultSetMetaData rsmd_all_legs = result_for_all_legs.getMetaData();
-            
-            int columns_common = rsmd_common.getColumnCount();
-            int columns_all_legs = rsmd_all_legs.getColumnCount();
-            
-            
-            HashMap<String, HashMap> TripIDToTripObject = new HashMap<String, HashMap>();
-            // add trips to structure
-            while (result_common.next()) {
-                HashMap trip = new HashMap();
-                
-                for (int col = 0; col < columns_common; col++) {
-                    String attribute = rsmd_common.getColumnName(col + 1);
-                    String value = result_common.getString(col + 1);
-                    trip.put(attribute, value);
+                if (debug_output_query) {
+                    String tmp_common = preparedCommonForTrip.toString();
+                    String tmp_legs = preparedAllLegs.toString();
+                    System.out.print(tmp_common);
+                    System.out.print("\n\n");
+                    System.out.print(tmp_legs);
+
+                    System.out.print("\n\n");
+
+                    if (addedAtLeastOneCondition) {
+                        String[] splitTmp = tmp_common.split("WHERE");
+                        System.out.print("... WHERE"+splitTmp[1]);
+                        System.out.print("\n\n");
+
+                        if (debug_output_request) {
+                            out.println("... WHERE"+splitTmp[1]);
+                        }
+                    }
                 }
-                
-                trip.put("_legsLoaded", "0");
-                HashMap<String, String> holderForLegs = new HashMap<String, String>();
-                trip.put("_legs", holderForLegs);
-                
-                String tripId = (String) trip.get("trip_id");
-                TripIDToTripObject.put(tripId, trip);
-                Trips.add(trip);
-            }
-            
-            // add legs to these trips
-            while (result_for_all_legs.next()) {
-                HashMap leg = new HashMap();
-                
-                for (int col = 0; col < columns_all_legs; col++) {
-                    String attribute = rsmd_all_legs.getColumnName(col + 1);
-                    String value = result_for_all_legs.getString(col + 1);
-                    leg.put(attribute, value);
+
+
+                //####### SEND QUERIES #######
+
+                ResultSet result_common = preparedCommonForTrip.executeQuery();
+                ResultSet result_for_all_legs = preparedAllLegs.executeQuery();
+
+                ResultSetMetaData rsmd_common = result_common.getMetaData();
+                ResultSetMetaData rsmd_all_legs = result_for_all_legs.getMetaData();
+
+                int columns_common = rsmd_common.getColumnCount();
+                int columns_all_legs = rsmd_all_legs.getColumnCount();
+
+
+                HashMap<String, HashMap> TripIDToTripObject = new HashMap<String, HashMap>();
+                // add trips to structure
+                while (result_common.next()) {
+                    HashMap trip = new HashMap();
+
+                    for (int col = 0; col < columns_common; col++) {
+                        String attribute = rsmd_common.getColumnName(col + 1);
+                        String value = result_common.getString(col + 1);
+                        trip.put(attribute, value);
+                    }
+
+                    trip.put("_legsLoaded", "0");
+                    HashMap<String, String> holderForLegs = new HashMap<String, String>();
+                    trip.put("_legs", holderForLegs);
+
+                    String tripId = (String) trip.get("trip_id");
+                    TripIDToTripObject.put(tripId, trip);
+                    Trips.add(trip);
                 }
-                // get object representing Trip of this Leg
-                String tripId = (String) leg.get("trip_id");
-                HashMap tripObject = TripIDToTripObject.get(tripId);
-                HashMap trip_legsHolder = (HashMap) tripObject.get("_legs");
-                
-                int numberOfLoadedLegs = Integer.parseInt((String)tripObject.get("_legsLoaded"));
-                trip_legsHolder.put("leg"+(numberOfLoadedLegs), leg);
-                numberOfLoadedLegs++;
-                tripObject.put("_legsLoaded", ""+numberOfLoadedLegs);
-            }
+
+                // add legs to these trips
+                while (result_for_all_legs.next()) {
+                    HashMap leg = new HashMap();
+
+                    for (int col = 0; col < columns_all_legs; col++) {
+                        String attribute = rsmd_all_legs.getColumnName(col + 1);
+                        String value = result_for_all_legs.getString(col + 1);
+                        leg.put(attribute, value);
+                    }
+                    // get object representing Trip of this Leg
+                    String tripId = (String) leg.get("trip_id");
+                    HashMap tripObject = TripIDToTripObject.get(tripId);
+                    HashMap trip_legsHolder = (HashMap) tripObject.get("_legs");
+
+                    int numberOfLoadedLegs = Integer.parseInt((String)tripObject.get("_legsLoaded"));
+                    trip_legsHolder.put("leg"+(numberOfLoadedLegs), leg);
+                    numberOfLoadedLegs++;
+                    tripObject.put("_legsLoaded", ""+numberOfLoadedLegs);
+                }
             
+            }
         } catch (SQLException es) {
             JSONObject errorJson = new JSONObject();
             errorJson.put("error", "Error while creating connection");
@@ -369,7 +418,8 @@
         }
     }
     
-    if (!error) {
+    if (!error && !isExploratory) {
+        
         JSONObject json = new JSONObject();
         for (int i = 0; i < Trips.size(); i++) {
             HashMap h = Trips.get(i);

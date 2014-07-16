@@ -310,8 +310,14 @@
                                 ▷► <input style="font-size: x-large;" class="btn btn-primary" type="button" value="SHOW" id="ButtonFilteredData"/> ◄◁
                             </div>
                             <input type="checkbox" name="autoReset" id="autoReset" value="ON" checked="checked" class="panelCheckbox" />
+                            <input type="checkbox" name="invisCheckbox" id="invisCheckbox" value="ON" checked="checked" />
                             <label for="autoReset">automatic cleaning</label>
                             <!-- end of filters -->
+                            <div class="filterPrediction">
+                                Trips: <span id="tripCount"></span>, 
+                                Agents: <span id="agentCount"></span>, 
+                                Legs: <span id="legCount"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -332,10 +338,10 @@
                     <br>
                     <br>
                     Hint: use <kbd><kbd>shift</kbd> + <kbd>drag</kbd></kbd> for rectangular selection.
-<!--<em style="color: red">Temporary server response (accepted request parameters):</em>
+<em style="color: red">Temporary server response (accepted request parameters):</em>
 <pre class="tempServerResponse" style="border: red solid 1px;">
 (server response)
-</pre>-->
+</pre>
                 </div>
             </div>
         </div>
@@ -346,19 +352,7 @@
     
     <h4>Gender distribution</h4>
     <div id="genderGraph" style="min-width: 310px; height: 0px; max-width: 600px; margin: 0 auto"></div>
-    
-<form>
-	<div id="radio">
-		<input type="radio" id="radio1" name="radio"><label for="radio1">Choice 1</label>
-		<input type="radio" id="radio2" name="radio" checked="checked"><label for="radio2">Choice 2</label>
-		<input type="radio" id="radio3" name="radio"><label for="radio3">Choice 3</label>
-	</div>
-</form>
- <script>
-$(function() {
-$( "#radio" ).buttonset();
-});
-</script>
+
 </div>
     </body>
 </html>
