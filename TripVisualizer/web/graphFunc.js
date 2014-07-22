@@ -5,12 +5,12 @@ $(document).ready(function() {
             //fooGraphs_STACKED_chart_dot_js();
 
             fooGraphs_PIE_highcharts();
-            //fooGraphs_STACKED_highcharts();
+            fooGraphs_STACKED_highcharts();
         }
     });
 
     function fooGraphs_PIE_highcharts() {
-        $("genderGraph").css("height","300px");
+        $("#genderGraph").css("height","300px");
         
         var dataArr = [];
         for(var propertyName in STATS.byAgentProp.gender) {
@@ -75,6 +75,7 @@ $(document).ready(function() {
     
     
     function fooGraphs_STACKED_highcharts() {
+        $("#legTypeGraph").css("height","400px");
         var assignmentByName = {"WALK":0,"TELEPORT":1,"PT":2,"CAR":3}
         
         var ArrLabels = [];

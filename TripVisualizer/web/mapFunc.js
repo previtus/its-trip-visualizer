@@ -610,7 +610,7 @@ $(document).ready(function() {
         $.post("getFilteredData.jsp", dataToBeSent)
                 .done(function(data) {
                     //recieve response
-                    $(".tempServerResponse").text($.trim(data));
+                    //$(".tempServerResponse").text($.trim(data));
                     processMultipleTripsDataExploration(data);
                 });
     }
