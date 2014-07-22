@@ -23,6 +23,10 @@ $(document).ready(function() {
         slide: function(event, ui) {
             $("#timeRange").val(msecToTime(ui.values[0]) + " - " + msecToTime(ui.values[1]));
             //$("#timeRange").val(ui.values[0] + " - " + ui.values[1]);
+        },
+        stop: function(event, ui) {
+            $("#invisCheckbox").trigger('click');
+            $("#invisCheckbox").trigger('click');
         }
     });
     $("#timeRange").val(msecToTime($("#timeRange_slider").slider("values", 0)) + " - " + msecToTime($("#timeRange_slider").slider("values", 1)));

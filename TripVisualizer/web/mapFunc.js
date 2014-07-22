@@ -2,9 +2,12 @@
 $(document).ready(function() {
     var debug = true;
 
+    var map_center_x = 49.198;
+    var map_center_y = 16.64;
+
     // INITIALIZATION:
     var map = L.map('map', {
-        center: [49.198, 16.64],
+        center: [map_center_x, map_center_y],
         zoom: 13
     });
     
@@ -42,6 +45,9 @@ $(document).ready(function() {
     layerControl.addBaseLayer(googleMap, 'Google');
     layerControl.addBaseLayer(googleTerrain, 'Google Terrain');
     
+    var gridLayer = new L.layerGroup();
+    //layerControl.addOverlay(gridLayer, 'Grid');
+    
     // add permalink generation function
     map.addControl(new L.Control.Permalink({text: 'Permalink', layers: layerControl}));
     
@@ -60,6 +66,61 @@ $(document).ready(function() {
 //            map.invalidateSize();
 //        }
 //    });
+
+    // GRID OVERLAY
+    // grid settings
+    var SelectedPolygons = [];
+    var GridSettings = {
+        start_x: map_center_x, 
+        start_y: map_center_y,
+        
+        x_step: 0.01,
+        y_step: 0.03,
+        
+        x_times: 10,
+        y_times: 10        
+    };
+    
+    var xmin = GridSettings.start_x - GridSettings.x_times*GridSettings.x_step;
+    var xmax = GridSettings.start_x + GridSettings.x_times*GridSettings.x_step;
+    var ymin = GridSettings.start_y - GridSettings.y_times*GridSettings.y_step;
+    var ymax = GridSettings.start_y + GridSettings.y_times*GridSettings.y_step;
+    var x,y;
+    for(x = xmin; x<= xmax; x+= GridSettings.x_step)
+    {
+        for(y = ymin; y<= ymax; y+= GridSettings.y_step)
+        {
+            var p1 = new L.LatLng(x, y),
+                p2 = new L.LatLng(x+GridSettings.x_step, y),
+                p3 = new L.LatLng(x+GridSettings.x_step, y+GridSettings.y_step),
+                p4 = new L.LatLng(x, y+GridSettings.y_step),
+                polygonPoints = [p1, p2, p3, p4];
+
+        var defaultStyle = {
+            color: "#333344",
+            weight: 1, /* weight of grid line */
+            opacity: 0.3, /* grid line opacity */
+            fillOpacity: 0.2, /* grid fill opacity */
+            fillColor: "#333344"
+        };
+
+            var polygon = new L.Polygon(polygonPoints, defaultStyle);
+            polygon.on('click',function(e) {
+                //alert('x: '+x+', y: '+y);
+                //console.log( polygon.getBounds() );
+                //console.log( polygon );
+                this.setStyle({fillOpacity: 0, opacity: 0.1});
+                SelectedPolygons.push(this.toGeoJSON().geometry.coordinates);
+                this.off('click');
+                
+                //console.log(SelectedPolygons);
+                //console.log(this.toGeoJSON().geometry.coordinates);
+            });
+            gridLayer.addLayer(polygon); 
+        }
+    }
+
+    map.addLayer(gridLayer);
 
     // visualization
     function visualizeGeoJSON0(objJson, desc) {
@@ -767,5 +828,16 @@ $(document).ready(function() {
     
     $(window).load(function() { 
        onChange();
+    });
+    
+    $("#DEBUGshowMultiPolygon").click(function() {
+        //var myJsonString = JSON.stringify(SelectedPolygons);
+        
+        var ooo = {
+            "type": "MultiPolygon",
+            "coordinates": SelectedPolygons
+        }
+        
+        L.geoJson(ooo).addTo(map);
     });
 });

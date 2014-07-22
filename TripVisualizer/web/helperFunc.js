@@ -13,6 +13,14 @@ function minTwoDigits(n) {
   return (n < 10 ? '0' : '') + n;
 }
 
+function roundTo3Digits(input) {
+    return roundToXDigits(input,3);
+}
+
+function roundToXDigits (input, digits) { 
+    return +(Math.round(input + "e+"+digits)  + "e-"+digits);
+}
+
 // slider input time period
 function msecToTime(milliseconds) {
     var date = new Date(new Number(milliseconds));
