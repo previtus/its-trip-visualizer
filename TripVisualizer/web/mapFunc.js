@@ -111,15 +111,18 @@ $(document).ready(function() {
                 //console.log( polygon );
                 this.setStyle({fillOpacity: 0, opacity: 0.1});
                 
-                var tmp = [];
-                for (i = 0; i < 4; i++) {
-                    tmp.push( this.toGeoJSON().geometry.coordinates[0][i] );
-                }
+//                var tmp = [];
+//                for (i = 0; i < 4; i++) {
+//                    console.log( this.toGeoJSON().geometry.coordinates[0][i] );
+//                    
+//                    tmp.push( this.toGeoJSON().geometry.coordinates[0][i] );
+//                }
                 
-                SelectedPolygons.push(tmp);
-                //SelectedPolygons.push(this.toGeoJSON().geometry.coordinates);
+                //SelectedPolygons.push(tmp);
+                SelectedPolygons.push(this.toGeoJSON().geometry.coordinates[0]);
                 this.off('click');
                 
+                //console.log(tmp);
                 //console.log(SelectedPolygons);
                 //console.log(this.toGeoJSON().geometry.coordinates);
             });

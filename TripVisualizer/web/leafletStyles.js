@@ -47,5 +47,5 @@ window.defaultMarkerStyle = {
 
 if (detailLVL == 1) {
     // only primary line
-    window.defaultStyle.opacity = 1;
+    window.defaultStyle.opacity = 0.75;
 }

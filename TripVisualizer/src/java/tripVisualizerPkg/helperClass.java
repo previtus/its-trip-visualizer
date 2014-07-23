@@ -58,13 +58,17 @@ public class helperClass {
             return false;
     }
     
-    public static double[][] parseArrDouble(HttpServletRequest request, String name, int x, int y) {
-        double[][] Mordor = new double[x][y];
+    public static double[][][] parseArrDouble(HttpServletRequest request, String name, int x, int y) {
+        double[][][] Mordor = new double[x][y][2];
     
         for (int i=0; i<x; i++) {
             //boundaries[<i>][<0-3>]
             for (int j=0; j<y; j++) {
-                Mordor[i][j] = Double.parseDouble(request.getParameter(name+"["+i+"]["+j+"][]"));
+                String[] var_array = request.getParameterValues(name+"["+i+"]["+j+"][]");
+                
+                Mordor[i][j][0] = Double.parseDouble( var_array[0] );
+                Mordor[i][j][1] = Double.parseDouble( var_array[1] );
+                //Double.parseDouble(request.getParameter(name+"["+i+"]["+j+"][]"));
             }
         }
         return Mordor;

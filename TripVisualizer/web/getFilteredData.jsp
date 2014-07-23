@@ -11,8 +11,8 @@
 <%@page import="org.json.simple.JSONObject"%>
 <%
     boolean error = false;
-    boolean debug_output_request = false;
-    boolean debug_output_query = true;
+    boolean debug_output_request = false; // does interfere with client-server interaction
+    boolean debug_output_query = true; // can be running with correct client-server interaction
     boolean timer = true;
     
     if (debug_output_request || debug_output_query) {
@@ -50,35 +50,6 @@
     }
     Boolean isExploratory = Boolean.parseBoolean(request.getParameter("isExploratory"));
     
-    out.println("--- request.getParameterMap().entrySet() ---");
-    out.println(request.getParameterMap().entrySet());
-    out.println("");
-    out.println( request.getParameter("boundaries") );
-    out.println( request.getParameter("boundaries_numOfBoxes") );
-    out.println("");
-    
-    int numOfBoxes = Integer.parseInt(request.getParameter("boundaries_numOfBoxes"));
-    System.out.println(""+numOfBoxes);
-    
-    double[][] boundaries = helperClass.parseArrDouble(request,"boundaries",numOfBoxes,4);
-    for (int i=0; i<boundaries.length; i++) {
-        for (int j=0; j<boundaries[0].length; j++) {
-            System.out.print(boundaries[i][j]+" ");
-            out.print(boundaries[i][j]+" ");
-        }
-        System.out.println("");
-        out.println("");
-    }
-    
-    // Structure of "boundaries"
-    // [
-    //  [[[Ax,Ay],[Bx,By],[Cx,Cy],[Dx,Dy]]], <- one box
-    //  [[[Ax,Ay],[Bx,By],[Cx,Cy],[Dx,Dy]]], <- second box
-    //  ...                                  <- etc...
-    // ]
-
-
-    
     if (!error) {
         try {
             //####### CREATE CONNECTION #######
@@ -91,6 +62,7 @@
             //####### BUILD QUERY #######
             ArrayList<helperClass.VarTypes> types = new ArrayList<helperClass.VarTypes>();
             StringBuilder whereCondition = new StringBuilder();
+            StringBuilder intersectionGeom = new StringBuilder();
             ArrayList<String> valuesForConditions = new ArrayList<String>();
             Boolean addedAtLeastOneCondition = false;
 
@@ -196,6 +168,64 @@
                 addedAtLeastOneCondition = true;
             }
             
+            // FILTERING BY MULTIPOLYGON SELECTION !
+            if (R.isSet("boundaries_numOfBoxes") && R.isInt("boundaries_numOfBoxes") && Integer.parseInt(request.getParameter("boundaries_numOfBoxes")) > 0) {
+                int numOfBoxes = Integer.parseInt(request.getParameter("boundaries_numOfBoxes"));
+                // LOAD BOUNDARY
+                double[][][] boundaries = helperClass.parseArrDouble(request,"boundaries",numOfBoxes,5);
+                if (debug_output_query || debug_output_request) {
+                    for (int i=0; i<boundaries.length; i++) {
+                        for (int j=0; j<boundaries[0].length; j++) {
+                            System.out.print(boundaries[i][j][0]+" "+boundaries[i][j][1]+", ");
+                            if (debug_output_request) out.print(boundaries[i][j][0]+" "+boundaries[i][j][1]+", ");
+                        }
+                        System.out.println("");
+                        if (debug_output_request) out.println("");
+                    }
+                }
+                
+
+                // Structure of "boundaries"
+                // [
+                //  [[[Ax,Ay],[Bx,By],[Cx,Cy],[Dx,Dy],[Ax,Ay]]], <- one box
+                //  [[[Ax,Ay],[Bx,By],[Cx,Cy],[Dx,Dy],[Ax,Ay]]], <- second box
+                //  ...                                          <- etc...
+                // ]
+                
+                // BUILD GEOMETRY (union of polygons!)
+                /*
+                    ST_Union(
+                            ST_GeomFromText('POLYGON((
+                            <POINTS OF BOX>     <-- Ax Ay, Bx By, Cx Cy, Dx Dy, Ax Ay
+                            ))', 4326),
+                            <... etc>
+                    )
+                */
+                intersectionGeom.append("(SELECT ST_Union(ARRAY[ ");
+                for (int i=0; i<numOfBoxes; i++) {
+                    intersectionGeom.append("ST_GeomFromText('POLYGON((");
+                    for (int j=0; j<boundaries[i].length; j++) {
+                        intersectionGeom.append(boundaries[i][j][0]+" "+boundaries[i][j][1]+", ");
+                    }
+                    intersectionGeom.setLength(intersectionGeom.length()-2);
+                    intersectionGeom.append("))', 4326),");
+                }
+                // delete last ","
+                intersectionGeom.setLength(intersectionGeom.length()-1);
+                intersectionGeom.append("]) )");
+                
+                if (debug_output_request) out.print("Intersection geometry SQL:\n"+intersectionGeom.toString());
+                if (debug_output_query) System.out.print("Intersection geometry SQL:\n"+intersectionGeom.toString());
+            
+                // add to WHERE condition
+                // WHERE ... ST_Intersects(l.path, <intersectionGeom>)
+                
+                whereCondition.append("ST_Intersects(l.path, ").append(intersectionGeom).append(") AND ");
+                addedAtLeastOneCondition = true;
+            }
+            
+            
+            
             // FILTERING BY RECTANGULAR SELECTION
             // in request: bound_a_lon, bound_a_lat, bound_b_lon, bound_b_lat
             // http://postgis.org/docs/ST_Intersects.html
@@ -255,7 +285,9 @@
 
             if (debug_output_query) {
                 if (debug_output_request) {
+                    out.print("\n\n|");
                     out.println(whereCondition.toString());
+                    out.print("|\n\n");
                 }
                 
                 System.out.print("\n\n|");
