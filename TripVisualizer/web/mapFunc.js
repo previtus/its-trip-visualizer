@@ -110,7 +110,14 @@ $(document).ready(function() {
                 //console.log( polygon.getBounds() );
                 //console.log( polygon );
                 this.setStyle({fillOpacity: 0, opacity: 0.1});
-                SelectedPolygons.push(this.toGeoJSON().geometry.coordinates);
+                
+                var tmp = [];
+                for (i = 0; i < 4; i++) {
+                    tmp.push( this.toGeoJSON().geometry.coordinates[0][i] );
+                }
+                
+                SelectedPolygons.push(tmp);
+                //SelectedPolygons.push(this.toGeoJSON().geometry.coordinates);
                 this.off('click');
                 
                 //console.log(SelectedPolygons);
@@ -663,7 +670,9 @@ $(document).ready(function() {
         $.post("getFilteredData.jsp", dataToBeSent)
                 .done(function(data) {
                     //recieve response
-                    //$(".tempServerResponse").text($.trim(data));
+                    $(".tempServerResponseTxt").show();
+                    $(".tempServerResponse").show();
+                    $(".tempServerResponse").text($.trim(data));
                     processMultipleTripsData(data);
                 });
     }
@@ -671,8 +680,10 @@ $(document).ready(function() {
         $.post("getFilteredData.jsp", dataToBeSent)
                 .done(function(data) {
                     //recieve response
+                    //$(".tempServerResponseTxt").show();
+                    //$(".tempServerResponse").show();
                     //$(".tempServerResponse").text($.trim(data));
-                    processMultipleTripsDataExploration(data);
+                    //processMultipleTripsDataExploration(data);
                 });
     }
     
@@ -780,6 +791,11 @@ $(document).ready(function() {
         }
         
         dataToBeSent.isExploratory = isExploratory;
+        
+        //dataToBeSent.boundaries = JSON.stringify(SelectedPolygons);
+        dataToBeSent.boundaries = SelectedPolygons;
+        dataToBeSent.boundaries_numOfBoxes = SelectedPolygons.length;
+        
         //send it
         if (isExploratory) {
             getMultipleTripsExplore(dataToBeSent);

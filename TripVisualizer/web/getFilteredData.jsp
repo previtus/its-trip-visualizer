@@ -1,10 +1,11 @@
+<%@page import="tripVisualizerPkg.connection"%>
+<%@page import="java.io.IOException"%>
 <%@page import="tripVisualizerPkg.helperClass.VarTypes"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="tripVisualizerPkg.helperClass"%>
-<%@page import="tripVisualizerPkg.connection"%>
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page import="java.sql.*"%>
 <%@page import="org.json.simple.JSONObject"%>
@@ -48,6 +49,35 @@
         out.flush();
     }
     Boolean isExploratory = Boolean.parseBoolean(request.getParameter("isExploratory"));
+    
+    out.println("--- request.getParameterMap().entrySet() ---");
+    out.println(request.getParameterMap().entrySet());
+    out.println("");
+    out.println( request.getParameter("boundaries") );
+    out.println( request.getParameter("boundaries_numOfBoxes") );
+    out.println("");
+    
+    int numOfBoxes = Integer.parseInt(request.getParameter("boundaries_numOfBoxes"));
+    System.out.println(""+numOfBoxes);
+    
+    double[][] boundaries = helperClass.parseArrDouble(request,"boundaries",numOfBoxes,4);
+    for (int i=0; i<boundaries.length; i++) {
+        for (int j=0; j<boundaries[0].length; j++) {
+            System.out.print(boundaries[i][j]+" ");
+            out.print(boundaries[i][j]+" ");
+        }
+        System.out.println("");
+        out.println("");
+    }
+    
+    // Structure of "boundaries"
+    // [
+    //  [[[Ax,Ay],[Bx,By],[Cx,Cy],[Dx,Dy]]], <- one box
+    //  [[[Ax,Ay],[Bx,By],[Cx,Cy],[Dx,Dy]]], <- second box
+    //  ...                                  <- etc...
+    // ]
+
+
     
     if (!error) {
         try {
