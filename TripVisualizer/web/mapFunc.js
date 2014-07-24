@@ -207,7 +207,7 @@ $(document).ready(function() {
     }
     
     function visualizeGeoJSON(objJson, pointsJson, jsonAllPoints, tripCommonProperties) {
-        var color_seed = tripCommonProperties.agent_id+" "+tripCommonProperties.trip_id+JSON.stringify(objJson);
+        var color_seed = tripCommonProperties.agent_id+" "+tripCommonProperties.trip_id;//+JSON.stringify(objJson);
         var color_starter = colorFromStrSeed(color_seed);
         
         //console.log(color_starter);
@@ -215,7 +215,7 @@ $(document).ready(function() {
         //var color_starter = randomColorHexFromSeed(tripCommonProperties.agent_id+tripCommonProperties.trip_id);
         
         // hax, only one line drawn, do it with the nicer color
-        if (detailLVL = 1) {
+        if (detailLVL == 1) {
             color_starter = ColorLuminance(color_starter, 0.8);
         }
         
@@ -386,6 +386,11 @@ $(document).ready(function() {
                 .setContent(desc)
                 .openOn(map);
                 
+            if (closeLayers.length > 3) {
+                // hide most of them
+                $(".tripDesc").children("div").slice(2).toggle();
+            }
+            
             $(".tripDesc").click(function() {
                 $(this).children("div").toggle();
             });
@@ -670,10 +675,14 @@ $(document).ready(function() {
     function getMultipleTrips(dataToBeSent) {
         $.post("getFilteredData.jsp", dataToBeSent)
                 .done(function(data) {
+                    //clear map
+                    if ($("#autoReset").is(':checked')) {
+                        clearMap();
+                    }
                     //recieve response
-                    $(".tempServerResponseTxt").show();
-                    $(".tempServerResponse").show();
-                    $(".tempServerResponse").text($.trim(data));
+                    //$(".tempServerResponseTxt").show();
+                    //$(".tempServerResponse").show();
+                    //$(".tempServerResponse").text($.trim(data));
                     processMultipleTripsData(data);
                 });
     }
@@ -808,9 +817,6 @@ $(document).ready(function() {
     }
 
     $("#ButtonFilteredData").click(function() {
-        if ($("#autoReset").is(':checked')) {
-            clearMap();
-        }
         collectDataFromForm(false);
     });
 

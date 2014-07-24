@@ -224,11 +224,15 @@
                 //whereCondition.append("ST_Intersects(l.path, ").append(intersectionGeom).append(") AND ");
                 whereCondition.append("ST_Intersects(l.path, (SELECT Geo FROM RectangleSelection) ) AND "); // using 'variable' stored in 'RectangleSelection'
                 addedAtLeastOneCondition = true;
+            } else {
+                intersectionGeom.append("SELECT ST_GeomFromText('GEOMETRYCOLLECTION EMPTY')");
+                whereCondition.append("ST_Intersects(l.path, (SELECT Geo FROM RectangleSelection) ) AND ");
+                addedAtLeastOneCondition = true;
             }
             
             
             
-            // FILTERING BY RECTANGULAR SELECTION
+/*            // FILTERING BY RECTANGULAR SELECTION
             // in request: bound_a_lon, bound_a_lat, bound_b_lon, bound_b_lat
             // http://postgis.org/docs/ST_Intersects.html
             // - ST_MakeEnvelope(minLon, minLat, maxLon, maxLat, 4326)
@@ -263,6 +267,7 @@
                 types.add(helperClass.VarTypes.DblVar);
                 addedAtLeastOneCondition = true;
             }
+*/
             
             // FILTERING BY TIME
             // in request: time_start, time_end
