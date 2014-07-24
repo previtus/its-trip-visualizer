@@ -237,7 +237,6 @@ $(document).ready(function() {
         };
         
         var features = new L.featureGroup();
-        
         var layer1_mainLine = new L.geoJson(lines,{ style: useStyle });
         layer1_mainLine.isUserMarked = true;
         layer1_mainLine._layerTypeMarker = 1;
@@ -430,7 +429,7 @@ $(document).ready(function() {
             // ###### JSON object's structure is as follows: ######
             /* jsonData:
              *  - <int trip_id>:
-             *      - education,agent_id,gender,pt_discount_card,end_time,economic_activity,start_time, ..... atd
+             *      - education,agent_id,gender,pt_discount_card,t_end_time,economic_activity,t_start_time, ..... atd
              *      - _legsLoaded : int number of loaded legs
              *      - _legs:
              *          leg0 az leg<_legsLoaded-1>:
@@ -440,7 +439,7 @@ $(document).ready(function() {
             var numberOfTrips = Object.keys(jsonData).length;
             
             $.each(jsonData, function(i, trip) {
-                var tripCommonProperties = trip;
+                var tripCommonProperties = trip;                
                 
                 /* STATS */
                 // for each trip:
@@ -456,7 +455,7 @@ $(document).ready(function() {
                 // VAR A -> no cloning (which is + now), but mess
                 // STATS.Trips[trip_id] = trip; // wish I could make it a subset of this object without neccessity of cloning
                 // VAR B -> cloning (shallow one), but neat
-                STATS.Trips[trip_id] = _.pick(trip, 'trip_id', 'start_time', 'end_time', 'from_activity', 'to_activity', 'agent_id');
+                STATS.Trips[trip_id] = _.pick(trip, 'trip_id', 't_start_time', 't_end_time', 'from_activity', 'to_activity', 'agent_id');
                 
                 // 2.) save to STATS.Legs
                 STATS.Legs[trip_id] = trip._legs;
@@ -505,7 +504,6 @@ $(document).ready(function() {
                 /* ende-STATS */
                 
                 
-                
                 var multiPointArray = "["; // store only first and last coordinate segment
                 var lineStrArr = "["; // store all coordinates to form MultiLine
                 
@@ -513,13 +511,13 @@ $(document).ready(function() {
                 var seedStr = tripCommonProperties.agent_id+" "+tripCommonProperties.trip_id;
                 var offset = offsetFromStrSeed(seedStr);
                 
-                var FirstSegment = jQuery.parseJSON( trip._legs.leg0.geojsonpath ).coordinates;
+                var FirstSegment = jQuery.parseJSON( trip._legs.leg0.geojsonpath ).coordinates[0];
                 FirstSegment = offsetArrayOfPoints(FirstSegment,offset);
                 multiPointArray += "["+FirstSegment[0]+"],"
                 
                 $.each(trip._legs, function(j, leg) {
                     // <offset?>
-                    var coordinates = jQuery.parseJSON(leg.geojsonpath).coordinates;
+                    var coordinates = jQuery.parseJSON(leg.geojsonpath).coordinates[0];
                     // coordinates is array of points
                     coordinates = offsetArrayOfPoints(coordinates,offset);
                     
@@ -546,7 +544,7 @@ $(document).ready(function() {
 //                multiPointArray = allPoints;
                 // </HAX>
 
-                var lineGeoData = multiLineStrToGeoJSON(lineStrArr)
+                var lineGeoData = multiLineStrToGeoJSON(lineStrArr);
                 var pointGeoData = multiPointStrToGeoJSON(multiPointArray);
                 
                 visualizeGeoJSON(lineGeoData, pointGeoData, jsonAllPoints, tripCommonProperties);

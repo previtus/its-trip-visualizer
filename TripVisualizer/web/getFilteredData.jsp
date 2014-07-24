@@ -1,3 +1,4 @@
+<%@page import="java.util.Arrays"%>
 <%@page import="tripVisualizerPkg.connection"%>
 <%@page import="java.io.IOException"%>
 <%@page import="tripVisualizerPkg.helperClass.VarTypes"%>
@@ -201,7 +202,7 @@
                             <... etc>
                     )
                 */
-                intersectionGeom.append("(SELECT ST_Union(ARRAY[ ");
+                intersectionGeom.append("SELECT ST_Union(ARRAY[ ");
                 for (int i=0; i<numOfBoxes; i++) {
                     intersectionGeom.append("ST_GeomFromText('POLYGON((");
                     for (int j=0; j<boundaries[i].length; j++) {
@@ -212,7 +213,7 @@
                 }
                 // delete last ","
                 intersectionGeom.setLength(intersectionGeom.length()-1);
-                intersectionGeom.append("]) )");
+                intersectionGeom.append("])");
                 
                 if (debug_output_request) out.print("Intersection geometry SQL:\n"+intersectionGeom.toString());
                 if (debug_output_query) System.out.print("Intersection geometry SQL:\n"+intersectionGeom.toString());
@@ -220,7 +221,8 @@
                 // add to WHERE condition
                 // WHERE ... ST_Intersects(l.path, <intersectionGeom>)
                 
-                whereCondition.append("ST_Intersects(l.path, ").append(intersectionGeom).append(") AND ");
+                //whereCondition.append("ST_Intersects(l.path, ").append(intersectionGeom).append(") AND ");
+                whereCondition.append("ST_Intersects(l.path, (SELECT Geo FROM RectangleSelection) ) AND "); // using 'variable' stored in 'RectangleSelection'
                 addedAtLeastOneCondition = true;
             }
             
@@ -342,71 +344,66 @@
                 out.print(json);
                 out.flush();
             } else {
+                PreparedStatement preparedMainQuery;
                 PreparedStatement preparedCommonForTrip;
                 PreparedStatement preparedAllLegs;
                 if (!addedAtLeastOneCondition) {
                     // No needs to add conditions...
-                    preparedCommonForTrip = conn.prepareStatement("SELECT DISTINCT "
-                        + "a.*, t.trip_id, t.end_time, t.start_time, t.from_activity, t.to_activity "
-                        + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id"
-                    );
-                    preparedAllLegs = conn.prepareStatement("SELECT "
-                        + "t.trip_id, l.end_time as l_end_time, l.start_time as l_start_time, l.type, ST_AsGeoJSON(path) as geojsonPath "
+                    preparedMainQuery = conn.prepareStatement("SELECT "
+                        + "a.*, t.trip_id, l.end_time as l_end_time, l.start_time as l_start_time, l.type, ST_AsGeoJSON(ST_Multi(path)) as geojsonPath, t.end_time as t_end_time, t.start_time as t_start_time, t.from_activity, t.to_activity "
                         + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id"
                     );
                 } else {
-                    preparedCommonForTrip = conn.prepareStatement("SELECT DISTINCT "
-                        + "a.*, t.trip_id, t.end_time, t.start_time, t.from_activity, t.to_activity "
+                    preparedMainQuery = conn.prepareStatement("WITH RectangleSelection as "
+                        + "( " + intersectionGeom.toString() + " as Geo) "
+                        + "SELECT "
+                        + "a.*, t.trip_id, l.end_time as l_end_time, l.start_time as l_start_time, l.type, t.end_time as t_end_time, t.start_time as t_start_time, t.from_activity, t.to_activity "
+                            
+                        + ", CASE "
+                        + "WHEN ST_CoveredBy(l.path, (SELECT Geo FROM RectangleSelection)) "
+                        +    "THEN ST_AsGeoJSON(ST_Multi(l.path)) "
+                        +    "ELSE "
+                        +      "ST_AsGeoJSON(ST_Multi( "
+                        +        "ST_Intersection(l.path, (SELECT Geo FROM RectangleSelection)) "
+                        +      " )) END AS geojsonPath "
+                            
+                        //+ ", ST_AsGeoJSON(ST_Intersection(l.path, "
+                        //+       " (SELECT Geo FROM RectangleSelection) "
+                        //+ ")) as geojsonPath "
                         + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id WHERE "
-                        //+ "t.trip_id=?"
                         + whereCondition.toString()
                     );
-                    preparedAllLegs = conn.prepareStatement("SELECT "
-                        + "t.trip_id, l.end_time as l_end_time, l.start_time as l_start_time, l.type, ST_AsGeoJSON(path) as geojsonPath "
-                        + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id WHERE "
-                        //+ "t.trip_id=?"
-                        + whereCondition.toString()
-                    );
-
+                    
                     for (int i = 1; i < valuesForConditions.size()+1; i++) {
                         String var = valuesForConditions.get(i-1);
                         switch (types.get(i-1)) {
                             case DblVar:
-                                preparedCommonForTrip.setDouble(i, Double.parseDouble( var ));
-                                preparedAllLegs.setDouble(i, Double.parseDouble( var ));
+                                preparedMainQuery.setDouble(i, Double.parseDouble( var ));
                                 break;
                             case IntVar:
-                                preparedCommonForTrip.setInt(i, Integer.parseInt( var ));
-                                preparedAllLegs.setInt(i, Integer.parseInt( var ));
+                                preparedMainQuery.setInt(i, Integer.parseInt( var ));
                                 break;
                             case BooVar:
                                 if (var.equals("T")) {
-                                    preparedCommonForTrip.setBoolean(i, true);
-                                    preparedAllLegs.setBoolean(i, true);
+                                    preparedMainQuery.setBoolean(i, true);
                                 } else {
-                                    preparedCommonForTrip.setBoolean(i, false);
-                                    preparedAllLegs.setBoolean(i, false);
+                                    preparedMainQuery.setBoolean(i, false);
                                 }
                                 break;
                             default: //default is string
-                                preparedCommonForTrip.setString(i, var);
-                                preparedAllLegs.setString(i, var);
+                                preparedMainQuery.setString(i, var);
                                 break;
                         }
                     }
                 }
 
                 if (debug_output_query) {
-                    String tmp_common = preparedCommonForTrip.toString();
-                    String tmp_legs = preparedAllLegs.toString();
-                    System.out.print(tmp_common);
-                    System.out.print("\n\n");
-                    System.out.print(tmp_legs);
-
+                    String tmp_query = preparedMainQuery.toString();
+                    System.out.print(tmp_query);
                     System.out.print("\n\n");
 
                     if (addedAtLeastOneCondition) {
-                        String[] splitTmp = tmp_common.split("WHERE");
+                        String[] splitTmp = tmp_query.split("WHERE");
                         System.out.print("... WHERE"+splitTmp[1]);
                         System.out.print("\n\n");
 
@@ -416,57 +413,72 @@
                     }
                 }
 
+                //out.println("---MAIN QUERY-->");
+                //out.println(preparedMainQuery.toString());
+                //out.println("----------------");
 
                 //####### SEND QUERIES #######
 
-                ResultSet result_common = preparedCommonForTrip.executeQuery();
-                ResultSet result_for_all_legs = preparedAllLegs.executeQuery();
+                ResultSet result_common = preparedMainQuery.executeQuery();
 
                 ResultSetMetaData rsmd_common = result_common.getMetaData();
-                ResultSetMetaData rsmd_all_legs = result_for_all_legs.getMetaData();
 
                 int columns_common = rsmd_common.getColumnCount();
-                int columns_all_legs = rsmd_all_legs.getColumnCount();
-
 
                 HashMap<String, HashMap> TripIDToTripObject = new HashMap<String, HashMap>();
                 // add trips to structure
                 while (result_common.next()) {
-                    HashMap trip = new HashMap();
+                    HashMap<String, String> row = new HashMap();
 
                     for (int col = 0; col < columns_common; col++) {
                         String attribute = rsmd_common.getColumnName(col + 1);
                         String value = result_common.getString(col + 1);
-                        trip.put(attribute, value);
+                        row.put(attribute, value);
                     }
+                    String tripId = (String) row.get("trip_id");
+                    
+                    String[] legsAttributes = {"trip_id", "l_end_time", "l_start_time", "type", "geojsonpath"};
+                    
+                    if (!TripIDToTripObject.containsKey(tripId)) {
+                        HashMap trip = new HashMap();
+                        // to leg add only>
+                        //l.type, ST_AsGeoJSON(path) as geojsonPath
+                        List legsAttributesList = Arrays.asList(legsAttributes);
+                        for (String key : row.keySet()) {
+                            if (!legsAttributesList.contains(key)) {
+                                String value = row.get(key);
+                                trip.put(key, value);
+                            }
+                        }
+                        
+                        // new one, create new record
+                        trip.put("trip_id", tripId);
+                        trip.put("_legsLoaded", "0");
+                        HashMap<String, String> holderForLegs = new HashMap<String, String>();
+                        trip.put("_legs", holderForLegs);
 
-                    trip.put("_legsLoaded", "0");
-                    HashMap<String, String> holderForLegs = new HashMap<String, String>();
-                    trip.put("_legs", holderForLegs);
-
-                    String tripId = (String) trip.get("trip_id");
-                    TripIDToTripObject.put(tripId, trip);
-                    Trips.add(trip);
-                }
-
-                // add legs to these trips
-                while (result_for_all_legs.next()) {
-                    HashMap leg = new HashMap();
-
-                    for (int col = 0; col < columns_all_legs; col++) {
-                        String attribute = rsmd_all_legs.getColumnName(col + 1);
-                        String value = result_for_all_legs.getString(col + 1);
-                        leg.put(attribute, value);
+                        TripIDToTripObject.put(tripId, trip);
+                        Trips.add(trip);
                     }
-                    // get object representing Trip of this Leg
-                    String tripId = (String) leg.get("trip_id");
+                    
+                    // add as a leg to already existing one
                     HashMap tripObject = TripIDToTripObject.get(tripId);
                     HashMap trip_legsHolder = (HashMap) tripObject.get("_legs");
+
+                    HashMap leg = new HashMap();
+                    // to leg add only>
+                    //l.type, ST_AsGeoJSON(path) as geojsonPath
+                    for (int i = 0; i < legsAttributes.length; i++) {
+                        String attribute = legsAttributes[i];
+                        String value = row.get(attribute);
+                        leg.put(attribute, value);
+                    }
 
                     int numberOfLoadedLegs = Integer.parseInt((String)tripObject.get("_legsLoaded"));
                     trip_legsHolder.put("leg"+(numberOfLoadedLegs), leg);
                     numberOfLoadedLegs++;
                     tripObject.put("_legsLoaded", ""+numberOfLoadedLegs);
+                    
                 }
             
             }
