@@ -365,7 +365,7 @@ $(document).ready(function() {
                 debugStr += Layer1._leaflet_id + " (distFromClick "+Layer1._lastDist+"; tripId: "+Layer1._tripProperties.trip_id+") \n";
 
                 // collect informations for description
-                var TripInfo = Layer1._tripProperties;
+                var TripInfo = Layer1._tripProperties;                
                 var legInfo = "";
                 $.each(TripInfo._legs, function(j, leg) {
                     legInfo += leg.type + " | ";
@@ -373,7 +373,7 @@ $(document).ready(function() {
                 legInfo = legInfo.slice(0,-3);
                 
                 var localDesc = "<div class='tripDesc'><strong style='color: "+TripInfo._colorCoding+";'>#"+TripInfo.trip_id+" "+ TripInfo.agent_id + "</strong><br>"
-                    + "<div class='tripDescDetails'><div style='text-align: center;'><small>" + msecToTime(TripInfo.start_time) + " to " + msecToTime(TripInfo.end_time) + "</small></div>"
+                    + "<div class='tripDescDetails'><div style='text-align: center;'><small>" + msecToTime(TripInfo.t_start_time) + " to " + msecToTime(TripInfo.t_end_time) + "</small></div>"
                     + TripInfo.gender + "; " + TripInfo.economic_activity + "; " + TripInfo.education + "<br>"
                     + TripInfo.from_activity + " -> " + TripInfo.to_activity + "<br>"
                     + "<small>" + legInfo + "</small>"
