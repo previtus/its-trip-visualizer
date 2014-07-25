@@ -30,7 +30,6 @@ $(document).ready(function() {
         },
         stop: function(event, ui) {
             $("#invisCheckbox").trigger('click');
-            $("#invisCheckbox").trigger('click');
         }
     });
     $("#timeRange").val(msecToTime($("#timeRange_slider").slider("values", 0)) + " - " + msecToTime($("#timeRange_slider").slider("values", 1)));
