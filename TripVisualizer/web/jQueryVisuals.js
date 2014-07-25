@@ -1,3 +1,7 @@
+/* jQuery visualization used in form UI */
+/* Generally only input/output reactions of form on main site. 
+ * Can't reach map object and any drawing connected with map layers (those are separated in mapFunc.js file). */
+
 $(document).ready(function() {
     // JQUERY MAGICS
     // resize
@@ -30,8 +34,7 @@ $(document).ready(function() {
         }
     });
     $("#timeRange").val(msecToTime($("#timeRange_slider").slider("values", 0)) + " - " + msecToTime($("#timeRange_slider").slider("values", 1)));
-    //$("#timeRange").val($("#timeRange_slider").slider("values", 0) + " - " + $("#timeRange_slider").slider("values", 1));
-
+    
     // filter panels toggle and enabling
     $(".filterPanel .panelControl input[name='toggleButton']").click(function() {
         // points to panelContent div
@@ -42,7 +45,6 @@ $(document).ready(function() {
         } else {
             $(this).val("-");
         }
-
     });
 
     $(".filterPanel .panelControl .panelCheckbox").change(function() {

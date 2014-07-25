@@ -1,9 +1,8 @@
+/* Graph generation from data recieved from server, done after jQuery is ready*/
+
 $(document).ready(function() {
     $( "#ButtonGenGraphsTMP" ).click(function() {
         if (STATS.byAgentProp != null) {
-            //fooGraphs_PIE_chart_dot_js();
-            //fooGraphs_STACKED_chart_dot_js();
-
             fooGraphs_PIE_highcharts();
             //fooGraphs_STACKED_highcharts();
         }

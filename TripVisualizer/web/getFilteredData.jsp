@@ -14,7 +14,6 @@
     boolean error = false;
     boolean debug_output_request = false; // does interfere with client-server interaction
     boolean debug_output_query = true; // can be running with correct client-server interaction
-    boolean timer = true;
     
     if (debug_output_request || debug_output_query) {
         JSONObject tmpJson = new JSONObject();
@@ -68,24 +67,6 @@
             ArrayList<String> valuesForConditions = new ArrayList<String>();
             Boolean addedAtLeastOneCondition = false;
 
-            // FILTERING BY ID 
-            /*
-            // trip_id and agent_id wont be used ...
-            if (R.isSet("trip_id") && R.isInt("trip_id")) {
-                whereCondition.append("t.trip_id = ? AND ");
-                valuesForConditions.add(request.getParameter("trip_id"));
-                types.add(helperClass.VarTypes.IntVar);
-                addedAtLeastOneCondition = true;
-            }
-
-            if (R.isSet("agent_id")) {
-                whereCondition.append("a.agent_id = ? AND ");
-                valuesForConditions.add(request.getParameter("agent_id"));
-                types.add(helperClass.VarTypes.StrVar);
-                addedAtLeastOneCondition = true;
-            }
-            */
-
             // FILTERING BY ACTIVITY (trip)
             addedAtLeastOneCondition = helperClass.MultiselectMacro(R, "from_act[]", "t.from_activity", true, whereCondition,valuesForConditions, types) || addedAtLeastOneCondition;
             addedAtLeastOneCondition = helperClass.MultiselectMacro(R, "to_act[]", "t.to_activity", true, whereCondition,valuesForConditions, types) || addedAtLeastOneCondition;
@@ -94,17 +75,8 @@
             addedAtLeastOneCondition = helperClass.MultiselectMacro(R, "trans_type[]", "l.type", false, whereCondition,valuesForConditions, types) || addedAtLeastOneCondition;
             
             // FILTERING BY AGENT INFO (agent)
-            // information in: age, age_val, gender, education, maritalStatus, economicalActivity, driveLicence, ptCard
-            // in table:
-        /*  
-            age integer,
-            gender character varying,
-            education character varying,
-            marital_status character varying,
-            economic_activity character varying,
-            drivers_licence boolean,
-            pt_discount_card boolean
-        */
+            // information in: age_from,age_to=age, gender=gender, education=education, maritalStatus=marital_status, economicalActivity=economic_activity, driveLicence=drivers_licence, ptCard=pt_discount_card
+            // (<value in request>=<value in table>)
             // age
             if (( R.isSet("age_from") && R.isInt("age_from") ) || ( R.isSet("age_to") && R.isInt("age_to") ) ) {
                 if (R.isSet("age_from")) {
@@ -150,7 +122,6 @@
             // economic_activity
             addedAtLeastOneCondition = helperClass.MultiselectMacro(R, "economicalActivity[]", "a.economic_activity", false, whereCondition,valuesForConditions, types) || addedAtLeastOneCondition;
 
-
             // drivers_licence
             if (R.isSet("driveLicence")) {
                 whereCondition.append("a.drivers_licence = ? AND ");
@@ -183,14 +154,11 @@
                     }
                 }
                 
-
                 // Structure of "boundaries"
                 // [
                 //  [[[Ax,Ay],[Bx,By],[Cx,Cy],[Dx,Dy],[Ax,Ay]]], <- one box
-                //  [[[Ax,Ay],[Bx,By],[Cx,Cy],[Dx,Dy],[Ax,Ay]]], <- second box
                 //  ...                                          <- etc...
                 // ]
-                
                 // BUILD GEOMETRY (union of polygons!)
                 /*
                     ST_Union(
@@ -229,43 +197,6 @@
                 addedAtLeastOneCondition = true;
                 intersectionGeomAdded = true;
             }
-            
-/*            // FILTERING BY RECTANGULAR SELECTION
-            // in request: bound_a_lon, bound_a_lat, bound_b_lon, bound_b_lat
-            // http://postgis.org/docs/ST_Intersects.html
-            // - ST_MakeEnvelope(minLon, minLat, maxLon, maxLat, 4326)
-            if (R.isSet("bound_a_lon") && R.isSet("bound_a_lat") && R.isSet("bound_b_lon") && R.isSet("bound_b_lat")) {
-                // WRONG WAYS
-                // the ones which use bounding box of l.path
-                //whereCondition.append("l.path && ST_MakeEnvelope(?, ?, ?, ?, 4326) AND ");
-                whereCondition.append("l.path @ ST_MakeEnvelope(?, ?, ?, ?, 4326) AND "); // if paths bounding box is inside selected rectangle
-                //whereCondition.append("l.path ~ ST_MakeEnvelope(?, ?, ?, ?, 4326) AND "); // if selected rect is inside of paths bounding box - not what we want
-                //whereCondition.append("ST_Contains(ST_MakeEnvelope(?, ?, ?, ?, 4326), l.path) AND ");
-                //whereCondition.append("Not ST_IsEmpty(ST_Buffer(ST_Intersection(l.path, ST_MakeEnvelope(?, ?, ?, ?, 4326)),0.0)) AND ");
-                
-                // precise intersection
-                //whereCondition.append("Not ST_IsEmpty(ST_Intersection(l.path, ST_MakeEnvelope(?, ?, ?, ?, 4326))) AND ");
-                // \ this works but is kinda slow ...
-                
-                // CORRECT WAY
-                // also proper intersection, but boolean -> ST_Intersects instead of ST_Intersection
-                //whereCondition.append("ST_Intersects(l.path, ST_MakeEnvelope(?, ?, ?, ?, 4326)) AND ");
-                
-                // GENERALY WE WANT
-                // whereCondition.append("l.path @ ST_MakeEnvelope(?, ?, ?, ?, 4326) AND "); // if paths bounding box is inside selected rectangle
-                // ... but it can't cut legs in halves, so it sometimes looks wierd...
-                
-                valuesForConditions.add(request.getParameter("bound_a_lon"));
-                valuesForConditions.add(request.getParameter("bound_a_lat"));
-                valuesForConditions.add(request.getParameter("bound_b_lon"));
-                valuesForConditions.add(request.getParameter("bound_b_lat"));
-                types.add(helperClass.VarTypes.DblVar);
-                types.add(helperClass.VarTypes.DblVar);
-                types.add(helperClass.VarTypes.DblVar);
-                types.add(helperClass.VarTypes.DblVar);
-                addedAtLeastOneCondition = true;
-            }
-*/
             
             // FILTERING BY TIME
             // in request: time_start, time_end

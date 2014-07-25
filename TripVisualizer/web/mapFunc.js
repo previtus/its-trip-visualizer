@@ -1,4 +1,6 @@
 /* FUNCTIONS USED AFTER DOCUMENT LOADED */
+/* Most of map functionality is stored in this file. */
+
 $(document).ready(function() {
     var debug = true;
 

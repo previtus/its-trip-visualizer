@@ -70,3 +70,18 @@
 #invisCheckbox {
     display: none;
 }
+
+/* Well styling */
+.well {
+    margin-bottom: 0px;
+}
+
+.mergeWithRight {
+    padding-right: 7px;
+    border-right-width: 0;
+}
+
+.mergeWithLeft {
+    padding-left: 7px;
+    border-left-width: 0;
+}

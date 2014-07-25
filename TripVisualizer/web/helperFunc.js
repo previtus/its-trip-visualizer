@@ -1,4 +1,5 @@
 /* HELPER FUNCTIONS */
+/* used in other .js files, no need for jQuery to be loaded */
 
 function offsetArrayOfPoints(arr, off) {
     var offarr = arr;
@@ -28,10 +29,10 @@ function msecToTime(milliseconds) {
     return str;
 }
 
-function randColor(hue) {
+function randColor(huehuehue) {
     
     return $.Color({
-        hue: hue,
+        hue: huehuehue,
         saturation: 0.9,
         lightness: 0.4,
         alpha: 1
