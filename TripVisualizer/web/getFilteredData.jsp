@@ -49,7 +49,8 @@
         out.flush();
     }
     Boolean isExploratory = Boolean.parseBoolean(request.getParameter("isExploratory"));
-    
+    int[] stats = new int[3]; // stats - agents, trips, legs
+
     if (!error) {
         try {
             //####### CREATE CONNECTION #######
@@ -237,8 +238,14 @@
                 if (addedAtLeastOneCondition) {
                     whereString = "WHERE "+whereCondition.toString();
                 }
+                String intersectionDeclarationString = "";
+                if (intersectionGeomAdded) {
+                        intersectionDeclarationString = "WITH RectangleSelection as ( " + intersectionGeom.toString() + " as Geo) ";
+                }
                 
-                PreparedStatement preparedAgregation = conn.prepareStatement("SELECT "
+                PreparedStatement preparedAgregation = conn.prepareStatement(
+                          intersectionDeclarationString
+                        + "SELECT "
                         + "count(DISTINCT A.agent_id), count(DISTINCT A.trip_id), count(A.trip_id) "
                         + "FROM ( "
                         + "SELECT a.agent_id, t.trip_id "
@@ -300,7 +307,7 @@
                         +        "ST_Intersection(l.path, (SELECT Geo FROM RectangleSelection)) "
                         +      " )) END AS geojsonPath ";
                     } else {
-                        intersectionString = "ST_AsGeoJSON(ST_Multi( l.path )) AS geojsonPath";
+                        intersectionString = ", ST_AsGeoJSON(ST_Multi( l.path )) AS geojsonPath ";
                     }
                     
                     preparedMainQuery = conn.prepareStatement(
@@ -365,7 +372,12 @@
 
                 HashMap<String, HashMap> TripIDToTripObject = new HashMap<String, HashMap>();
                 // add trips to structure
+                int rows = 0;
+                int distinct_trips = 0;
+                ArrayList<String> distinct_agent_ids = new ArrayList<String>();
+                
                 while (result_common.next()) {
+                    rows++;
                     HashMap<String, String> row = new HashMap();
 
                     for (int col = 0; col < columns_common; col++) {
@@ -374,10 +386,17 @@
                         row.put(attribute, value);
                     }
                     String tripId = (String) row.get("trip_id");
+                    String agentId = (String) row.get("agent_id");
                     
                     String[] legsAttributes = {"trip_id", "l_end_time", "l_start_time", "type", "geojsonpath"};
+                    if (!distinct_agent_ids.contains(agentId)) {
+                        distinct_agent_ids.add(agentId);
+                    }
                     
                     if (!TripIDToTripObject.containsKey(tripId)) {
+                        // This is a new leg (aka first leg of new trip)
+                        distinct_trips++;
+                        
                         HashMap trip = new HashMap();
                         // to leg add only>
                         //l.type, ST_AsGeoJSON(path) as geojsonPath
@@ -418,7 +437,11 @@
                     tripObject.put("_legsLoaded", ""+numberOfLoadedLegs);
                     
                 }
-            
+                
+                // stats - agents, trips, legs
+                stats[0] = distinct_agent_ids.size();
+                stats[1] = distinct_trips;
+                stats[2] = rows;
             }
         } catch (SQLException es) {
             JSONObject errorJson = new JSONObject();
@@ -433,13 +456,18 @@
     if (!error && !isExploratory) {
         
         JSONObject json = new JSONObject();
+        // add trips
         for (int i = 0; i < Trips.size(); i++) {
             HashMap h = Trips.get(i);
             String indexById = (String) h.get("trip_id");
             json.put(indexById, h);
-            
         }
+        // add statistics
+        json.put("agents", stats[0]);
+        json.put("trips", stats[1]);
+        json.put("legs", stats[2]);
+        
         out.print(json);
-        out.flush();        
+        out.flush();
     }
 %>
