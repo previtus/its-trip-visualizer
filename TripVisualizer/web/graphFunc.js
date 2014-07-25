@@ -5,7 +5,7 @@ $(document).ready(function() {
             //fooGraphs_STACKED_chart_dot_js();
 
             fooGraphs_PIE_highcharts();
-            fooGraphs_STACKED_highcharts();
+            //fooGraphs_STACKED_highcharts();
         }
     });
 

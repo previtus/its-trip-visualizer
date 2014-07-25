@@ -64,6 +64,7 @@
             ArrayList<helperClass.VarTypes> types = new ArrayList<helperClass.VarTypes>();
             StringBuilder whereCondition = new StringBuilder();
             StringBuilder intersectionGeom = new StringBuilder();
+            boolean intersectionGeomAdded = false;
             ArrayList<String> valuesForConditions = new ArrayList<String>();
             Boolean addedAtLeastOneCondition = false;
 
@@ -221,13 +222,13 @@
                 //whereCondition.append("ST_Intersects(l.path, ").append(intersectionGeom).append(") AND ");
                 whereCondition.append("ST_Intersects(l.path, (SELECT Geo FROM RectangleSelection) ) AND "); // using 'variable' stored in 'RectangleSelection'
                 addedAtLeastOneCondition = true;
-            } else {
+                intersectionGeomAdded = true;
+            } else if ( R.isInt("boundaries_numOfBoxes") && Integer.parseInt(request.getParameter("boundaries_numOfBoxes")) == 0 ) {
                 intersectionGeom.append("SELECT ST_GeomFromText('GEOMETRYCOLLECTION EMPTY')");
                 whereCondition.append("ST_Intersects(l.path, (SELECT Geo FROM RectangleSelection) ) AND ");
                 addedAtLeastOneCondition = true;
+                intersectionGeomAdded = true;
             }
-            
-            
             
 /*            // FILTERING BY RECTANGULAR SELECTION
             // in request: bound_a_lon, bound_a_lat, bound_b_lon, bound_b_lat
@@ -356,22 +357,26 @@
                         + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id"
                     );
                 } else {
-                    preparedMainQuery = conn.prepareStatement("WITH RectangleSelection as "
-                        + "( " + intersectionGeom.toString() + " as Geo) "
-                        + "SELECT "
-                        + "a.*, t.trip_id, l.end_time as l_end_time, l.start_time as l_start_time, l.type, t.end_time as t_end_time, t.start_time as t_start_time, t.from_activity, t.to_activity "
-                            
-                        + ", CASE "
+                    String intersectionString = "";
+                    String intersectionDeclarationString = "";
+                    if (intersectionGeomAdded) {
+                        intersectionDeclarationString = "WITH RectangleSelection as ( " + intersectionGeom.toString() + " as Geo) ";
+                        intersectionString = ", CASE "
                         + "WHEN ST_CoveredBy(l.path, (SELECT Geo FROM RectangleSelection)) "
                         +    "THEN ST_AsGeoJSON(ST_Multi(l.path)) "
                         +    "ELSE "
                         +      "ST_AsGeoJSON(ST_Multi( "
                         +        "ST_Intersection(l.path, (SELECT Geo FROM RectangleSelection)) "
-                        +      " )) END AS geojsonPath "
-                            
-                        //+ ", ST_AsGeoJSON(ST_Intersection(l.path, "
-                        //+       " (SELECT Geo FROM RectangleSelection) "
-                        //+ ")) as geojsonPath "
+                        +      " )) END AS geojsonPath ";
+                    } else {
+                        intersectionString = "ST_AsGeoJSON(ST_Multi( l.path )) AS geojsonPath";
+                    }
+                    
+                    preparedMainQuery = conn.prepareStatement(
+                          intersectionDeclarationString
+                        + "SELECT "
+                        + "a.*, t.trip_id, l.end_time as l_end_time, l.start_time as l_start_time, l.type, t.end_time as t_end_time, t.start_time as t_start_time, t.from_activity, t.to_activity "
+                        + intersectionString
                         + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id WHERE "
                         + whereCondition.toString()
                     );

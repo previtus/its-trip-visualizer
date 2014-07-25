@@ -3,7 +3,7 @@ $(document).ready(function() {
     var debug = true;
 
     var map_center_x = 49.198;
-    var map_center_y = 16.64;
+    var map_center_y = 16.62;
 
     // INITIALIZATION:
     var map = L.map('map', {
@@ -46,6 +46,7 @@ $(document).ready(function() {
     layerControl.addBaseLayer(googleTerrain, 'Google Terrain');
     
     var gridLayer = new L.layerGroup();
+    var gridIsDrawn = false;
     //layerControl.addOverlay(gridLayer, 'Grid');
     
     // add permalink generation function
@@ -77,12 +78,15 @@ $(document).ready(function() {
         x_step: 0.01,
         y_step: 0.03,
         
-        x_times: 6,
-        y_times: 6        
+        x_times: 4,
+        y_times: 3        
     };
     
     function drawGrid() {
-    
+        if (gridIsDrawn) {
+            deleteGrid();
+        }
+        
         var xmin = GridSettings.start_x - GridSettings.x_times*GridSettings.x_step;
         var xmax = GridSettings.start_x + GridSettings.x_times*GridSettings.x_step;
         var ymin = GridSettings.start_y - GridSettings.y_times*GridSettings.y_step;
@@ -131,14 +135,22 @@ $(document).ready(function() {
                 gridLayer.addLayer(polygon); 
             }
         }
+        gridIsDrawn = true;
     }
     function deleteGrid() {
+        //console.log(gridLayer);
         
+        $.each(gridLayer._layers, function(i, layer) {
+            map.removeLayer(layer);
+        });
+        
+        gridIsDrawn = false;
+        SelectedPolygons = [];
     }
     
     map.addLayer(gridLayer);
     drawGrid();
-        
+    
     // visualization
     function visualizeGeoJSON0(objJson, desc) {
         //console.log(objJson);
@@ -811,9 +823,11 @@ $(document).ready(function() {
         
         dataToBeSent.isExploratory = isExploratory;
         
-        //dataToBeSent.boundaries = JSON.stringify(SelectedPolygons);
-        dataToBeSent.boundaries = SelectedPolygons;
-        dataToBeSent.boundaries_numOfBoxes = SelectedPolygons.length;
+        if (gridIsDrawn) {
+            //dataToBeSent.boundaries = JSON.stringify(SelectedPolygons);
+            dataToBeSent.boundaries = SelectedPolygons;
+            dataToBeSent.boundaries_numOfBoxes = SelectedPolygons.length;
+        }
         
         //send it
         if (isExploratory) {
@@ -890,14 +904,12 @@ $(document).ready(function() {
        onChange();
     });
     
-    $("#DEBUGshowMultiPolygon").click(function() {
-        //var myJsonString = JSON.stringify(SelectedPolygons);
-        
-        var ooo = {
-            "type": "MultiPolygon",
-            "coordinates": SelectedPolygons
-        }
-        
-        L.geoJson(ooo).addTo(map);
+    $("#ButtonRedraw").click(function() {
+        deleteGrid();
+        drawGrid();
     });
+    $("#ButtonDeleteGrid").click(function() {
+        deleteGrid();
+    });
+    // #ButtonGenGraphsTMP in graphFunc.js
 });

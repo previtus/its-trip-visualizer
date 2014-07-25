@@ -73,7 +73,7 @@
         <![endif]-->
 
         <script>
-            var detailLVL = 3;
+            var detailLVL = 1;
             // 1 only back line
             // 2 backline + overline
             // 3 backline + overline + points
@@ -335,11 +335,13 @@
                     <!-- --FOOTER-- -->
                     <strong>Control panel:</strong><br>
                     <input type="button" class="btn btn-default" value="Clear map" id="ButtonClearMap"/>
-                    <input type="button" class="btn btn-default" value="Cancel selection" id="ButtonUnselect"/>
+                    <input type="button" class="btn btn-default" value="Redraw grid" id="ButtonRedraw"/>
+                    <input type="button" class="btn btn-default" value="Delete grid" id="ButtonDeleteGrid"/>
+                    
+                    <!--<input type="button" class="btn btn-default" value="Cancel selection" id="ButtonUnselect"/>-->
                     <!--<input type="button" class="btn btn-default" value="Toggle graph" id="ButtonToggleGraphTMP"/>-->
                     <input type="button" class="btn btn-default" value="Generate graphs from current filters" id="ButtonGenGraphsTMP"/>
                     
-                    <input type="button" class="btn btn-default" value="MultiPolygonize!" id="DEBUGshowMultiPolygon"/>
                     <br>
                     <br>
                     Hint: use <kbd><kbd>shift</kbd> + <kbd>drag</kbd></kbd> for rectangular selection.
