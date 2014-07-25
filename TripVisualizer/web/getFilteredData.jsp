@@ -105,23 +105,20 @@
             pt_discount_card boolean
         */
             // age
-            if (R.isSet("age") && R.isSet("age_val") && R.isInt("age_val")) {
-                String comparator = "";
-                String comparatorFromClient = request.getParameter("age");
-                if (comparatorFromClient.equals("lt")) {
-                    comparator = "<";
-                } else if (comparatorFromClient.equals("gt")) {
-                    comparator = ">";
-                } else if (comparatorFromClient.equals("eq")) {
-                    comparator = "=";
-                } else {
-                    // well this shouldn't happen ...
-                    comparator = "=";
+            if (( R.isSet("age_from") && R.isInt("age_from") ) || ( R.isSet("age_to") && R.isInt("age_to") ) ) {
+                if (R.isSet("age_from")) {
+                    // age > age_from
+                    whereCondition.append("a.age >= ? AND ");
+                    valuesForConditions.add(request.getParameter("age_from"));
+                    types.add(helperClass.VarTypes.IntVar);
                 }
-
-                whereCondition.append("a.age "+comparator+" ? AND ");
-                valuesForConditions.add(request.getParameter("age_val"));
-                types.add(helperClass.VarTypes.IntVar);
+                if (R.isSet("age_to")) {
+                    // age < age_to
+                    whereCondition.append("a.age <= ? AND ");
+                    valuesForConditions.add(request.getParameter("age_to"));
+                    types.add(helperClass.VarTypes.IntVar);
+                }
+                
                 addedAtLeastOneCondition = true;
             }
 

@@ -77,61 +77,68 @@ $(document).ready(function() {
         x_step: 0.01,
         y_step: 0.03,
         
-        x_times: 10,
-        y_times: 10        
+        x_times: 6,
+        y_times: 6        
     };
     
-    var xmin = GridSettings.start_x - GridSettings.x_times*GridSettings.x_step;
-    var xmax = GridSettings.start_x + GridSettings.x_times*GridSettings.x_step;
-    var ymin = GridSettings.start_y - GridSettings.y_times*GridSettings.y_step;
-    var ymax = GridSettings.start_y + GridSettings.y_times*GridSettings.y_step;
-    var x,y;
-    for(x = xmin; x<= xmax; x+= GridSettings.x_step)
-    {
-        for(y = ymin; y<= ymax; y+= GridSettings.y_step)
+    function drawGrid() {
+    
+        var xmin = GridSettings.start_x - GridSettings.x_times*GridSettings.x_step;
+        var xmax = GridSettings.start_x + GridSettings.x_times*GridSettings.x_step;
+        var ymin = GridSettings.start_y - GridSettings.y_times*GridSettings.y_step;
+        var ymax = GridSettings.start_y + GridSettings.y_times*GridSettings.y_step;
+        var x,y;
+        for(x = xmin; x<= xmax; x+= GridSettings.x_step)
         {
-            var p1 = new L.LatLng(x, y),
-                p2 = new L.LatLng(x+GridSettings.x_step, y),
-                p3 = new L.LatLng(x+GridSettings.x_step, y+GridSettings.y_step),
-                p4 = new L.LatLng(x, y+GridSettings.y_step),
-                polygonPoints = [p1, p2, p3, p4];
+            for(y = ymin; y<= ymax; y+= GridSettings.y_step)
+            {
+                var p1 = new L.LatLng(x, y),
+                    p2 = new L.LatLng(x+GridSettings.x_step, y),
+                    p3 = new L.LatLng(x+GridSettings.x_step, y+GridSettings.y_step),
+                    p4 = new L.LatLng(x, y+GridSettings.y_step),
+                    polygonPoints = [p1, p2, p3, p4];
 
-        var defaultStyle = {
-            color: "#333344",
-            weight: 1, /* weight of grid line */
-            opacity: 0.3, /* grid line opacity */
-            fillOpacity: 0.2, /* grid fill opacity */
-            fillColor: "#333344"
-        };
+            var defaultStyle = {
+                color: "#333344",
+                weight: 1, /* weight of grid line */
+                opacity: 0.3, /* grid line opacity */
+                fillOpacity: 0.2, /* grid fill opacity */
+                fillColor: "#333344"
+            };
 
-            var polygon = new L.Polygon(polygonPoints, defaultStyle);
-            polygon.on('click',function(e) {
-                //alert('x: '+x+', y: '+y);
-                //console.log( polygon.getBounds() );
-                //console.log( polygon );
-                this.setStyle({fillOpacity: 0, opacity: 0.1});
-                
-//                var tmp = [];
-//                for (i = 0; i < 4; i++) {
-//                    console.log( this.toGeoJSON().geometry.coordinates[0][i] );
-//                    
-//                    tmp.push( this.toGeoJSON().geometry.coordinates[0][i] );
-//                }
-                
-                //SelectedPolygons.push(tmp);
-                SelectedPolygons.push(this.toGeoJSON().geometry.coordinates[0]);
-                this.off('click');
-                
-                //console.log(tmp);
-                //console.log(SelectedPolygons);
-                //console.log(this.toGeoJSON().geometry.coordinates);
-            });
-            gridLayer.addLayer(polygon); 
+                var polygon = new L.Polygon(polygonPoints, defaultStyle);
+                polygon.on('click',function(e) {
+                    //alert('x: '+x+', y: '+y);
+                    //console.log( polygon.getBounds() );
+                    //console.log( polygon );
+                    this.setStyle({fillOpacity: 0, opacity: 0.1});
+
+    //                var tmp = [];
+    //                for (i = 0; i < 4; i++) {
+    //                    console.log( this.toGeoJSON().geometry.coordinates[0][i] );
+    //                    
+    //                    tmp.push( this.toGeoJSON().geometry.coordinates[0][i] );
+    //                }
+
+                    //SelectedPolygons.push(tmp);
+                    SelectedPolygons.push(this.toGeoJSON().geometry.coordinates[0]);
+                    this.off('click');
+
+                    //console.log(tmp);
+                    //console.log(SelectedPolygons);
+                    //console.log(this.toGeoJSON().geometry.coordinates);
+                });
+                gridLayer.addLayer(polygon); 
+            }
         }
     }
-
+    function deleteGrid() {
+        
+    }
+    
     map.addLayer(gridLayer);
-
+    drawGrid();
+        
     // visualization
     function visualizeGeoJSON0(objJson, desc) {
         //console.log(objJson);
@@ -772,9 +779,11 @@ $(document).ready(function() {
         }
 
         if ($("#filter_byAgentInfo_check").is(':checked')) {
-            if ($("#age").val() !== "-" && $.trim($("#age_val").val())) {
-                dataToBeSent.age = $("#age").val();
-                dataToBeSent.age_val = $("#age_val").val();
+            if ($(".multiselectAgesFrom").val() !== "-") {
+                dataToBeSent.age_from = $(".multiselectAgesFrom").val();
+            }
+            if ($(".multiselectAgesTo").val() !== "-") {
+                dataToBeSent.age_to = $(".multiselectAgesTo").val();
             }
 
             setIfSelected(dataToBeSent, "gender", $('input[name=gender]:checked').val());
@@ -846,6 +855,34 @@ $(document).ready(function() {
         numberDisplayed: 2,
         onDropdownHide: function(element, checked) {
             onChange(element);
+        }
+    });
+    
+    $(".multiselectAgesFrom").multiselect({
+        buttonClass: 'btn btn-sm form-control',
+        enableFiltering: true,
+        maxHeight: 400,
+        onDropdownHide: function(element, checked) {
+            onChange(element);
+            
+            //alert( $('.multiselectAgesFrom').val() );
+            //$(".multiselectAgesTo").children().prop('disabled', false);
+            //$(".multiselectAgesTo").children().slice(0, $('.multiselectAgesFrom').val() ).prop('disabled', true);
+            //$(".multiselectAgesTo").children().each(function(){
+            //    $(this).prop('disabled', true);
+            //});
+        }
+    });
+    $(".multiselectAgesTo").multiselect({
+        buttonClass: 'btn btn-sm form-control',
+        enableFiltering: true,
+        maxHeight: 400,
+        onDropdownHide: function(element, checked) {
+            onChange(element);
+            
+            //$(".multiselectAgesFrom").children().attr("disabled", "enabled");
+            //$(".multiselectAgesFrom").children().slice( $('.multiselectAgesFrom').val() ).attr("disabled", "disabled");
+
         }
     });
     
