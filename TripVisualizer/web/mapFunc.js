@@ -487,6 +487,7 @@ $(document).ready(function() {
                 tmp[ propValues[i] ] = 0;
             }
         });
+        STATS.byAgentProp.isEmpty = true;
         //console.log(STATS.byAgentProp);
         
         if (jsonData.hasOwnProperty("error")) {
@@ -543,19 +544,26 @@ $(document).ready(function() {
                     // doesn't exist yet
                     STATS.Agents[agent_id] = _.pick(trip, 'agent_id', 'age', 'gender', 'education', 'marital_status', 'economic_activity', 'drivers_licence', 'pt_discount_card');
                     STATS.Agents[agent_id]._trips = [trip_id];
-                    STATS.Agents[agent_id].ageCategory = countAgeCategoryFromAge(trip.age, numberOfAgeCategories);
-
+                    STATS.Agents[agent_id].ageCategory = countAgeCategoryFromAge(trip.age);
+                    
                     // BUILD ARRAYS OF USED VALUES of AGENT - with voluntary initialization
                     // plus one to for example this structure STATS.byAgentProp.gender.FEMALE
                     // parse through accepted properties
-                    $.each(InitNamesForAgentProps, function(propName, nevermind_initiallyAcceptedValues) {
+                    $.each(InitNamesForAgentProps, function(propName, nevermind_initiallyAcceptedValues) {                        
                         var property = STATS.byAgentProp[propName];
                         var value = trip[propName];
+                        if (propName === "age") {
+                            // age is special - convert it to category
+                            value = catTostr( countAgeCategoryFromAge(trip.age) );
+                        }
+
                         if (property[value] == null) {
                             // wasn't initiated
                             property[value] = 1;
+                            STATS.byAgentProp.isEmpty = false;
                         } else {
                             property[value] += 1;
+                            STATS.byAgentProp.isEmpty = false;
                         }
 
                         // here we could build back-pointers to agents with these properties
@@ -688,6 +696,7 @@ $(document).ready(function() {
                     var jsonData = jQuery.parseJSON(data);
                     processMultipleTripsData(jsonData);
                     processMultipleTripsDataExploration(jsonData);
+                    drawGraphs();
                 });
     }
     function getMultipleTripsExplore(dataToBeSent) {
@@ -860,6 +869,7 @@ $(document).ready(function() {
             //$(".multiselectAgesTo").children().each(function(){
             //    $(this).prop('disabled', true);
             //});
+            //minAgeSetTo($('.multiselectAgesFrom').val());
         }
     });
     $(".multiselectAgesTo").multiselect({
@@ -871,7 +881,7 @@ $(document).ready(function() {
 
             //$(".multiselectAgesFrom").children().attr("disabled", "enabled");
             //$(".multiselectAgesFrom").children().slice( $('.multiselectAgesFrom').val() ).attr("disabled", "disabled");
-
+            //maxAgeSetTo($('.multiselectAgesTo').val());
         }
     });
 

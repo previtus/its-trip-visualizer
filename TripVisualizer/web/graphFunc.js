@@ -1,29 +1,39 @@
 /* Graph generation from data recieved from server, done after jQuery is ready*/
+drawGraphs = function (){};
 
 $(document).ready(function() {
     $( "#ButtonGenGraphsTMP" ).click(function() {
         if (STATS.byAgentProp != null) {
-            /* in STATS.byAgentProp we have:
-             * drivers_licence, economic_activity, education, gender, marital_status, pt_discount_card
-             */
-            
-            //ageGraph <-- ?
-            
-            var genderColors = ["#F7464A", "#464af7"]; 
-            drawGraph("genderGraph","gender", genderColors, "Gender");
-            
-            drawGraph("driversGraph","drivers_licence", genderColors, "Driver's<br>licence");
-            drawGraph("economicGraph","economic_activity", genderColors, "Economic<br>activity");
-            drawGraph("educationGraph","education", genderColors, "Education");
-            drawGraph("maritalGraph","marital_status", genderColors, "Marital<br>status");
-            drawGraph("ptcardGraph","pt_discount_card", genderColors, "Public<br>transport card");
-            
-
+            drawGraphs();
         }
     });
 
+    drawGraphs = function () {
+        console.log(STATS.byAgentProp);
+        if (STATS.byAgentProp == null || STATS.byAgentProp.isEmpty) {
+            return;
+        }
+        
+        /* in STATS.byAgentProp we have:
+         * drivers_licence, economic_activity, education, gender, marital_status, pt_discount_card, age (in categories)
+         */
 
-    function drawGraph(idname,statname,colors,graphName) {
+        //ageGraph <-- ?
+
+        var redBlue = ["#F7464A", "#464af7"]; 
+        var greenRed = ["#0ed209", "#d2090e"];
+        drawGraph("genderGraph","gender", redBlue, "Gender", "Gender");
+
+        drawGraph("driversGraph","drivers_licence", greenRed, "Driver's<br>licence", "Driver's licence");
+        drawGraph("economicGraph","economic_activity", null, "Economic<br>activity", "Economic activity");
+        drawGraph("educationGraph","education", null, "Education", "Education");
+        drawGraph("maritalGraph","marital_status", null, "Marital<br>status", "Marital status");
+        drawGraph("ptcardGraph","pt_discount_card", greenRed, "Public<br>transport card", "Public transport card");
+        
+        drawGraph("ageGraph","age", null, "Age", "Age");
+    }
+
+    function drawGraph(idname,statname,colors,graphName,popupname) {
         $("#"+idname).css("height","300px");
         
         var dataArr = [];
@@ -37,12 +47,14 @@ $(document).ready(function() {
         }
         
         //console.log(dataArr);
-        var n = colors.length;
-        for (i = 0; i < n; i++) {
-            colors.push(lighter(colors[i]));
+        if (colors !== null) {
+            var n = colors.length;
+            for (var i = 0; i < n; i++) {
+                colors.push(lighter(colors[i]));
+            }    
         }
         
-        $('#'+idname).highcharts({
+        var settingsHalfDonut = {
             chart: {
                 plotBackgroundColor: null,
                 plotBorderWidth: 0,
@@ -70,8 +82,8 @@ $(document).ready(function() {
                     },
                     startAngle: -90,
                     endAngle: 90,
-                    center: ['50%', '75%'],
-                    colors:  colors
+                    center: ['50%', '75%']
+                    //colors: colors
                     //colors:  ["#F7464A", "#464af7", "rgba(15,72,127,1)", "rgba(52,109,164,1)"]
                     //colors: ["#F7464A", "#464af7"]
                 }
@@ -82,7 +94,52 @@ $(document).ready(function() {
                 innerSize: '50%',
                 data: dataArr
             }]
-        });
+        };
+        
+        var settings = {
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: 0,
+                plotShadow: false
+            },
+            title: {
+                text: graphName,
+//                align: 'center',
+//                verticalAlign: 'middle',
+//                y: 55
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.y}</b>'
+            },
+            plotOptions: {
+                pie: {
+                    dataLabels: {
+                        enabled: true,
+//                        distance: -50,
+//                        style: {
+//                            fontWeight: 'bold',
+//                            color: 'white',
+//                            textShadow: '0px 1px 2px black'
+//                        }
+                    },
+//                    startAngle: -90,
+//                    endAngle: 90,
+//                    center: ['50%', '75%']
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: popupname,
+//                innerSize: '50%',
+                data: dataArr
+            }]
+        };
+        
+        if (colors !== null) {
+            settings.plotOptions.pie.colors = colors;
+        }
+        
+        $('#'+idname).highcharts( settings );
 
     }
 
