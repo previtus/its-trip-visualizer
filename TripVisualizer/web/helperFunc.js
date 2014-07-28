@@ -10,6 +10,17 @@ function offsetArrayOfPoints(arr, off) {
     return offarr;
 }
 
+// String manipulations
+function capitaliseFirstLetter(string)
+{
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+String.prototype.replaceAll = function(str1, str2, ignore) 
+{
+	return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2);
+}
+
+// Int manipulations
 function minTwoDigits(n) {
   return (n < 10 ? '0' : '') + n;
 }

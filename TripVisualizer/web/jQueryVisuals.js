@@ -14,7 +14,11 @@ $(document).ready(function() {
     // Accordion
     $( "#accordion" ).accordion({
         collapsible: true,
-        heightStyle: "content"
+        heightStyle: "content",
+        active: false,
+        activate: function(event, ui) {
+            $(window).trigger('resize');
+        }
     });
 
     // slider input TripId

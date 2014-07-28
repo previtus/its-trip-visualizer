@@ -42,7 +42,10 @@ $(document).ready(function() {
             var propertyValue = stat[propertyName];
             //console.log(propertyName+" "+propertyValue);
             
-            var dataSlice = [propertyName, propertyValue]
+            var lowName = capitaliseFirstLetter( String.toLowerCase(propertyName) );
+            lowName = lowName.replaceAll("_"," ");
+            
+            var dataSlice = [lowName, propertyValue]
             dataArr.push(dataSlice);
         }
         
