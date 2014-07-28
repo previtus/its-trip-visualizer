@@ -3,17 +3,33 @@
 $(document).ready(function() {
     $( "#ButtonGenGraphsTMP" ).click(function() {
         if (STATS.byAgentProp != null) {
-            fooGraphs_PIE_highcharts();
-            //fooGraphs_STACKED_highcharts();
+            /* in STATS.byAgentProp we have:
+             * drivers_licence, economic_activity, education, gender, marital_status, pt_discount_card
+             */
+            
+            //ageGraph <-- ?
+            
+            var genderColors = ["#F7464A", "#464af7"]; 
+            drawGraph("genderGraph","gender", genderColors, "Gender");
+            
+            drawGraph("driversGraph","drivers_licence", genderColors, "Driver's<br>licence");
+            drawGraph("economicGraph","economic_activity", genderColors, "Economic<br>activity");
+            drawGraph("educationGraph","education", genderColors, "Education");
+            drawGraph("maritalGraph","marital_status", genderColors, "Marital<br>status");
+            drawGraph("ptcardGraph","pt_discount_card", genderColors, "Public<br>transport card");
+            
+
         }
     });
 
-    function fooGraphs_PIE_highcharts() {
-        $("#genderGraph").css("height","300px");
+
+    function drawGraph(idname,statname,colors,graphName) {
+        $("#"+idname).css("height","300px");
         
         var dataArr = [];
-        for(var propertyName in STATS.byAgentProp.gender) {
-            var propertyValue = STATS.byAgentProp.gender[propertyName];
+        var stat = STATS.byAgentProp[statname];
+        for(var propertyName in stat) {
+            var propertyValue = stat[propertyName];
             //console.log(propertyName+" "+propertyValue);
             
             var dataSlice = [propertyName, propertyValue]
@@ -21,21 +37,19 @@ $(document).ready(function() {
         }
         
         //console.log(dataArr);
-        
-        var colors = ["#F7464A", "#464af7"];
         var n = colors.length;
         for (i = 0; i < n; i++) {
             colors.push(lighter(colors[i]));
         }
         
-        $('#genderGraph').highcharts({
+        $('#'+idname).highcharts({
             chart: {
                 plotBackgroundColor: null,
                 plotBorderWidth: 0,
                 plotShadow: false
             },
             title: {
-                text: 'Gender',
+                text: graphName,
                 align: 'center',
                 verticalAlign: 'middle',
                 y: 55
@@ -71,8 +85,8 @@ $(document).ready(function() {
         });
 
     }
-    
-    
+
+    /*
     function fooGraphs_STACKED_highcharts() {
         $("#legTypeGraph").css("height","400px");
         var assignmentByName = {"WALK":0,"TELEPORT":1,"PT":2,"CAR":3}
@@ -170,4 +184,5 @@ $(document).ready(function() {
             }]
         });
     }
+    */
 });

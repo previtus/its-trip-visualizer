@@ -299,15 +299,59 @@
             </div>
         </div>
 
+
 <div class="container">
     <h2>Graphs:</h2>
-    <h3>Agent data</h3>
-    
-    <h4>Gender distribution</h4>
-    <div id="genderGraph" style="min-width: 310px; height: 0px; max-width: 600px; margin: 0 auto"></div>
-
-    <h4>Leg type distribution</h4>
-    <div id="legTypeGraph" style="min-width: 510px; height: 0px; margin: 0 auto"></div>
+    <div id="accordion" style="text-align: center;">
+        <!-------------------->
+        <h3>Agent data</h3>
+        <div>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Distribution by age category</h4>
+                        <div id="ageGraph" style="min-width: 310px; height: 0px; max-width: 600px; margin: 0 auto"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Gender distribution</h4>
+                        <div id="genderGraph" style="min-width: 310px; height: 0px; max-width: 600px; margin: 0 auto"></div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <h4>Education</h4>
+                        <div id="educationGraph" style="min-width: 310px; height: 0px; max-width: 600px; margin: 0 auto"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Marital status</h4>
+                        <div id="maritalGraph" style="min-width: 310px; height: 0px; max-width: 600px; margin: 0 auto"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Economical activity</h4>
+                        <div id="economicGraph" style="min-width: 310px; height: 0px; max-width: 600px; margin: 0 auto"></div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Drivers licence</h4>
+                        <div id="driversGraph" style="min-width: 310px; height: 0px; max-width: 600px; margin: 0 auto"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Public transport card</h4>
+                        <div id="ptcardGraph" style="min-width: 310px; height: 0px; max-width: 600px; margin: 0 auto"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-------------------->
+        <h3>Leg data</h3>
+        <div>
+            <h4>Leg type distribution</h4>
+            <div id="legTypeGraph" style="min-width: 510px; height: 0px; margin: 0 auto"></div>
+        </div>
+    </div>
 </div>
     </body>
 </html>

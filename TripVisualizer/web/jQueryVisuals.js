@@ -7,6 +7,16 @@ $(document).ready(function() {
     // resize
     $(".leaflet-control-attribution").css("margin-right", "20px");
 
+    // multiselect
+    //$(".multiselectCustom").multiselect(...) is in mapFunc
+    $(".exclusionSelect").buttonset();
+
+    // Accordion
+    $( "#accordion" ).accordion({
+        collapsible: true,
+        heightStyle: "content"
+    });
+
     // slider input TripId
     $("#tripId_slider").slider({
         range: true,
@@ -56,6 +66,5 @@ $(document).ready(function() {
     });
     $(":checkbox").change().change();
     
-    //$(".multiselectCustom").multiselect(...) is in mapFunc
-    $(".exclusionSelect").buttonset();
+
 });

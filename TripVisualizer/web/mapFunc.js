@@ -255,7 +255,7 @@ $(document).ready(function() {
     }
 
     function visualizeGeoJSON(objJson, pointsJson, jsonAllPoints, tripCommonProperties) {
-        var color_seed = tripCommonProperties.agent_id + " " + tripCommonProperties.trip_id;//+JSON.stringify(objJson);
+        var color_seed = tripCommonProperties.agent_id + " " + (5*tripCommonProperties.trip_id)+JSON.stringify(objJson);
         var color_starter = colorFromStrSeed(color_seed);
 
         //console.log(color_starter);
