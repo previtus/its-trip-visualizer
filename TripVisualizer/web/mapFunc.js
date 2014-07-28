@@ -154,6 +154,45 @@ $(document).ready(function() {
     drawGrid();
 
     // visualization
+    function getLayerByTripId(tripId) {
+        var l = null;
+        $.each(map._layers, function(i, layer) {
+            if (layer.isUserMarked) {
+                if (layer._tripProperties.trip_id) {
+                    if (layer._tripProperties.trip_id == tripId) {
+                        l = layer;
+                        return l;
+                    }
+                }
+            }
+        });
+        return l;
+    }
+    
+    var lastHighlighted = null;
+    function highlightById(tripId) {
+        var layer = getLayerByTripId(tripId);
+        if (layer != null) {
+            console.log("highlighting "+layer._tripProperties.trip_id);
+            console.log(layer);
+            layer.bringToFront();
+            var tmpStyle_L1 = window.mouseOverStyle;
+            layer.setStyle(tmpStyle_L1);
+        }
+    }
+    function highlightEndId(tripId) {
+        var layer = getLayerByTripId(tripId);
+        if (layer != null) {
+            console.log("de-highlighting "+layer._tripProperties.trip_id);
+            console.log(layer);
+            
+            layer.bringToBack();
+            var styleDefault_L1 = window.defaultStyle;
+            styleDefault_L1.color = layer._tripProperties._colorCoding;
+            layer.setStyle(styleDefault_L1);
+        }
+    }
+    
     function groupTop(e) {
         var layerClicked = e.target;
 
@@ -238,7 +277,8 @@ $(document).ready(function() {
         // Main lines
         var lines = {
             "type": "Feature",
-            "geometry": objJson
+            "geometry": objJson,
+            "properties": tripCommonProperties
         };
         var points = {
             "type": "Feature",
@@ -254,6 +294,9 @@ $(document).ready(function() {
         layer1_mainLine._tripProperties._colorCodingLight = color_lighter;
         layer1_mainLine._allPoints = jsonAllPoints;
         features.addLayer(layer1_mainLine);
+
+        //tripCommonProperties._layer1id = layer1_mainLine.getLayerId();
+        tripCommonProperties._layer1id = layer1_mainLine._leaflet_id;
 
         if (detailLVL > 1) {
             // Secondary lines
@@ -381,15 +424,14 @@ $(document).ready(function() {
                 });
                 legInfo = legInfo.slice(0, -3);
 
-                var localDesc = "<div class='tripDesc'><strong style='color: " + TripInfo._colorCoding + ";'>#" + TripInfo.trip_id + " " + TripInfo.agent_id + "</strong><br>"
+                var localDesc = "<div class='tripDesc' id='"+TripInfo.trip_id+"'><strong style='color: " + TripInfo._colorCoding + ";'>#" + TripInfo.trip_id + " " + TripInfo.agent_id + "</strong><br>"
                         + "<div class='tripDescDetails'><div style='text-align: center;'><small>" + msecToTime(TripInfo.t_start_time) + " to " + msecToTime(TripInfo.t_end_time) + "</small></div>"
                         + TripInfo.gender + "; " + TripInfo.economic_activity + "; " + TripInfo.education + "<br>"
                         + TripInfo.from_activity + " -> " + TripInfo.to_activity + "<br>"
                         + "<small>" + legInfo + "</small>"
                         + "</div></div>";
                 desc += localDesc;
-            }
-            ;
+            };
 
             var popup = L.popup();
             popup.setLatLng(e.latlng)
@@ -400,6 +442,22 @@ $(document).ready(function() {
                 // hide most of them
                 $(".tripDesc").children("div").slice(2).toggle();
             }
+
+            $(".tripDesc").each(function() {
+                var currentId = $(this).attr('id');
+                
+//                $("#"+currentId)
+//                    .on('mouseover', highlightById(currentId))
+//                    .on('mouseout', highlightEndId(currentId));
+                
+                $("#"+currentId).mouseover(function() {
+                    highlightById(currentId);
+                });
+                
+                $("#"+currentId).mouseout(function() {
+                    highlightEndId(currentId);
+                });
+            });
 
             $(".tripDesc").click(function() {
                 $(this).children("div").toggle();
