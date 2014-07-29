@@ -47,6 +47,13 @@ InitNamesForAgentProps.drivers_licence = ["t","f"];
 InitNamesForAgentProps.pt_discount_card = ["t","f"];
 initNames_forAgeCategories();
 
+var InitTypesForLegs = {};
+InitTypesForLegs.type = ["CAR","PT","TELEPORT","WALK"];
+
+var InitTypesForTrips = {};
+InitTypesForTrips.to_activity = ["SLEEP","WORK","SCHOOL","LEISURE","SHOP_DAILY","SHOP_LONG"];
+InitTypesForTrips.from_activity = InitTypesForTrips.to_activity;
+
 function catTostr(cat) {
     var catSize = (maxAge - minAge) / numberOfAgeCategories; //can i haz cat
     //var str = (cat*catSize)+" to "+((cat+1)*catSize);

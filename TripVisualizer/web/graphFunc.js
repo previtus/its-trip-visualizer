@@ -20,26 +20,41 @@ $(document).ready(function() {
         var redBlue = ["#F7464A", "#464af7"]; 
         var greenRed = ["#0ed209", "#d2090e"];
         // PIE
-        drawGraphPie("genderGraph","gender", redBlue, "Gender", "Gender");
-        drawGraphPie("driversGraph","drivers_licence", greenRed, "Driver's<br>licence", "Driver's licence");
-        drawGraphPie("economicGraph","economic_activity", null, "Economic<br>activity", "Economic activity");
-        drawGraphPie("educationGraph","education", null, "Education", "Education");
-        drawGraphPie("maritalGraph","marital_status", null, "Marital<br>status", "Marital status");
-        drawGraphPie("ptcardGraph","pt_discount_card", greenRed, "Public<br>transport card", "Public transport card");
-        drawGraphPie("ageGraph","age", null, "Age", "Age");
+        drawGraphPie("genderGraph","byAgentProp","gender", redBlue, "Gender", "Gender");
+        drawGraphPie("driversGraph","byAgentProp","drivers_licence", greenRed, "Driver's<br>licence", "Driver's licence");
+        drawGraphPie("economicGraph","byAgentProp","economic_activity", null, "Economic<br>activity", "Economic activity");
+        drawGraphPie("educationGraph","byAgentProp","education", null, "Education", "Education");
+        drawGraphPie("maritalGraph","byAgentProp","marital_status", null, "Marital<br>status", "Marital status");
+        drawGraphPie("ptcardGraph","byAgentProp","pt_discount_card", greenRed, "Public<br>transport card", "Public transport card");
+        drawGraphPie("ageGraph","byAgentProp","age", null, "Age", "Age");
         
         // BOX
-        drawGraphBar("ptcardGraph","pt_discount_card", greenRed, "Public transport card");
+        drawGraphBar("ptcardGraph","byAgentProp","pt_discount_card", greenRed, "Public transport card");
         
         // WHISKER
-        //var dataArr = [1, 2, 3, 4, 1, 1]; // number of legs per trip
-        //drawGraphWhisker("legsInTripWhiskerGraph",dataArr, "Number of legs", "Legs in trip");
+        //STATS.Trips[trip_id].numerOfLegs
+        var dataArr = []; // number of legs per trip
+        for (var t in STATS.Trips) {
+            var trip = STATS.Trips[t];
+            dataArr.push( trip.numberOfLegs );
+        }
+        //console.log(dataArr);
+        //var dataArr = [1, 2, 3, 4, 1, 1];
+        drawGraphWhisker("legsInTripWhiskerGraph",dataArr, "Number of legs", "Legs in trip");
+        
+        // same for trips
+        console.log(STATS.byTripProp);
+        drawGraphPie("fromActGraph","byTripProp","from_activity", null, "Starting activity", "Starting activity");
+        drawGraphPie("toActGraph","byTripProp","to_activity", null, "Ending activity", "Ending activity");
+        
+        // same for legs
+        drawGraphPie("legTypeGraph","byLegProp","type", null, "Leg type", "Leg type");
     }
 
     function drawGraphWhisker(idname,dataArr,ytext,title) {
         var catArr = [title];
         var q = jStat.quartiles(dataArr);
-        console.log(q)
+        
         var statArr = [[dataArr.min(), q[0], median(dataArr), q[2], dataArr.max()]];
         //var dataArr = [[minimum, lower_quartile, median, upper_quartile, maximum]];
         var avg = dataArr.avg();
@@ -109,8 +124,9 @@ $(document).ready(function() {
         
         $('#'+idname).highcharts( settings );
     }
-    function drawGraphBar(idname,statname,colors,title) {
-        var stat = STATS.byAgentProp[statname];
+    function drawGraphBar(idname,source,statname,colors,title) {
+        var statTmp = STATS[source];
+        var stat = statTmp[statname];
         var dataArr = [];
         var categoriesArr = [];
         
@@ -169,11 +185,12 @@ $(document).ready(function() {
         }
         $('#'+idname).highcharts( settings );
     }
-    function drawGraphPie(idname,statname,colors,graphName,popupname) {
+    function drawGraphPie(idname,source,statname,colors,graphName,popupname) {
         $("#"+idname).css("height","300px");
         
         var dataArr = [];
-        var stat = STATS.byAgentProp[statname];
+        var statTmp = STATS[source];
+        var stat = statTmp[statname];
         for(var propertyName in stat) {
             var propertyValue = stat[propertyName];
             //console.log(propertyName+" "+propertyValue);

@@ -478,6 +478,11 @@ $(document).ready(function() {
         STATS.Legs = {};
 
         STATS.byAgentProp = {};
+        STATS.byLegProp = {};
+        STATS.byLegProp.type = {};
+        STATS.byTripProp = {};
+        STATS.byTripProp.from_activity = {};
+        STATS.byTripProp.to_activity = {};
         // init zeros
         $.each(InitNamesForAgentProps, function(propName, propValues) {
             STATS.byAgentProp[propName] = {};
@@ -489,6 +494,15 @@ $(document).ready(function() {
         });
         STATS.byAgentProp.isEmpty = true;
         //console.log(STATS.byAgentProp);
+        // init STATS.byLegProp.type
+        $.each(InitTypesForLegs, function(propName, propValues) {
+            STATS.byLegProp[propName] = {};
+            for (i = 0; i < propValues.length; i++) {
+                var tmp = STATS.byLegProp[propName];
+                tmp[ propValues[i] ] = 0;
+            }
+        });
+        //console.log(STATS.byLegProp);
         
         if (jsonData.hasOwnProperty("error")) {
             // report error
@@ -534,9 +548,33 @@ $(document).ready(function() {
                 // VAR B -> cloning (shallow one), but neat
                 
                 STATS.Trips[trip_id] = _.pick(trip, 'trip_id', 't_start_time', 't_end_time', 'from_activity', 'to_activity', 'agent_id');
+                STATS.Trips[trip_id].numberOfLegs = Object.keys(trip._legs).length;
+
+                //from_activity, to_activity
+                if (STATS.byTripProp.from_activity[ STATS.Trips[trip_id].from_activity ] == null) {
+                    STATS.byTripProp.from_activity[ STATS.Trips[trip_id].from_activity ] = 1;
+                } else {
+                    STATS.byTripProp.from_activity[ STATS.Trips[trip_id].from_activity ] += 1;
+                }
+                if (STATS.byTripProp.to_activity[ STATS.Trips[trip_id].to_activity ] == null) {
+                    STATS.byTripProp.to_activity[ STATS.Trips[trip_id].to_activity ] = 1;
+                } else {
+                    STATS.byTripProp.to_activity[ STATS.Trips[trip_id].to_activity ] += 1;
+                }
 
                 // 2.) save to STATS.Legs
                 STATS.Legs[trip_id] = trip._legs;
+                
+                for (var t in trip._legs) {
+                    var leg = trip._legs[t];
+                    
+                    if (STATS.byLegProp.type[ leg.type ] == null) {
+                        STATS.byLegProp.type[ leg.type ] = 1;
+                    } else {
+                        STATS.byLegProp.type[ leg.type ] += 1;
+                    }
+                }
+                //STATS.byLegProp[propName];
 
                 // 3.) save to STATS.Agents
                 //STATS.Agents[agent_id] = _.pick(trip, '');
@@ -587,7 +625,6 @@ $(document).ready(function() {
                 }
 
                 /* ende-STATS */
-
 
                 var multiPointArray = "["; // store only first and last coordinate segment
                 var lineStrArr = "["; // store all coordinates to form MultiLine

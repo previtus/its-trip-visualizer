@@ -48,6 +48,7 @@ Array.prototype.avg = function () {
     } 
    return j ? sum / j : 0; 
 };
+
 function median(values) {
     values.sort( function(a,b) {return a - b;} );
     var half = Math.floor(values.length/2);
