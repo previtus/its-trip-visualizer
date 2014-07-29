@@ -9,7 +9,7 @@ $(document).ready(function() {
     });
 
     drawGraphs = function () {
-        console.log(STATS.byAgentProp);
+        //console.log(STATS.byAgentProp);
         if (STATS.byAgentProp == null || STATS.byAgentProp.isEmpty) {
             return;
         }
@@ -17,24 +17,98 @@ $(document).ready(function() {
         /* in STATS.byAgentProp we have:
          * drivers_licence, economic_activity, education, gender, marital_status, pt_discount_card, age (in categories)
          */
-
-        //ageGraph <-- ?
-
         var redBlue = ["#F7464A", "#464af7"]; 
         var greenRed = ["#0ed209", "#d2090e"];
+        // PIE
         drawGraphPie("genderGraph","gender", redBlue, "Gender", "Gender");
-
         drawGraphPie("driversGraph","drivers_licence", greenRed, "Driver's<br>licence", "Driver's licence");
         drawGraphPie("economicGraph","economic_activity", null, "Economic<br>activity", "Economic activity");
         drawGraphPie("educationGraph","education", null, "Education", "Education");
         drawGraphPie("maritalGraph","marital_status", null, "Marital<br>status", "Marital status");
         drawGraphPie("ptcardGraph","pt_discount_card", greenRed, "Public<br>transport card", "Public transport card");
-        
         drawGraphPie("ageGraph","age", null, "Age", "Age");
         
+        // BOX
         drawGraphBar("ptcardGraph","pt_discount_card", greenRed, "Public transport card");
+        
+        // WHISKER
+        //var dataArr = [1, 2, 3, 4, 1, 1]; // number of legs per trip
+        //drawGraphWhisker("legsInTripWhiskerGraph",dataArr, "Number of legs", "Legs in trip");
     }
 
+    function drawGraphWhisker(idname,dataArr,ytext,title) {
+        var catArr = [title];
+        var q = jStat.quartiles(dataArr);
+        console.log(q)
+        var statArr = [[dataArr.min(), q[0], median(dataArr), q[2], dataArr.max()]];
+        //var dataArr = [[minimum, lower_quartile, median, upper_quartile, maximum]];
+        var avg = dataArr.avg();
+        
+        $("#"+idname).css("height","300px");
+        var settings = {
+	    chart: {
+	        type: 'boxplot'
+	    },
+	    title: {
+	        text: title
+	    },
+	    legend: {
+	        enabled: false
+	    },
+	
+	    xAxis: {
+	        categories: catArr,
+	        title: {
+	            text: title
+	        }
+	    },
+	    
+	    yAxis: {
+	        title: {
+	            text: ytext
+	        },
+	        plotLines: [{
+	            value: 932,
+	            color: 'red',
+	            width: 1,
+	            label: {
+	                text: 'Theoretical mean: '+avg,
+	                align: 'center',
+	                style: {
+	                    color: 'gray'
+	                }
+	            }
+	        }]  
+	    },
+	
+	    series: [{
+	        name: title,
+	        data: statArr,
+	        tooltip: {
+	            headerFormat: '<em>{point.key}</em><br/>'
+	        }
+	    }/*, {
+	        name: 'Outlier',
+	        color: Highcharts.getOptions().colors[0],
+	        type: 'scatter',
+	        data: [ // x, y positions where 0 is the first category
+	            [0, 644],
+	            [0, 720]
+	        ],
+	        marker: {
+	            fillColor: 'white',
+	            lineWidth: 1,
+	            lineColor: Highcharts.getOptions().colors[0]
+	        },
+	        tooltip: {
+	            pointFormat: 'Observation: {point.y}'
+	        }
+	    }*/]
+	
+	};
+        
+        $('#'+idname).highcharts( settings );
+    }
     function drawGraphBar(idname,statname,colors,title) {
         var stat = STATS.byAgentProp[statname];
         var dataArr = [];

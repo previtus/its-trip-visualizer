@@ -33,11 +33,13 @@
         <script type="text/javascript" src="jquery/bootstrap-multiselect.js"></script>
         <script type="text/javascript" src="boot/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+        <script type="text/javascript" src="http://code.highcharts.com/highcharts-more.js"></script>
         <script type="text/javascript" src="http://code.highcharts.com/modules/exporting.js"></script>
         <script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
         <script type="text/javascript" src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
         <script type="text/javascript" src="please.min.js"></script> <!-- pleasant color generation -->
         <script type="text/javascript" src="seedrandom.min.js"></script>
+        <script type="text/javascript" src="jstat.js"></script>
         <!--[if IE]>
         <script type="text/javascript">
             runsOnPotatoes = true;
@@ -347,10 +349,36 @@
             </div>
         </div>
         <!-------------------->
+        <h3>Trip data</h3>
+        <div>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Starting activity distribution</h4>
+                        <div id="xyz" style="min-width: 310px; height: 0px; max-width: 600px; margin: 0 auto"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Ending activity distribution</h4>
+                        <div id="xyz2" style="min-width: 310px; height: 0px; max-width: 600px; margin: 0 auto"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-------------------->
         <h3>Leg data</h3>
         <div>
-            <h4>Leg type distribution</h4>
-            <div id="legTypeGraph" style="min-width: 510px; height: 0px; margin: 0 auto"></div>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Leg type distribution</h4>
+                        <div id="legTypeGraph" style="min-width: 510px; height: 0px; margin: 0 auto"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Legs in trip</h4>
+                        <div id="legsInTripWhiskerGraph" style="min-width: 310px; height: 0px; max-width: 600px; margin: 0 auto"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

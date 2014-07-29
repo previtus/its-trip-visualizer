@@ -33,6 +33,31 @@ function roundToXDigits (input, digits) {
     return +(Math.round(input + "e+"+digits)  + "e-"+digits);
 }
 
+// Arrays helper
+Array.prototype.max = function() {
+  return Math.max.apply(null, this);
+};
+
+Array.prototype.min = function() {
+  return Math.min.apply(null, this);
+};
+Array.prototype.avg = function () {
+    var sum = 0, j = 0; 
+   for (var i = 0; i < this.length, isFinite(this[i]); i++) { 
+          sum += parseFloat(this[i]); ++j; 
+    } 
+   return j ? sum / j : 0; 
+};
+function median(values) {
+    values.sort( function(a,b) {return a - b;} );
+    var half = Math.floor(values.length/2);
+
+    if(values.length % 2)
+        return values[half];
+    else
+        return (values[half-1] + values[half]) / 2.0;
+}
+
 // slider input time period
 function msecToTime(milliseconds) {
     var date = new Date(new Number(milliseconds));
