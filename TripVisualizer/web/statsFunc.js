@@ -50,7 +50,7 @@ initNames_forAgeCategories();
 function catTostr(cat) {
     var catSize = (maxAge - minAge) / numberOfAgeCategories; //can i haz cat
     //var str = (cat*catSize)+" to "+((cat+1)*catSize);
-    var str = Math.floor(minAge + cat*catSize + 1)+" to "+Math.floor(minAge + (cat+1)*catSize);
+    var str = Math.floor(minAge + cat*catSize + 1)+"_to_"+Math.floor(minAge + (cat+1)*catSize);
     return str;
 }
 
