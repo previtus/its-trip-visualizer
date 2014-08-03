@@ -723,9 +723,9 @@ $(document).ready(function() {
         $.post("getFilteredData.jsp", dataToBeSent)
                 .done(function(data) {
                     //clear map
-                    if ($("#autoReset").is(':checked')) {
+                    //if ($("#autoReset").is(':checked')) {
                         clearMap();
-                    }
+                    //}
                     //recieve response
                     //$(".tempServerResponseTxt").show();
                     //$(".tempServerResponse").show();
@@ -793,36 +793,29 @@ $(document).ready(function() {
     function collectDataFromForm(isExploratory) {
         //prepare data
         var dataToBeSent = {};
-//        if ($("#filter_byId_check").is(':checked')) {
-//            setIfNotEmpty(dataToBeSent, "agent_id", $("#agent_id").val());
-//            setIfNotEmpty(dataToBeSent, "trip_id", $("#trip_id").val());
-//        }
+//         setIfNotEmpty(dataToBeSent, "agent_id", $("#agent_id").val());
+//         setIfNotEmpty(dataToBeSent, "trip_id", $("#trip_id").val());
+        // by activity
+        setIfSelected(dataToBeSent, "from_act", $("#from_act").val());
+        setIfSelected(dataToBeSent, "to_act", $("#to_act").val());
+        
+        // by transport type
+        setIfSelected(dataToBeSent, "trans_type", $("#trans_type").val());
 
-        if ($("#filter_byActiv_check").is(':checked')) {
-            setIfSelected(dataToBeSent, "from_act", $("#from_act").val());
-            setIfSelected(dataToBeSent, "to_act", $("#to_act").val());
-            //dataToBeSent.to_act = $("#to_act").val();
+        // by agent info
+        if ($(".multiselectAgesFrom").val() !== "-") {
+            dataToBeSent.age_from = $(".multiselectAgesFrom").val();
+        }
+        if ($(".multiselectAgesTo").val() !== "-") {
+            dataToBeSent.age_to = $(".multiselectAgesTo").val();
         }
 
-        if ($("#filter_byTransportType_check").is(':checked')) {
-            setIfSelected(dataToBeSent, "trans_type", $("#trans_type").val());
-        }
-
-        if ($("#filter_byAgentInfo_check").is(':checked')) {
-            if ($(".multiselectAgesFrom").val() !== "-") {
-                dataToBeSent.age_from = $(".multiselectAgesFrom").val();
-            }
-            if ($(".multiselectAgesTo").val() !== "-") {
-                dataToBeSent.age_to = $(".multiselectAgesTo").val();
-            }
-
-            setIfSelected(dataToBeSent, "gender", $('input[name=gender]:checked').val());
-            setIfSelected(dataToBeSent, "education", $("#education").val());
-            setIfSelected(dataToBeSent, "maritalStatus", $("#maritalStatus").val());
-            setIfSelected(dataToBeSent, "economicalActivity", $("#economicalActivity").val());
-            setIfSelected(dataToBeSent, "driveLicence", $('input[name=driveLicence]:checked').val());
-            setIfSelected(dataToBeSent, "ptCard", $('input[name=ptCard]:checked').val());
-        }
+        setIfSelected(dataToBeSent, "gender", $('input[name=gender]:checked').val());
+        setIfSelected(dataToBeSent, "education", $("#education").val());
+        setIfSelected(dataToBeSent, "maritalStatus", $("#maritalStatus").val());
+        setIfSelected(dataToBeSent, "economicalActivity", $("#economicalActivity").val());
+        setIfSelected(dataToBeSent, "driveLicence", $('input[name=driveLicence]:checked').val());
+        setIfSelected(dataToBeSent, "ptCard", $('input[name=ptCard]:checked').val());
 
         // add rectangle selection filter
         setIfNotEmpty(dataToBeSent, "bound_a_lat", $("#BoundA_lat").val());
@@ -853,8 +846,6 @@ $(document).ready(function() {
         } else {
             getMultipleTrips(dataToBeSent);
         }
-
-
     }
 
     $("#ButtonFilteredData").click(function() {
