@@ -67,13 +67,24 @@ function msecToTime(milliseconds) {
 }
 
 function randColor(huehuehue) {
-    
-    return $.Color({
+    var c = jQuery.Color( "red" );
+    var othercolor = jQuery.Color({
         hue: huehuehue,
         saturation: 0.9,
         lightness: 0.4,
         alpha: 1
-    }).toHexString();
+    });
+    c = c.transition( othercolor, 0.05 );
+    
+    console.log(c.toHexString());
+    return c.toHexString();
+    
+//    return $.Color({
+//        hue: huehuehue,
+//        saturation: 0.9,
+//        lightness: 0.4,
+//        alpha: 1
+//    }).toHexString();
 };
 
 function colorFromStrSeed(strSeed) {
