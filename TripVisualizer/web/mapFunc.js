@@ -14,7 +14,7 @@ $(document).ready(function() {
     });
 
     var baseLayers =
-            ['OpenStreetMap.Mapnik', 'OpenStreetMap.BlackAndWhite', 'OpenStreetMap.HOT',
+            ['OpenStreetMap.BlackAndWhite', 'OpenStreetMap.Mapnik', 'OpenStreetMap.HOT',
                 'OpenMapSurfer.Roads',
                 'MapQuestOpen.OSM', 'Stamen.Toner',
                 'Esri.WorldImagery', 'HERE.hybridDay',

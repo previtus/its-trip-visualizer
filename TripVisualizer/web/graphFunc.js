@@ -43,7 +43,7 @@ $(document).ready(function() {
         drawGraphWhisker("legsInTripWhiskerGraph",dataArr, "Number of legs", "Legs in trip");
         
         // same for trips
-        console.log(STATS.byTripProp);
+        //console.log(STATS.byTripProp);
         drawGraphPie("fromActGraph","byTripProp","from_activity", null, "Starting activity", "Starting activity");
         drawGraphPie("toActGraph","byTripProp","to_activity", null, "Ending activity", "Ending activity");
         

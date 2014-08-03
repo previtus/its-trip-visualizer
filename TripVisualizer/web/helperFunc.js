@@ -76,7 +76,7 @@ function randColor(huehuehue) {
     });
     c = c.transition( othercolor, 0.05 );
     
-    console.log(c.toHexString());
+    //console.log(c.toHexString());
     return c.toHexString();
     
 //    return $.Color({
