@@ -20,6 +20,7 @@
         <link rel="stylesheet" href="boot/css/bootstrap.min.css" />
         <link rel="stylesheet" href="boot/css/grid.css" />
         <link rel="stylesheet" href="styles.css" />
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
 
         <!-- --JS-- -->
         <script type="text/javascript" src="leaflet/leaflet-providers.js"></script>
@@ -122,6 +123,9 @@
                     <tr>
                         <td>
                             <div id="map" style="height: 100%;"></div>
+                            <div class="loadingIcon">
+                                    <i class="fa fa-refresh fa-spin"></i>
+                            </div>
                         </td>
                     </tr>
                     <tr style="height: 60px;">
@@ -135,6 +139,7 @@
 
                                 <input type="button" class="btn btn-default" value="Generate graphs from current filters" id="ButtonGenGraphsTMP"/>
 
+                                
                                 <br>
                                 <em class="tempServerResponseTxt" style="color: red; display: none;">Temporary server response (accepted request parameters):</em>
                                 <pre class="tempServerResponse" style="border: red solid 1px; display: none;">

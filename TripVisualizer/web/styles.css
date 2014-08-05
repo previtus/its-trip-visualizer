@@ -31,18 +31,18 @@
 
 .panel-heading-small {
     background-color: #bfbfbf; /*#fff;*/
-    
+
     /*border-bottom: 1px solid transparent;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;*/
-    
+
     border: 0px;
-    
+
     padding: 5px 15px 2px 5px;
 }
 .panel-body {
     border: 0px;
-    
+
     background-color: #f5f5f5;
     padding: 5px 15px;
 }
@@ -107,4 +107,18 @@
 .mergeWithLeft {
     padding-left: 7px;
     border-left-width: 0;
+}
+
+/* loading icon */
+.loadingIcon {
+    position: absolute;
+    top: 50%;
+    left: 40%;
+    z-index: 9999;
+    
+    padding: 40px;
+    background-color: white;
+    border-radius: 4px;
+    
+    color: red;
 }
