@@ -173,8 +173,8 @@ $(document).ready(function() {
     function highlightById(tripId) {
         var layer = getLayerByTripId(tripId);
         if (layer != null) {
-            console.log("highlighting "+layer._tripProperties.trip_id);
-            console.log(layer);
+//            console.log("highlighting "+layer._tripProperties.trip_id);
+//            console.log(layer);
             layer.bringToFront();
             var tmpStyle_L1 = window.mouseOverStyle;
             layer.setStyle(tmpStyle_L1);
@@ -183,8 +183,8 @@ $(document).ready(function() {
     function highlightEndId(tripId) {
         var layer = getLayerByTripId(tripId);
         if (layer != null) {
-            console.log("de-highlighting "+layer._tripProperties.trip_id);
-            console.log(layer);
+//            console.log("de-highlighting "+layer._tripProperties.trip_id);
+//            console.log(layer);
             
             layer.bringToBack();
             var styleDefault_L1 = window.defaultStyle;
@@ -423,8 +423,6 @@ $(document).ready(function() {
                     legInfo += leg.type + " | ";
                 });
                 legInfo = legInfo.slice(0, -3);
-
-console.log(TripInfo);
 
                 var localDesc = "<div class='tripDesc' id='"+TripInfo.trip_id+"'><span style='color: " + TripInfo._colorCoding + ";'>#" + TripInfo.trip_id + " <strong>" + TripInfo.agent_id + "</strong></span><br>"
                         + "<div class='tripDescDetails'>"
@@ -863,6 +861,7 @@ console.log(TripInfo);
     var xhr = null;
     function getMultipleTrips(dataToBeSent) {
         $(".loadingIcon").show();
+        map.closePopup();
         
         if (xhr !== null) {
             // abort any previous unfinished request calls
