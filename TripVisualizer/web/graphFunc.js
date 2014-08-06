@@ -29,7 +29,35 @@ $(document).ready(function() {
         drawGraphPie("ageGraph","byAgentProp","age", null, "Age", "Age");
         
         // BOX
-        drawGraphBar("ptcardGraph","byAgentProp","pt_discount_card", greenRed, "Public transport card");
+        drawGraphBar("ptcardGraph","byAgentProp","pt_discount_card", greenRed, "Public transport card", 'Number of agents', "agents");
+        
+        // box + time dist for Trips
+        
+        console.log("STATS.byTimeDist");
+        console.log(STATS.byTimeDist);
+        console.log("STATS.byLegTimeDist");
+        console.log(STATS.byLegTimeDist);
+        
+        prepForGraph = {};
+        for (var i = 0; i < numberOfTimeCategories; i++) {
+            prepForGraph[ categoryNameFromCat(i) ] = STATS.byTimeDist[i];
+        }
+        STATS.byTimeDist.prepForGraph = prepForGraph;
+        //console.log(STATS.byTimeDist.prepForGraph);
+        drawGraphBar("timeTripGraph","byTimeDist","prepForGraph", null, "Time distribution", 'Number of trips', "trips");
+        // BTW: muze vykreslovat 1 u kategorie, ktera je jiz mimo casovy usek a to tehdy, kdyz existuje leg, ktery se ve filtrovanem casovem useku vyskytuje
+        //      jelikoz tento graf bere v potaz cely casovy zacatek a konec TRIPu, staci i leg nekdy ze zacatku aby byla vyplnena kategorie jina
+        // BTW2: soucet sloupcu grafu muze byt vetsi nez pocet vykreslenych tripu a to tehdy, kdyz jeden trip nalezi do vice casovych intervalu
+        //      (snadno se stane, kdyz je "numberOfTimeCategories" ve statsFunc.js moc velky). Je to tak spravne!
+        
+        // box + time dist for Legs
+        prepLegTimeForGraph = {};
+        for (var i = 0; i < numberOfLegTimeCategories; i++) {
+            prepLegTimeForGraph[ categoryNameFromLegCat(i) ] = STATS.byLegTimeDist[i];
+        }
+        STATS.byLegTimeDist.prepLegTimeForGraph = prepLegTimeForGraph;
+        drawGraphBar("timeLegTripGraph","byLegTimeDist","prepLegTimeForGraph", null, "Time distribution", 'Number of legs', "legs");
+        
         
         // WHISKER
         //STATS.Trips[trip_id].numerOfLegs
@@ -124,7 +152,7 @@ $(document).ready(function() {
         
         $('#'+idname).highcharts( settings );
     }
-    function drawGraphBar(idname,source,statname,colors,title) {
+    function drawGraphBar(idname,source,statname,colors,title, yTitle, serTitle) {
         var statTmp = STATS[source];
         var stat = statTmp[statname];
         var dataArr = [];
@@ -156,7 +184,7 @@ $(document).ready(function() {
             yAxis: {
                 min: 0,
                 title: {
-                    text: 'Number of agents'
+                    text: yTitle
                 }
             },
             tooltip: {
@@ -175,7 +203,7 @@ $(document).ready(function() {
                 }
             },
             series: [{
-                name: title,
+                name: serTitle,
                 colorByPoint: true,
                 data: dataArr
             }]

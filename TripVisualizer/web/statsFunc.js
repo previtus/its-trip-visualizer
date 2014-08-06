@@ -65,7 +65,7 @@ function initNames_forAgeCategories () {
     InitNamesForAgentProps.age = []; // empty arr
     var catSize = (maxAge - minAge) / numberOfAgeCategories; //cibet cat
     
-    for (a = 0; a < numberOfAgeCategories; a++) {
+    for (var a = 0; a < numberOfAgeCategories; a++) {
         //InitNamesForAgentProps.age.push((i*catSize)+"to"+((i+1)*catSize));
         //InitNamesForAgentProps.age.push(i);
         InitNamesForAgentProps.age.push( catTostr(a) );
@@ -79,3 +79,58 @@ function initNames_forAgeCategories () {
 //function maxAgeSetTo(max) {
 //    maxAge = max;
 //}
+
+// Time distribution statistics
+var minTime = 0000000;
+var maxTime = 86400000;
+var numberOfTimeCategories = 6; //6 is ok, 8 also
+var timeCatSize = (maxTime - minTime) / numberOfTimeCategories;
+STATS.byTimeDist = {};
+initNames_forTimeCategories();
+
+function initNames_forTimeCategories () {
+//    console.log("STATS.byTimeDist <- "+numberOfTimeCategories+" categories");
+    for (var a = 0; a < numberOfTimeCategories; a++) {
+//        console.log("STATS.byTimeDist["+a+"] is from "+(a*timeCatSize)+" to "+((a+1)*timeCatSize));
+        STATS.byTimeDist[a] = 0;
+    }
+}
+
+function timeCategoryFromTime(time) {
+    var count = -1;
+    while (time > 0) {
+        time -= timeCatSize;
+        count ++;
+    }
+    return count;
+}
+
+function categoryNameFromCat(cat) {
+    //return msecToTime(cat*timeCatSize)+"_to_"+msecToTime((cat+1)*timeCatSize);
+    return msecToTimeHM(cat*timeCatSize)+"_to_"+msecToTimeHM((cat+1)*timeCatSize -1);
+    //return cat+"="+(cat*timeCatSize)+"_to_"+((cat+1)*timeCatSize);
+}
+
+// SPECIAL**
+// LEG TIME DISTRIBUTION
+var numberOfLegTimeCategories = 8;
+var timeLegCatSize = (maxTime - minTime) / numberOfLegTimeCategories;
+STATS.byLegTimeDist = {};
+initNames_forLegTimeCategories();
+function initNames_forLegTimeCategories () {
+    for (var a = 0; a < numberOfLegTimeCategories; a++) {
+        STATS.byLegTimeDist[a] = 0;
+    }
+}
+
+function timeLegCategoryFromTime(time) {
+    var count = -1;
+    while (time > 0) {
+        time -= timeLegCatSize;
+        count ++;
+    }
+    return count;
+}
+function categoryNameFromLegCat(cat) {
+    return msecToTimeHM(cat*timeLegCatSize)+"_to_"+msecToTimeHM((cat+1)*timeLegCatSize -1);
+}

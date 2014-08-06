@@ -80,6 +80,11 @@ function msecToTime(milliseconds) {
     var str = date.getUTCHours() + ":" + minTwoDigits(date.getUTCMinutes()) + ":" + minTwoDigits(date.getUTCSeconds());
     return str;
 }
+function msecToTimeHM(milliseconds) {
+    var date = new Date(new Number(milliseconds));
+    var str = date.getUTCHours() + ":" + minTwoDigits(date.getUTCMinutes());
+    return str;
+}
 
 function randColor(huehuehue) {
     var c = jQuery.Color( "red" );

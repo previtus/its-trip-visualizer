@@ -487,9 +487,17 @@ console.log(TripInfo);
         STATS.byAgentProp = {};
         STATS.byLegProp = {};
         STATS.byLegProp.type = {};
+        
         STATS.byTripProp = {};
         STATS.byTripProp.from_activity = {};
         STATS.byTripProp.to_activity = {};
+        
+        STATS.byTimeDist = {};
+        initNames_forTimeCategories();
+        //console.log(STATS.byTimeDist);
+        STATS.byLegTimeDist = {};
+        initNames_forLegTimeCategories();
+        
         // init zeros
         $.each(InitNamesForAgentProps, function(propName, propValues) {
             STATS.byAgentProp[propName] = {};
@@ -580,6 +588,50 @@ console.log(TripInfo);
                     } else {
                         STATS.byLegProp.type[ leg.type ] += 1;
                     }
+                    
+                    // TIME FOR LEGS
+                    // leg.l_start_time, leg.l_end_time
+                    var s = leg.l_start_time;
+                    var startCat = timeLegCategoryFromTime(s);
+                    var e = leg.l_end_time;
+                    var endCat = timeLegCategoryFromTime(e);
+
+                    var fiftyPerc = timeLegCatSize*0.5;
+                    if (startCat == endCat) {
+                        STATS.byLegTimeDist[startCat]++;
+                    } else if ((endCat - startCat) == 1) {
+                        var c = endCat * timeLegCatSize;
+                        var atLeastOne = false;
+                        if ((c - s)>fiftyPerc) {
+                            STATS.byLegTimeDist[startCat]++;
+                            atLeastOne = true;
+                        }
+
+                        if ((e - c)>fiftyPerc) {
+                            STATS.byLegTimeDist[endCat]++;
+                            atLeastOne = true;
+                        }
+
+                        if (!atLeastOne) {
+                            if ((c - s)>(e - c)) {
+                                STATS.byLegTimeDist[startCat]++;
+                            } else {
+                                STATS.byLegTimeDist[endCat]++;
+                            }
+                        }
+                    } else {
+                        var cFirst = (startCat+1) * timeLegCatSize; // first central point
+                        if ((cFirst-s)>fiftyPerc) {
+                            STATS.byLegTimeDist[startCat]++;
+                        }
+                        for (var tmp_i = startCat+1; tmp_i < endCat; tmp_i++) {
+                            STATS.byLegTimeDist[tmp_i]++;
+                        }
+                        var cLast = endCat * timeLegCatSize; // first central point
+                        if ((e-cLast)>fiftyPerc) {
+                            STATS.byLegTimeDist[endCat]++;
+                        }
+                    }
                 }
                 //STATS.byLegProp[propName];
 
@@ -630,7 +682,88 @@ console.log(TripInfo);
                 } else {
                     STATS.Agents[agent_id]._trips.push(trip_id);
                 }
-
+                
+                // 4. TIME STATS
+                var logLevel = 0; // 3 all; 2 only multi-interval
+                
+                if (logLevel>2) console.log("-next-trip--------------------------------------");
+                // trip.t_start_time, trip.t_end_time
+                var s = trip.t_start_time;
+                var startCat = timeCategoryFromTime(s);
+                var e = trip.t_end_time;
+                var endCat = timeCategoryFromTime(e);
+                if (logLevel>2) console.log("S: "+s+" = "+msecToTimeHM(s)+" (cat "+startCat+"); end: "+e+" = "+msecToTimeHM(e)+" (cat "+endCat+")");
+                
+                var fiftyPerc = timeCatSize*0.5;
+                if (startCat == endCat) {
+                    // I-------------------I
+                    //           s.....e
+                    // time interval only in one category
+                    
+                    STATS.byTimeDist[startCat]++;
+                    
+                    if (logLevel>2) console.log("start: "+s+" (cat "+startCat+"); end: "+e+"(cat "+endCat+")");
+                    if (logLevel>2) console.log("plusplus to <"+startCat+"> //one interval only");
+                } else if ((endCat - startCat) == 1) {
+                    var c = endCat * timeCatSize;
+                    // I-------------------I-------------------I
+                    //           s........[C]..e
+                    // time interval in two categories - even if its <50% we must assign it to at least one
+                    if (logLevel>2) console.log("start: "+s+"; C: "+c+"; end: "+e);
+                    var atLeastOne = false;
+                    if ((c - s)>fiftyPerc) {
+                        STATS.byTimeDist[startCat]++;
+                        atLeastOne = true;
+                        if (logLevel>2) console.log("plusplus to <"+startCat+"> //two intervals - first is >50%");
+                    }
+                    
+                    if ((e - c)>fiftyPerc) {
+                        STATS.byTimeDist[endCat]++;
+                        atLeastOne = true;
+                        if (logLevel>2) console.log("plusplus to <"+endCat+"> //two intervals - first is >50%");
+                    }
+                    
+                    if (!atLeastOne) {
+                        // add the one which has larger segment
+                        if ((c - s)>(e - c)) {
+                            STATS.byTimeDist[startCat]++;
+                            if (logLevel>2) console.log("plusplus to <"+startCat+"> //two intervals - larger one (first)");
+                        } else {
+                            STATS.byTimeDist[endCat]++;
+                            if (logLevel>2) console.log("plusplus to <"+endCat+"> //two intervals - larger one (second)");
+                        }
+                    }
+                } else {
+                    if (logLevel>2) console.log("start: "+s+" (cat "+startCat+"); end: "+e+"(cat "+endCat+")");
+                    // I---I---I---I---I---I
+                    //  s.[C].........[C].e
+                    // time interval in multiple categories
+                    // solve the first and last category
+                    var cFirst = (startCat+1) * timeCatSize; // first central point
+                    if ((cFirst-s)>fiftyPerc) {
+                        STATS.byTimeDist[startCat]++;
+                        if (logLevel>1) console.log("plusplus to <"+startCat+"> // start of multi");
+                    }
+                    
+                    // solve all in between
+                    // I---I---I---I---I---I
+                    //  xx[C].........[C]xx
+                    //  plusplus to <startCat+1> --- <endCat-1>
+                    for (var tmp_i = startCat+1; tmp_i < endCat; tmp_i++) {
+                        STATS.byTimeDist[tmp_i]++;
+                        if (logLevel>1) console.log("plusplus to <"+tmp_i+"> // part");
+                    }
+                    
+                    // last category
+                    var cLast = endCat * timeCatSize; // first central point
+                    if ((e-cLast)>fiftyPerc) {
+                        STATS.byTimeDist[endCat]++;
+                        if (logLevel>1) console.log("plusplus to <"+endCat+"> // end of multi");
+                    }
+                }
+                if (logLevel>2) console.log(STATS.byTimeDist);
+                
+                
                 /* ende-STATS */
 
                 var multiPointArray = "["; // store only first and last coordinate segment
@@ -682,6 +815,7 @@ console.log(TripInfo);
             //console.log(STATS.Agents);
             //console.log(STATS.byAgentProp);
             //console.log(STATS.Legs);
+            console.log(STATS.byTimeDist);
         }
     }
 
