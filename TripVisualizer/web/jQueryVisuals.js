@@ -35,9 +35,9 @@ $(document).ready(function() {
 
     $("#timeRange_slider").slider({
         range: true,
-        min: 2262200,
-        max: 85944980,
-        values: [2262200, 85944980],
+        min: 0000000,
+        max: 86400000,
+        values: [0000000, 86400000-1],
         slide: function(event, ui) {
             $("#timeRange").val(msecToTime(ui.values[0]) + " - " + msecToTime(ui.values[1]));
             //$("#timeRange").val(ui.values[0] + " - " + ui.values[1]);

@@ -62,7 +62,7 @@ function median(values) {
 // slider input time period
 function msecToTime(milliseconds) {
     var date = new Date(new Number(milliseconds));
-    var str = date.getHours() + ":" + minTwoDigits(date.getMinutes()) + ":" + minTwoDigits(date.getSeconds());
+    var str = date.getUTCHours() + ":" + minTwoDigits(date.getUTCMinutes()) + ":" + minTwoDigits(date.getUTCSeconds());
     return str;
 }
 
