@@ -815,7 +815,7 @@ console.log(TripInfo);
             //console.log(STATS.Agents);
             //console.log(STATS.byAgentProp);
             //console.log(STATS.Legs);
-            console.log(STATS.byTimeDist);
+            //console.log(STATS.byTimeDist);
         }
     }
 

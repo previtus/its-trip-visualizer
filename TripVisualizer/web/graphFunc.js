@@ -33,10 +33,10 @@ $(document).ready(function() {
         
         // box + time dist for Trips
         
-        console.log("STATS.byTimeDist");
-        console.log(STATS.byTimeDist);
-        console.log("STATS.byLegTimeDist");
-        console.log(STATS.byLegTimeDist);
+//        console.log("STATS.byTimeDist");
+//        console.log(STATS.byTimeDist);
+//        console.log("STATS.byLegTimeDist");
+//        console.log(STATS.byLegTimeDist);
         
         prepForGraph = {};
         for (var i = 0; i < numberOfTimeCategories; i++) {
