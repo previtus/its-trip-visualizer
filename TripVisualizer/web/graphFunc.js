@@ -162,7 +162,7 @@ $(document).ready(function() {
             var propertyValue = stat[propertyName];
             //console.log(propertyName+" "+propertyValue);
             
-            var lowName = capitaliseFirstLetter( String.toLowerCase(propertyName) );
+            var lowName = capitaliseFirstLetter( makeLowerCase(propertyName) );
             lowName = lowName.replaceAll("_"," ");
             
             var dataSlice = [lowName, propertyValue]
@@ -223,7 +223,7 @@ $(document).ready(function() {
             var propertyValue = stat[propertyName];
             //console.log(propertyName+" "+propertyValue);
             
-            var lowName = capitaliseFirstLetter( String.toLowerCase(propertyName) );
+            var lowName = capitaliseFirstLetter( makeLowerCase(propertyName) );
             lowName = lowName.replaceAll("_"," ");
             
             var dataSlice = [lowName, propertyValue]
