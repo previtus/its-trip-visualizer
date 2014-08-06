@@ -365,7 +365,7 @@
                 //####### SEND QUERIES #######
 
                 ResultSet result_common = preparedMainQuery.executeQuery();
-
+                
                 ResultSetMetaData rsmd_common = result_common.getMetaData();
 
                 int columns_common = rsmd_common.getColumnCount();
@@ -443,6 +443,9 @@
                 stats[1] = distinct_trips;
                 stats[2] = rows;
             }
+            
+            // close connections
+            conn.close();
         } catch (SQLException es) {
             JSONObject errorJson = new JSONObject();
             errorJson.put("error", "Error while creating connection");
@@ -452,7 +455,6 @@
             out.flush();  
         }
     }
-    
     if (!error && !isExploratory) {
         
         JSONObject json = new JSONObject();

@@ -424,11 +424,18 @@ $(document).ready(function() {
                 });
                 legInfo = legInfo.slice(0, -3);
 
-                var localDesc = "<div class='tripDesc' id='"+TripInfo.trip_id+"'><strong style='color: " + TripInfo._colorCoding + ";'>#" + TripInfo.trip_id + " " + TripInfo.agent_id + "</strong><br>"
-                        + "<div class='tripDescDetails'><div style='text-align: center;'><small>" + msecToTime(TripInfo.t_start_time) + " to " + msecToTime(TripInfo.t_end_time) + "</small></div>"
-                        + TripInfo.gender + "; " + TripInfo.economic_activity + "; " + TripInfo.education + "<br>"
-                        + TripInfo.from_activity + " -> " + TripInfo.to_activity + "<br>"
-                        + "<small>" + legInfo + "</small>"
+console.log(TripInfo);
+
+                var localDesc = "<div class='tripDesc' id='"+TripInfo.trip_id+"'><span style='color: " + TripInfo._colorCoding + ";'>#" + TripInfo.trip_id + " <strong>" + TripInfo.agent_id + "</strong></span><br>"
+                        + "<div class='tripDescDetails'>"
+                        + "<strong>trip time:</strong> <small>" + msecToTime(TripInfo.t_start_time) + " to " + msecToTime(TripInfo.t_end_time) + "</small><br>"
+                        + "<strong>trip dest:</strong> <small>" + TripInfo.from_activity.toLowerCase() + " -> " + TripInfo.to_activity.toLowerCase() + "</small><br>"
+                        + "<div class='agentInfoBar'>"
+                            + "<strong>gender:</strong> "+ genderToStr(TripInfo.gender) + " <strong>age:</strong> "+ TripInfo.age + "<br>"
+                            + "<strong>education:</strong> " + TripInfo.education.toLowerCase() + " <strong>economic.:</strong> " + TripInfo.economic_activity.toLowerCase() + "<br>"
+                            + "<strong>driver's licence:</strong> " + booToStr(TripInfo.drivers_licence) + " <strong>pt. card:</strong> " + booToStr(TripInfo.pt_discount_card) + "<br>"
+                        + "</div>"
+                        + "<strong>legs:</strong> "+"<small>" + legInfo + "</small>"
                         + "</div></div>";
                 desc += localDesc;
             };
