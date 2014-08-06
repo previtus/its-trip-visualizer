@@ -719,13 +719,22 @@ $(document).ready(function() {
                 });
     }
 
+    var xhr = null;
     function getMultipleTrips(dataToBeSent) {
-        $.post("getFilteredData.jsp", dataToBeSent)
+        $(".loadingIcon").show();
+        
+        if (xhr !== null) {
+            // abort any previous unfinished request calls
+            xhr.abort();
+        }
+        
+        xhr = $.post("getFilteredData.jsp", dataToBeSent)
                 .done(function(data) {
                     //clear map
                     //if ($("#autoReset").is(':checked')) {
                         clearMap();
                     //}
+                    //
                     //recieve response
                     //$(".tempServerResponseTxt").show();
                     //$(".tempServerResponse").show();
@@ -734,6 +743,9 @@ $(document).ready(function() {
                     processMultipleTripsData(jsonData);
                     processMultipleTripsDataExploration(jsonData);
                     drawGraphs();
+                    
+                    $(".loadingIcon").hide();
+                    xhr = null;
                 });
     }
     function getMultipleTripsExplore(dataToBeSent) {

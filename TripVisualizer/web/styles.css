@@ -112,8 +112,8 @@
 /* loading icon */
 .loadingIcon {
     position: absolute;
-    top: 50%;
-    left: 40%;
+    top: 75%;
+    left: 25px;
     z-index: 9999;
     
     padding: 40px;
@@ -121,4 +121,6 @@
     border-radius: 4px;
     
     color: red;
+    
+    display: none;
 }
