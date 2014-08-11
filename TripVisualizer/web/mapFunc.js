@@ -179,11 +179,12 @@ $(document).ready(function() {
 //            console.log("highlighting "+layer._tripProperties.trip_id);
 //            console.log(layer);
             layer.bringToFront();
+            console.log(layer);
             var tmpStyle_L1 = window.mouseOverStyle;
             tmpStyle_L1.color = layer._tripProperties._highlightColor;
             layer.setStyle(tmpStyle_L1);
             
-            lastHighlighted = tripId;
+//            lastHighlighted = tripId;
         }
     }
     function highlightEndId(tripId) {
@@ -243,18 +244,30 @@ $(document).ready(function() {
         features._pointerToLayer1_main = layer1_mainLine;
         features.__deleteable = true;
 
-//        features
-//                //.bindPopup(desc)
-//                .on('click', mapClicked)
-//                .on('mouseover', function(){ highlightById(tripCommonProperties.trip_id); })
-//                .on('mouseout', function(){ unHighlightLast(); })
-//                .addTo(map);
         features.on('click', mapClicked);
-        features.on('mouseover', function(){ highlightById(tripCommonProperties.trip_id); });
-        features.on('mouseout', function(){ 
-            unHighlightLast();
-        });
+        features.on('mouseover', highlightOverEffect);
+        features.on('mouseout', highlightOutEffect);
         features.addTo(map);
+    }
+    
+    function highlightOverEffect(e) {
+        // cannot point to global variables or Leaflet onMouseOver event handling shall be broken ... O-o
+        //var id = e.layer.feature.properties.trip_id;
+        //console.log("in ? persistent, id: "+id);
+        var Layer1 = e.target._pointerToLayer1_main;
+        Layer1.bringToFront();
+        var tmpStyle_L1 = window.mouseOverStyle;
+        tmpStyle_L1.color = Layer1._tripProperties._highlightColor;
+        Layer1.setStyle(tmpStyle_L1);
+    }
+    
+    function highlightOutEffect(e) {
+        // cannot point to global variables or Leaflet onMouseOver event handling shall be broken ... O-o
+        var Layer1 = e.target._pointerToLayer1_main;
+        //Layer1.bringToFront();
+        var tmpStyle_L1 = window.defaultStyle;
+        tmpStyle_L1.color = Layer1._tripProperties._colorCoding;
+        Layer1.setStyle(tmpStyle_L1);
     }
 
     // map onclick processing
