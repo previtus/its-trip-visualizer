@@ -73,14 +73,15 @@ $(document).ready(function() {
     // GRID OVERLAY
     // grid settings
     var SelectedPolygons = [];
+    var gridCenter = [16.6142195, 49.205567]
     var GridSettings = {
-        start_x: map_center_x,
-        start_y: map_center_y,
-        x_step: 0.01,
+        start_x: gridCenter[1],
+        start_y: gridCenter[0],
+        x_step: 0.0108,
         y_step: 0.03,
         x_times: 4,
-        y_times: 3
-    };
+        y_times: 2
+    }; // x - north<->south; y - east<->west
 
     function drawGrid() {
         if (gridIsDrawn) {
@@ -88,9 +89,9 @@ $(document).ready(function() {
         }
 
         var xmin = GridSettings.start_x - GridSettings.x_times * GridSettings.x_step;
-        var xmax = GridSettings.start_x + GridSettings.x_times * GridSettings.x_step;
+        var xmax = GridSettings.start_x + GridSettings.x_times * GridSettings.x_step - 0.001;
         var ymin = GridSettings.start_y - GridSettings.y_times * GridSettings.y_step;
-        var ymax = GridSettings.start_y + GridSettings.y_times * GridSettings.y_step;
+        var ymax = GridSettings.start_y + GridSettings.y_times * GridSettings.y_step - 0.001;
         var x, y;
         for (x = xmin; x <= xmax; x += GridSettings.x_step)
         {

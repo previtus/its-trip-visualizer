@@ -1,0 +1,221 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Grid settings from trips</title>
+
+        <!-- --LEAFLET-- -->
+        <!-- delete -src -->
+        <!--<link rel="stylesheet" href="leaflet/leaflet-0.7.3/leaflet.css" />
+        <script src="leaflet/leaflet-0.7.3/leaflet-src.js" type="text/javascript"></script>-->
+        <link rel="stylesheet" href="leaflet/leaflet-0.8-dev-master/leaflet.css" />
+        <script type="text/javascript" src="leaflet/leaflet-0.8-dev-master/leaflet-src.js"></script>
+        <!-- 0.8 dev is faster in Chrome, but requires small hack in order for Google.js to work -->
+        <script type="text/javascript" src="leaflet/plugins/leaflet-hack-google.js"></script>
+
+        <!-- --CSS-- -->
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css" />
+        <link rel="stylesheet" href="jquery/bootstrap-multiselect.css" />
+        <link rel="stylesheet" href="boot/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="boot/css/grid.css" />
+        <link rel="stylesheet" href="styles.css" />
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
+
+        <!-- --JS-- -->
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+        <script type="text/javascript" src="boot/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+        <!--[if IE]>
+        <script type="text/javascript">
+            runsOnPotatoes = true;
+        </script>
+        <![endif]-->
+        <script type="text/javascript">
+$(document).ready(function() {
+    // --------------- display map
+    var map_center_x = 49.198;
+    var map_center_y = 16.62;
+
+    // INITIALIZATION:
+   var road_layer = new L.TileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            subdomains: ['1', '2', '3', '4'],
+            attribution: ''
+        }),
+    map = new L.Map('map', {
+        center: new L.LatLng(map_center_x, map_center_y),
+        zoom: 12,
+        layers: [
+            road_layer
+        ]
+    });
+
+    var geojsonLayer = new L.GeoJSON(null, {
+        onEachFeature: function (feature, layer) {
+            if (feature.properties) {
+                var popupString = '<div class="popup">';
+                for (var k in feature.properties) {
+                    var v = feature.properties[k];
+                    popupString += k + ': ' + v + '<br />';
+                }
+                popupString += '</div>';
+                layer.bindPopup(popupString, {
+                    maxHeight: 200
+                });
+            }
+        }
+    });
+
+    map.addLayer(geojsonLayer);
+
+    L.control.layers({'Road': road_layer}, {'GeoJSON': geojsonLayer}).addTo(map);
+    function clearMap() {
+        for (i in map._layers) {
+            if (map._layers[i].__deleteable) {
+                //if (map._layers[i]._path != undefined) {
+                try {
+                    map.removeLayer(map._layers[i]);
+                }
+                catch (e) {
+                    console.log("problem with " + e + map._layers[i]);
+                }
+            }
+        }
+    }
+    
+    // --------------- functionality
+    function drawJSON(jsonObj) {
+        geojsonLayer.addData(jsonObj);
+    }
+    
+    function createPoint(coordX, coordY, desc) {
+        var jsonStr = "{\"type\": \"Point\", \"coordinates\": ["+coordX+", "+coordY+"], \"properties\": { \"name\": \""+desc+"\" }}";
+        console.log(jsonStr);
+        console.log(JSON.parse(jsonStr));
+        geojsonLayer.addData(JSON.parse(jsonStr));
+    }
+    
+    function addLine(coordX, coordY, desc) {
+        $('#pointTab tr:last').after('<tr><td>'+desc+'</td> <td>'+coordX+'</td> <td>'+coordY+'</td></tr>');
+    }
+    
+    function processBoundingBoxCoordsFromJSON(jsonObj) {
+        var coords = jsonObj.coordinates[0];
+        console.log(coords);
+        
+        var tmp_a = coords[0]+"";
+        var tmp_b = coords[1]+"";
+        var tmp_c = coords[2]+"";
+        var tmp_d = coords[3]+"";
+        var a = tmp_a.split(",");
+        var b = tmp_b.split(",");
+        var c = tmp_c.split(",");
+        var d = tmp_d.split(",");
+        $("#A1").text(a[0]);
+        $("#A2").text(a[1]);
+        $("#B1").text(b[0]);
+        $("#B2").text(b[1]);
+        $("#C1").text(c[0]);
+        $("#C2").text(c[1]);
+        $("#D1").text(d[0]);
+        $("#D2").text(d[1]);
+        
+        createPoint(a[0],a[1],"a");
+        createPoint(b[0],b[1],"b");
+        createPoint(c[0],c[1],"c");
+        createPoint(d[0],d[1],"d");
+        
+        // calculate interesting points:
+        // in middle of a-b
+        var ab = [];
+        ab[0] = ( parseFloat(b[0]) + parseFloat(a[0]) )/2;
+        ab[1] = ( parseFloat(b[1]) + parseFloat(a[1]) )/2;
+        
+        console.log(ab);
+        createPoint(ab[0],ab[1],"ab");
+        addLine(ab[0],ab[1],"ab");
+        // in middle of abcd
+        var s = [];
+        s[0] = ( parseFloat(a[0]) + parseFloat(b[0]) + parseFloat(c[0]) + parseFloat(d[0]) )/4;
+        s[1] = ( parseFloat(a[1]) + parseFloat(b[1]) + parseFloat(c[1]) + parseFloat(d[1]) )/4;
+        
+        console.log(ab);
+        createPoint(s[0],s[1],"s");
+        addLine(s[0],s[1],"s");
+    }
+    
+    function sendToServer(dataToBeSent) {
+        $.post("gridSettingsScript.jsp", dataToBeSent)
+                .done(function(data) {
+                    clearMap();
+            
+                    $(".tempServerResponse").text($.trim(data));
+                    var jsonData = jQuery.parseJSON(data);
+                    console.log(jsonData);
+                    
+                    processBoundingBoxCoordsFromJSON(jsonData);
+                    drawJSON(jsonData);
+                });
+    }
+    $("#ButtonGetBoundBox").click(function() {
+        var dataToBeSent = {};
+        sendToServer(dataToBeSent);
+    });
+    $("#TstDraw").click(function() {
+        createPoint(map_center_y, map_center_x);
+    });
+});
+        </script>
+    </head>
+
+    <body>
+        <h1>Grid settings from trips</h1>
+        <div class="getter">
+            <input type="button" class="btn btn-default" value="Get bounding box from server" id="ButtonGetBoundBox"/>
+            <input type="button" class="btn btn-default" value="Test draw point" id="TstDraw"/>
+        </div>
+        <div class="informer">
+                                <em class="tempServerResponseTxt" style="color: red;">Server response:</em>
+                                <pre class="tempServerResponse" style="border: red solid 1px;">
+    (server response)
+                                </pre>
+        </div>
+        
+        <div id="map" style="height: 500px; width: 700px;"></div>
+
+        <div>
+            
+            <table border="1" style="width: 200px;" id="pointTab">
+                <tr>
+                    <th>name</th>
+                    <th>lon</th>
+                    <th>lat</th>
+                </tr>
+                <tr>
+                    <td>A</td>
+                    <td id="A1"></td>
+                    <td id="A2"></td>
+                </tr>
+                <tr>
+                    <td>B</td>
+                    <td id="B1"></td>
+                    <td id="B2"></td>
+                </tr>
+                <tr>
+                    <td>C</td>
+                    <td id="C1"></td>
+                    <td id="C2"></td>
+                </tr>
+                <tr>
+                    <td>D</td>
+                    <td id="D1"></td>
+                    <td id="D2"></td>
+                </tr>
+                
+            </table>
+        </div>
+    </body>
+
+</html>
