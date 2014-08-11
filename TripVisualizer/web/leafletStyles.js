@@ -2,7 +2,7 @@
 /* Default styling for drawn map elements.
  * Is also determined by value of detailLVL (in index.html) which selects number of layers drawn per trip (1-3). */
 var weightDefault = 5;
-var weightMouseOver = 15;
+var weightMouseOver = 7.5;
 
 var m1 = 0.55;
 var radius_m = 0.4;
