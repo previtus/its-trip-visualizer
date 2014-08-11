@@ -179,7 +179,6 @@ $(document).ready(function() {
 //            console.log("highlighting "+layer._tripProperties.trip_id);
 //            console.log(layer);
             layer.bringToFront();
-            console.log(layer);
             var tmpStyle_L1 = window.mouseOverStyle;
             tmpStyle_L1.color = layer._tripProperties._highlightColor;
             layer.setStyle(tmpStyle_L1);
