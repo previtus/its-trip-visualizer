@@ -89,7 +89,7 @@ function msecToTimeHM(milliseconds) {
     return str;
 }
 
-function randColor(huehuehue) {
+function randRedColor(huehuehue) {
     var c = jQuery.Color( "red" );
     var othercolor = jQuery.Color({
         hue: huehuehue,
@@ -109,8 +109,20 @@ function randColor(huehuehue) {
 //        alpha: 1
 //    }).toHexString();
 };
+function randBlueColor(huehuehue) {
+    var c = jQuery.Color( "blue" );
+    var othercolor = jQuery.Color({
+        hue: huehuehue,
+        saturation: 0.9,
+        lightness: 0.4,
+        alpha: 1
+    });
+    c = c.transition( othercolor, 0.05 );
+    
+    return c.toHexString();
+};
 
-function colorFromStrSeed(strSeed) {
+function redColorFromStrSeed(strSeed) {
     // rig elections!
     Math.seedrandom(strSeed);
     //Math.seedrandom(Math.random());
@@ -122,7 +134,12 @@ function colorFromStrSeed(strSeed) {
     var hue = Math.random()*1000;
     //console.log(hue);
     
-    return randColor(hue);
+    return randRedColor(hue);
+}
+function blueColorFromStrSeed(strSeed) {
+    Math.seedrandom(strSeed);
+    var hue = Math.random()*1000;
+    return randBlueColor(hue);
 }
 
 function offsetFromStrSeed(strSeed) {

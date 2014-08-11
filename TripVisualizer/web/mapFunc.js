@@ -171,13 +171,19 @@ $(document).ready(function() {
     
     var lastHighlighted = null;
     function highlightById(tripId) {
+        if (lastHighlighted != null) {
+            highlightEndId(lastHighlighted);
+        }
         var layer = getLayerByTripId(tripId);
         if (layer != null) {
 //            console.log("highlighting "+layer._tripProperties.trip_id);
 //            console.log(layer);
             layer.bringToFront();
             var tmpStyle_L1 = window.mouseOverStyle;
+            tmpStyle_L1.color = layer._tripProperties._highlightColor;
             layer.setStyle(tmpStyle_L1);
+            
+            lastHighlighted = tripId;
         }
     }
     function highlightEndId(tripId) {
@@ -190,74 +196,82 @@ $(document).ready(function() {
             var styleDefault_L1 = window.defaultStyle;
             styleDefault_L1.color = layer._tripProperties._colorCoding;
             layer.setStyle(styleDefault_L1);
+            
+            lastHighlighted = null;
+        }
+    }
+    function unHighlightLast() {
+        if (lastHighlighted != null) {
+            highlightEndId(lastHighlighted);
         }
     }
     
-    function groupTop(e) {
-        var layerClicked = e.target;
-
-        var Layer1 = layerClicked._pointerToLayer1_main;
-
-        // bring it up
-        Layer1.bringToFront();
-
-        if (detailLVL > 1) {
-            var Layer2 = Layer1._pointerToLayer2_secondary;
-            Layer2.bringToFront();
-            var tmpStyle_L2 = window.mouseOverSecondaryStyle;
-            tmpStyle_L2.color = Layer1._tripProperties._colorCodingLight;
-            Layer2.setStyle(tmpStyle_L2);
-        }
-
-        if (detailLVL > 2) {
-            var Layer3 = Layer1._pointerToLayer3_points
-            Layer3.bringToFront();
-            var tmpStyle_L3 = window.mouseOverMarkerStyle;
-
-            tmpStyle_L3.color = Layer1._tripProperties._colorCoding;
-            tmpStyle_L3.fillColor = Layer1._tripProperties._colorCodingLight;
-            Layer3.setStyle(tmpStyle_L3);
-        }
-
-        // change style
-        var tmpStyle_L1 = window.mouseOverStyle;
-        Layer1.setStyle(tmpStyle_L1);
-    }
-    function groupBot(e) {
-        var layerClicked = e.target;
-
-        var Layer1 = layerClicked._pointerToLayer1_main;
-
-        if (detailLVL > 2) {
-            var Layer3 = Layer1._pointerToLayer3_points
-            Layer3.bringToBack();
-            var styleDefault_L3 = window.defaultMarkerStyle;
-            styleDefault_L3.color = Layer1._tripProperties._colorCoding;
-            styleDefault_L3.fillColor = Layer1._tripProperties._colorCodingLight;
-            Layer3.setStyle(styleDefault_L3);
-        }
-
-        if (detailLVL > 1) {
-            var Layer2 = Layer1._pointerToLayer2_secondary;
-            Layer2.bringToBack();
-            var styleDefault_L2 = window.defaultSecondaryStyle;
-            styleDefault_L2.color = Layer1._tripProperties._colorCodingLight;
-            Layer2.setStyle(styleDefault_L2);
-        }
-
-
-        Layer1.bringToBack();
-
-        var styleDefault_L1 = window.defaultStyle;
-        styleDefault_L1.color = Layer1._tripProperties._colorCoding;
-        Layer1.setStyle(styleDefault_L1);
-
-    }
+//    function groupTop(e) {
+//        var layerClicked = e.target;
+//
+//        var Layer1 = layerClicked._pointerToLayer1_main;
+//
+//        // bring it up
+//        Layer1.bringToFront();
+//
+//        if (detailLVL > 1) {
+//            var Layer2 = Layer1._pointerToLayer2_secondary;
+//            Layer2.bringToFront();
+//            var tmpStyle_L2 = window.mouseOverSecondaryStyle;
+//            tmpStyle_L2.color = Layer1._tripProperties._colorCodingLight;
+//            Layer2.setStyle(tmpStyle_L2);
+//        }
+//
+//        if (detailLVL > 2) {
+//            var Layer3 = Layer1._pointerToLayer3_points
+//            Layer3.bringToFront();
+//            var tmpStyle_L3 = window.mouseOverMarkerStyle;
+//
+//            tmpStyle_L3.color = Layer1._tripProperties._colorCoding;
+//            tmpStyle_L3.fillColor = Layer1._tripProperties._colorCodingLight;
+//            Layer3.setStyle(tmpStyle_L3);
+//        }
+//
+//        // change style
+//        var tmpStyle_L1 = window.mouseOverStyle;
+//        tmpStyle_L1.color = layer._tripProperties._highlightColor;
+//        Layer1.setStyle(tmpStyle_L1);
+//    }
+//    function groupBot(e) {
+//        var layerClicked = e.target;
+//
+//        var Layer1 = layerClicked._pointerToLayer1_main;
+//
+//        if (detailLVL > 2) {
+//            var Layer3 = Layer1._pointerToLayer3_points
+//            Layer3.bringToBack();
+//            var styleDefault_L3 = window.defaultMarkerStyle;
+//            styleDefault_L3.color = Layer1._tripProperties._colorCoding;
+//            styleDefault_L3.fillColor = Layer1._tripProperties._colorCodingLight;
+//            Layer3.setStyle(styleDefault_L3);
+//        }
+//
+//        if (detailLVL > 1) {
+//            var Layer2 = Layer1._pointerToLayer2_secondary;
+//            Layer2.bringToBack();
+//            var styleDefault_L2 = window.defaultSecondaryStyle;
+//            styleDefault_L2.color = Layer1._tripProperties._colorCodingLight;
+//            Layer2.setStyle(styleDefault_L2);
+//        }
+//
+//
+//        Layer1.bringToBack();
+//
+//        var styleDefault_L1 = window.defaultStyle;
+//        styleDefault_L1.color = Layer1._tripProperties._colorCoding;
+//        Layer1.setStyle(styleDefault_L1);
+//
+//    }
 
     function visualizeGeoJSON(objJson, pointsJson, jsonAllPoints, tripCommonProperties) {
         var color_seed = tripCommonProperties.agent_id + " " + (5*tripCommonProperties.trip_id)+JSON.stringify(objJson);
-        var color_starter = colorFromStrSeed(color_seed);
-
+        var color_starter = redColorFromStrSeed(color_seed);
+        var highlight_color = blueColorFromStrSeed(color_seed);
         //console.log(color_starter);
 
         //var color_starter = randomColorHexFromSeed(tripCommonProperties.agent_id+tripCommonProperties.trip_id);
@@ -290,6 +304,7 @@ $(document).ready(function() {
         layer1_mainLine.isUserMarked = true;
         layer1_mainLine._layerTypeMarker = 1;
         layer1_mainLine._tripProperties = tripCommonProperties;
+        layer1_mainLine._tripProperties._highlightColor = highlight_color;
         layer1_mainLine._tripProperties._colorCoding = color_starter;
         layer1_mainLine._tripProperties._colorCodingLight = color_lighter;
         layer1_mainLine._allPoints = jsonAllPoints;
@@ -334,13 +349,17 @@ $(document).ready(function() {
         features
                 //.bindPopup(desc)
                 .on('click', mapClicked)
-                .on('mouseover', groupTop)
-                .on('mouseout', groupBot)
+//                .on('mouseover', groupTop)
+//                .on('mouseout', groupBot)
+                .on('mouseover', function(){ highlightById(tripCommonProperties.trip_id); })
+                .on('mouseout', function(){ unHighlightLast(); })
                 .addTo(map);
     }
 
     // map onclick processing
     function mapClicked(e) {
+        unHighlightLast();
+        
         var clickPoint = e.latlng;
         var X = L.point(clickPoint.lat, clickPoint.lng);
         var DIST = 0.001;
@@ -356,6 +375,7 @@ $(document).ready(function() {
 
         var closeLayers = [];
         var ind = 0;
+
 
         $.each(map._layers, function(i, layer) {
             // only one layer with line will have this flag
@@ -402,7 +422,8 @@ $(document).ready(function() {
                 return a._tripProperties.trip_id - b._tripProperties.trip_id; // ASC by trip_id
             });
 
-            var desc = ""
+            var desc = "";
+            
             for (i = 0; i < closeLayers.length; i++) {
                 var Layer1 = closeLayers[i];
                 Layer1.bringToFront();
@@ -437,7 +458,10 @@ $(document).ready(function() {
                         + "</div></div>";
                 desc += localDesc;
             };
-
+            
+            highlightById(closeLayers[0]._tripProperties.trip_id);
+            closeLayers[0].bringToFront();
+            
             var popup = L.popup();
             popup.setLatLng(e.latlng)
                     .setContent(desc)
