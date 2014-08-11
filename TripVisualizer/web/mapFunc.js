@@ -205,81 +205,14 @@ $(document).ready(function() {
             highlightEndId(lastHighlighted);
         }
     }
-    
-//    function groupTop(e) {
-//        var layerClicked = e.target;
-//
-//        var Layer1 = layerClicked._pointerToLayer1_main;
-//
-//        // bring it up
-//        Layer1.bringToFront();
-//
-//        if (detailLVL > 1) {
-//            var Layer2 = Layer1._pointerToLayer2_secondary;
-//            Layer2.bringToFront();
-//            var tmpStyle_L2 = window.mouseOverSecondaryStyle;
-//            tmpStyle_L2.color = Layer1._tripProperties._colorCodingLight;
-//            Layer2.setStyle(tmpStyle_L2);
-//        }
-//
-//        if (detailLVL > 2) {
-//            var Layer3 = Layer1._pointerToLayer3_points
-//            Layer3.bringToFront();
-//            var tmpStyle_L3 = window.mouseOverMarkerStyle;
-//
-//            tmpStyle_L3.color = Layer1._tripProperties._colorCoding;
-//            tmpStyle_L3.fillColor = Layer1._tripProperties._colorCodingLight;
-//            Layer3.setStyle(tmpStyle_L3);
-//        }
-//
-//        // change style
-//        var tmpStyle_L1 = window.mouseOverStyle;
-//        tmpStyle_L1.color = layer._tripProperties._highlightColor;
-//        Layer1.setStyle(tmpStyle_L1);
-//    }
-//    function groupBot(e) {
-//        var layerClicked = e.target;
-//
-//        var Layer1 = layerClicked._pointerToLayer1_main;
-//
-//        if (detailLVL > 2) {
-//            var Layer3 = Layer1._pointerToLayer3_points
-//            Layer3.bringToBack();
-//            var styleDefault_L3 = window.defaultMarkerStyle;
-//            styleDefault_L3.color = Layer1._tripProperties._colorCoding;
-//            styleDefault_L3.fillColor = Layer1._tripProperties._colorCodingLight;
-//            Layer3.setStyle(styleDefault_L3);
-//        }
-//
-//        if (detailLVL > 1) {
-//            var Layer2 = Layer1._pointerToLayer2_secondary;
-//            Layer2.bringToBack();
-//            var styleDefault_L2 = window.defaultSecondaryStyle;
-//            styleDefault_L2.color = Layer1._tripProperties._colorCodingLight;
-//            Layer2.setStyle(styleDefault_L2);
-//        }
-//
-//
-//        Layer1.bringToBack();
-//
-//        var styleDefault_L1 = window.defaultStyle;
-//        styleDefault_L1.color = Layer1._tripProperties._colorCoding;
-//        Layer1.setStyle(styleDefault_L1);
-//
-//    }
 
-    function visualizeGeoJSON(objJson, pointsJson, jsonAllPoints, tripCommonProperties) {
+    function visualizeGeoJSON(objJson, jsonAllPoints, tripCommonProperties) {
         var color_seed = tripCommonProperties.agent_id + " " + (5*tripCommonProperties.trip_id)+JSON.stringify(objJson);
         var color_starter = redColorFromStrSeed(color_seed);
+        color_starter = ColorLuminance(color_starter, 0.8);
         var highlight_color = blueColorFromStrSeed(color_seed);
+        highlight_color = ColorLuminance(highlight_color, 0.8);
         //console.log(color_starter);
-
-        //var color_starter = randomColorHexFromSeed(tripCommonProperties.agent_id+tripCommonProperties.trip_id);
-
-        // hax, only one line drawn, do it with the nicer color
-        if (detailLVL == 1) {
-            color_starter = ColorLuminance(color_starter, 0.8);
-        }
 
         var useStyle = {};
         useStyle.color = color_starter;
@@ -294,10 +227,6 @@ $(document).ready(function() {
             "geometry": objJson,
             "properties": tripCommonProperties
         };
-        var points = {
-            "type": "Feature",
-            "geometry": pointsJson
-        };
 
         var features = new L.featureGroup();
         var layer1_mainLine = new L.geoJson(lines, {style: useStyle});
@@ -307,53 +236,25 @@ $(document).ready(function() {
         layer1_mainLine._tripProperties._highlightColor = highlight_color;
         layer1_mainLine._tripProperties._colorCoding = color_starter;
         layer1_mainLine._tripProperties._colorCodingLight = color_lighter;
-        layer1_mainLine._allPoints = jsonAllPoints;
+        layer1_mainLine._allPoints = jsonAllPoints; //<- needed for detecting trips near click
         features.addLayer(layer1_mainLine);
 
-        //tripCommonProperties._layer1id = layer1_mainLine.getLayerId();
         tripCommonProperties._layer1id = layer1_mainLine._leaflet_id;
-
-        if (detailLVL > 1) {
-            // Secondary lines
-            var thinnerStyle = useStyle;
-            thinnerStyle.weight = window.defaultSecondaryStyle.weight;
-            thinnerStyle.color = color_lighter;
-            thinnerStyle.opacity = 1;
-            var layer2_secondaryLine = new L.geoJson(lines, {style: thinnerStyle});
-            layer2_secondaryLine._layerTypeMarker = 2;
-            features.addLayer(layer2_secondaryLine);
-            layer1_mainLine._pointerToLayer2_secondary = layer2_secondaryLine;
-        }
-        if (detailLVL > 2) {
-            // Points
-            var geojsonMarkerOptions = window.defaultMarkerStyle;
-            geojsonMarkerOptions.fillColor = color_lighter;
-            geojsonMarkerOptions.color = color_starter;
-
-            var layer3_points = new L.geoJson(points, {
-                pointToLayer: function(feature, latlng) {
-                    return L.circleMarker(latlng, geojsonMarkerOptions);
-                }
-            });
-            layer3_points._layerTypeMarker = 3;
-            features.addLayer(layer3_points);
-            layer1_mainLine._pointerToLayer3_points = layer3_points;
-        }
-
         features._pointerToLayer1_main = layer1_mainLine;
         features.__deleteable = true;
 
-//        layer2_secondaryLine._pointerToLayer1_main = layer1_mainLine;
-//        layer3_points._pointerToLayer1_main = layer1_mainLine;
-
-        features
-                //.bindPopup(desc)
-                .on('click', mapClicked)
-//                .on('mouseover', groupTop)
-//                .on('mouseout', groupBot)
-                .on('mouseover', function(){ highlightById(tripCommonProperties.trip_id); })
-                .on('mouseout', function(){ unHighlightLast(); })
-                .addTo(map);
+//        features
+//                //.bindPopup(desc)
+//                .on('click', mapClicked)
+//                .on('mouseover', function(){ highlightById(tripCommonProperties.trip_id); })
+//                .on('mouseout', function(){ unHighlightLast(); })
+//                .addTo(map);
+        features.on('click', mapClicked);
+        features.on('mouseover', function(){ highlightById(tripCommonProperties.trip_id); });
+        features.on('mouseout', function(){ 
+            unHighlightLast();
+        });
+        features.addTo(map);
     }
 
     // map onclick processing
@@ -425,20 +326,12 @@ $(document).ready(function() {
             var desc = "";
             
             for (i = 0; i < closeLayers.length; i++) {
-                var Layer1 = closeLayers[i];
-                Layer1.bringToFront();
-                if (detailLVL > 1) {
-                    var Layer2 = Layer1._pointerToLayer2_secondary;
-                    Layer2.bringToFront();
-                }
-                if (detailLVL > 2) {
-                    var Layer3 = Layer1._pointerToLayer3_points;
-                    Layer3.bringToFront();
-                }
-                debugStr += Layer1._leaflet_id + " (distFromClick " + Layer1._lastDist + "; tripId: " + Layer1._tripProperties.trip_id + ") \n";
+                var tripLayer = closeLayers[i];
+                tripLayer.bringToFront();
+                debugStr += tripLayer._leaflet_id + " (distFromClick " + tripLayer._lastDist + "; tripId: " + tripLayer._tripProperties.trip_id + ") \n";
 
                 // collect informations for description
-                var TripInfo = Layer1._tripProperties;
+                var TripInfo = tripLayer._tripProperties;
                 var legInfo = "";
                 $.each(TripInfo._legs, function(j, leg) {
                     legInfo += leg.type + " | ";
@@ -474,10 +367,6 @@ $(document).ready(function() {
 
             $(".tripDesc").each(function() {
                 var currentId = $(this).attr('id');
-                
-//                $("#"+currentId)
-//                    .on('mouseover', highlightById(currentId))
-//                    .on('mouseout', highlightEndId(currentId));
                 
                 $("#"+currentId).mouseover(function() {
                     highlightById(currentId);
@@ -788,7 +677,7 @@ $(document).ready(function() {
                 
                 /* ende-STATS */
 
-                var multiPointArray = "["; // store only first and last coordinate segment
+                //var multiPointArray = "["; // store only first and last coordinate segment
                 var lineStrArr = "["; // store all coordinates to form MultiLine
 
                 // Random offset with random string seed
@@ -797,7 +686,7 @@ $(document).ready(function() {
 
                 var FirstSegment = jQuery.parseJSON(trip._legs.leg0.geojsonpath).coordinates[0];
                 FirstSegment = offsetArrayOfPoints(FirstSegment, offset);
-                multiPointArray += "[" + FirstSegment[0] + "],"
+                //multiPointArray += "[" + FirstSegment[0] + "],"
 
                 $.each(trip._legs, function(j, leg) {
                     // <offset?>
@@ -806,15 +695,9 @@ $(document).ready(function() {
                     coordinates = offsetArrayOfPoints(coordinates, offset);
 
                     lineStrArr += JSON.stringify(coordinates) + ",";
-
-                    var last = coordinates[ coordinates.length - 1 ];
-                    multiPointArray += "[" + last + "],"
                 });
                 lineStrArr = lineStrArr.slice(0, -1);
                 lineStrArr += "]";
-
-                multiPointArray = multiPointArray.slice(0, -1);
-                multiPointArray += "]";
 
                 var lineSegments = jQuery.parseJSON(lineStrArr);
                 var allPoints = "[";
@@ -824,14 +707,10 @@ $(document).ready(function() {
                 }
                 allPoints = allPoints.slice(0, -1) + "]";
                 var jsonAllPoints = jQuery.parseJSON(lineStrArr);
-                // <HAX> - print all points!
-//                multiPointArray = allPoints;
-                // </HAX>
 
                 var lineGeoData = multiLineStrToGeoJSON(lineStrArr);
-                var pointGeoData = multiPointStrToGeoJSON(multiPointArray);
 
-                visualizeGeoJSON(lineGeoData, pointGeoData, jsonAllPoints, tripCommonProperties);
+                visualizeGeoJSON(lineGeoData, jsonAllPoints, tripCommonProperties);
             });
 
             //console.log(STATS.Agents);
@@ -843,12 +722,6 @@ $(document).ready(function() {
 
     function multiLineStrToGeoJSON(multilineStr) {
         var jsonString = "{\"type\": \"MultiLineString\",\"coordinates\": " + multilineStr + "}";
-
-        var geoData = jQuery.parseJSON(jsonString);
-        return geoData;
-    }
-    function multiPointStrToGeoJSON(str) {
-        var jsonString = "{\"type\": \"MultiPoint\",\"coordinates\": " + str + "}";
 
         var geoData = jQuery.parseJSON(jsonString);
         return geoData;
@@ -875,12 +748,6 @@ $(document).ready(function() {
     }
 
     // server comunination
-    function getOneTrip(tripId) {
-        $.post("getOneTrip.jsp", {trip_id: tripId})
-                .done(function(data) {
-                    processTripData(data);
-                });
-    }
 
     var xhr = null;
     function getMultipleTrips(dataToBeSent) {
