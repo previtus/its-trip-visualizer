@@ -184,7 +184,7 @@ $(document).ready(function() {
             tmpStyle_L1.color = layer._tripProperties._highlightColor;
             layer.setStyle(tmpStyle_L1);
             
-//            lastHighlighted = tripId;
+            lastHighlighted = tripId;
         }
     }
     function highlightEndId(tripId) {
@@ -351,7 +351,7 @@ $(document).ready(function() {
                 });
                 legInfo = legInfo.slice(0, -3);
 
-                var localDesc = "<div class='tripDesc' id='"+TripInfo.trip_id+"'><span style='color: " + TripInfo._colorCoding + ";'>#" + TripInfo.trip_id + " <strong>" + TripInfo.agent_id + "</strong></span><br>"
+                var localDesc = "<div class='tripDesc' id='"+TripInfo.trip_id+"'><span class=\"symbol\">+</span> <span style='color: " + TripInfo._colorCoding + ";'>#" + TripInfo.trip_id + " <strong>" + TripInfo.agent_id + "</strong></span><br>"
                         + "<div class='tripDescDetails'>"
                         + "<strong>trip time:</strong> <small>" + msecToTime(TripInfo.t_start_time) + " to " + msecToTime(TripInfo.t_end_time) + "</small><br>"
                         + "<strong>trip dest:</strong> <small>" + TripInfo.from_activity.toLowerCase() + " -> " + TripInfo.to_activity.toLowerCase() + "</small><br>"
@@ -377,21 +377,48 @@ $(document).ready(function() {
                 // hide most of them
                 $(".tripDesc").children("div").slice(2).toggle();
             }
+            
+            var defaultPlus = "<i class=\"fa fa-plus-square-o\"></i>"; //+
+            var defaultMinus = "<i class=\"fa fa-minus-square-o\"></i>"; //-
+            var highPlus = "<i class=\"fa fa-plus-square\"></i>"; //+
+            var highMinus = "<i class=\"fa fa-minus-square\"></i>"; //-
 
             $(".tripDesc").each(function() {
                 var currentId = $(this).attr('id');
+                var isVisible = $(this).children(".tripDescDetails").is(":visible");
+                if (isVisible) {
+                    $("#"+currentId+" .symbol").html(defaultMinus);
+                } else {
+                    $("#"+currentId+" .symbol").html(defaultPlus);
+                }
                 
                 $("#"+currentId).mouseover(function() {
+                    var isVisible = $(this).children(".tripDescDetails").is(":visible");
+                    
+                    if (isVisible) {
+                        $("#"+currentId+" .symbol").html(highMinus);
+                    } else {
+                        $("#"+currentId+" .symbol").html(highPlus);
+                    }
+                    
                     highlightById(currentId);
                 });
                 
                 $("#"+currentId).mouseout(function() {
+                    var isVisible = $(this).children(".tripDescDetails").is(":visible");
+                    
+                    if (isVisible) {
+                        $("#"+currentId+" .symbol").html(defaultMinus);
+                    } else {
+                        $("#"+currentId+" .symbol").html(defaultPlus);
+                    }
+                    
                     highlightEndId(currentId);
                 });
             });
 
             $(".tripDesc").click(function() {
-                $(this).children("div").toggle();
+                $(this).children(".tripDescDetails").toggle();
             });
 
             //console.log(debugStr);
