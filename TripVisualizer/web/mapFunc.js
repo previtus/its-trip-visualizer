@@ -171,6 +171,15 @@ $(document).ready(function() {
     }
     
     var lastHighlighted = null;
+    function isHighlighted(layer) {
+        if (layer != null) {
+            //console.log(layer);
+            if (layer._isHigh) {
+                return true;
+            }
+        }
+        return false;
+    }
     function highlightById(tripId) {
         if (lastHighlighted != null) {
             highlightEndId(lastHighlighted);
@@ -243,6 +252,7 @@ $(document).ready(function() {
         tripCommonProperties._layer1id = layer1_mainLine._leaflet_id;
         features._pointerToLayer1_main = layer1_mainLine;
         features.__deleteable = true;
+        features._isHigh = false;
 
         features.on('click', mapClicked);
         features.on('mouseover', highlightOverEffect);
@@ -259,6 +269,7 @@ $(document).ready(function() {
         var tmpStyle_L1 = window.mouseOverStyle;
         tmpStyle_L1.color = Layer1._tripProperties._highlightColor;
         Layer1.setStyle(tmpStyle_L1);
+        Layer1._isHigh = true;
     }
     
     function highlightOutEffect(e) {
@@ -268,6 +279,7 @@ $(document).ready(function() {
         var tmpStyle_L1 = window.defaultStyle;
         tmpStyle_L1.color = Layer1._tripProperties._colorCoding;
         Layer1.setStyle(tmpStyle_L1);
+        Layer1._isHigh = false;
     }
 
     // map onclick processing
@@ -337,6 +349,7 @@ $(document).ready(function() {
             });
 
             var desc = "";
+            var wasHigh = 0;
             
             for (i = 0; i < closeLayers.length; i++) {
                 var tripLayer = closeLayers[i];
@@ -363,10 +376,16 @@ $(document).ready(function() {
                         + "<strong>legs:</strong> "+"<small>" + legInfo + "</small>"
                         + "</div></div>";
                 desc += localDesc;
+                
+                if (wasHigh == 0 && isHighlighted(closeLayers[i])) {
+                    highlightEndId(closeLayers[i]._tripProperties.trip_id);
+                    wasHigh = i;
+                }
             };
             
-            highlightById(closeLayers[0]._tripProperties.trip_id);
-            closeLayers[0].bringToFront();
+//            highlightEndId(closeLayers[0]._tripProperties.trip_id);
+            highlightById(closeLayers[wasHigh]._tripProperties.trip_id);
+            closeLayers[wasHigh].bringToFront();
             
             var popup = L.popup();
             popup.setLatLng(e.latlng)
