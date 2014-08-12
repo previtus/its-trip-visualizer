@@ -113,14 +113,14 @@ $(document).ready(function() {
         var b = tmp_b.split(",");
         var c = tmp_c.split(",");
         var d = tmp_d.split(",");
-        $("#A1").text(a[0]);
-        $("#A2").text(a[1]);
-        $("#B1").text(b[0]);
-        $("#B2").text(b[1]);
-        $("#C1").text(c[0]);
-        $("#C2").text(c[1]);
-        $("#D1").text(d[0]);
-        $("#D2").text(d[1]);
+        $("#A1").text(a[1]);
+        $("#A2").text(a[0]);
+        $("#B1").text(b[1]);
+        $("#B2").text(b[0]);
+        $("#C1").text(c[1]);
+        $("#C2").text(c[0]);
+        $("#D1").text(d[1]);
+        $("#D2").text(d[0]);
         
         createPoint(a[0],a[1],"a");
         createPoint(b[0],b[1],"b");
@@ -132,18 +132,49 @@ $(document).ready(function() {
         var ab = [];
         ab[0] = ( parseFloat(b[0]) + parseFloat(a[0]) )/2;
         ab[1] = ( parseFloat(b[1]) + parseFloat(a[1]) )/2;
-        
-        console.log(ab);
         createPoint(ab[0],ab[1],"ab");
-        addLine(ab[0],ab[1],"ab");
-        // in middle of abcd
+        
+        // in middle of abcd == GridSettings.start_x/y
         var s = [];
         s[0] = ( parseFloat(a[0]) + parseFloat(b[0]) + parseFloat(c[0]) + parseFloat(d[0]) )/4;
         s[1] = ( parseFloat(a[1]) + parseFloat(b[1]) + parseFloat(c[1]) + parseFloat(d[1]) )/4;
         
         console.log(ab);
         createPoint(s[0],s[1],"s");
-        addLine(s[0],s[1],"s");
+        addLine(s[1],s[0],"grid settings start_x/y = s");
+        GridSettings.start_x = s[1];
+        GridSettings.start_y = s[0];
+        
+        // predefined width == GridSettings.x/y_step
+        var x_step = GridSettings.x_step;
+        var y_step = GridSettings.y_step;
+        
+        // counting repetition times == GridSettings.x/y_times
+        var distance_x = Math.abs(parseFloat(c[1]) - s[1]);
+        var distance_y = Math.abs(parseFloat(c[0]) - s[0]);
+        addLine(distance_x,distance_y,"distances");
+        
+        // do we need to add offset?
+        var offset_x = 0.001;
+        var offset_y = 0.001;
+        createPoint(( parseFloat(a[0]) - offset_y ),( parseFloat(a[1]) - offset_x ),"a+off");
+        createPoint(( parseFloat(b[0]) - offset_y ),( parseFloat(b[1]) + offset_x ),"b+off");
+        createPoint(( parseFloat(c[0]) + offset_y ),( parseFloat(c[1]) + offset_x ),"a+off");
+        createPoint(( parseFloat(d[0]) + offset_y ),( parseFloat(d[1]) - offset_x ),"b+off");
+        
+        var zbytek_x = Math.abs(distance_x/x_step - Math.round(distance_x/x_step));
+        var zbytek_y = Math.abs(distance_y/y_step - Math.round(distance_y/y_step));
+        
+        addLine(distance_x/x_step,distance_y/y_step,"number of repeats ?");
+        addLine((distance_x + offset_x)/x_step,(distance_y + offset_y)/y_step,"number of repeats with offset ?");
+        addLine(zbytek_x,zbytek_y,"zbytek");
+        addLine(Math.abs((distance_x + offset_x)/x_step - Math.round((distance_x + offset_x)/x_step)),Math.abs((distance_y + offset_y)/y_step - Math.round((distance_y + offset_y)/y_step)),"zbytek with offset");
+        
+        var x_times = Math.ceil( (distance_x + offset_x)/x_step );
+        var y_times = Math.ceil( (distance_y + offset_y)/y_step );
+        addLine(x_times,y_times,"grid settings x/y_times");
+        GridSettings.x_times = x_times;
+        GridSettings.y_times = y_times;
     }
     
     function sendToServer(dataToBeSent) {
@@ -166,6 +197,73 @@ $(document).ready(function() {
     $("#TstDraw").click(function() {
         createPoint(map_center_y, map_center_x);
     });
+    $("#TstGrid").click(function() {
+        drawGrid();
+    });
+    
+    // GRID DRAWING
+    // GRID OVERLAY
+    // grid settings
+    var gridLayer = new L.layerGroup();
+    var gridIsDrawn = false;
+    
+    var GridSettings = {
+        start_x: 16.6142195,
+        start_y: 49.205567,
+        x_step: 0.0108,
+        y_step: 0.03,
+        x_times: 4,
+        y_times: 2
+    }; // x - north<->south; y - east<->west
+
+    function drawGrid() {
+        if (gridIsDrawn) {
+            deleteGrid();
+        }
+
+        var xmin = GridSettings.start_x - GridSettings.x_times * GridSettings.x_step;
+        var xmax = GridSettings.start_x + GridSettings.x_times * GridSettings.x_step - 0.001;
+        var ymin = GridSettings.start_y - GridSettings.y_times * GridSettings.y_step;
+        var ymax = GridSettings.start_y + GridSettings.y_times * GridSettings.y_step - 0.001;
+        var x, y;
+        for (x = xmin; x <= xmax; x += GridSettings.x_step)
+        {
+            for (y = ymin; y <= ymax; y += GridSettings.y_step)
+            {
+                var p1 = new L.LatLng(x, y),
+                        p2 = new L.LatLng(x + GridSettings.x_step, y),
+                        p3 = new L.LatLng(x + GridSettings.x_step, y + GridSettings.y_step),
+                        p4 = new L.LatLng(x, y + GridSettings.y_step),
+                        polygonPoints = [p1, p2, p3, p4];
+
+                var defaultStyle = {
+                    color: "#333344",
+                    weight: 1, /* weight of grid line */
+                    opacity: 0.3, /* grid line opacity */
+                    fillOpacity: 0.2, /* grid fill opacity */
+                    fillColor: "#333344"
+                };
+
+                var polygon = new L.Polygon(polygonPoints, defaultStyle);
+                polygon.on('click', function(e) {
+                    this.setStyle({fillOpacity: 0, opacity: 0.1});
+                });
+                gridLayer.addLayer(polygon);
+            }
+        }
+        gridIsDrawn = true;
+    }
+    function deleteGrid() {
+        //console.log(gridLayer);
+
+        $.each(gridLayer._layers, function(i, layer) {
+            map.removeLayer(layer);
+        });
+
+        gridIsDrawn = false;
+        SelectedPolygons = [];
+    }
+    map.addLayer(gridLayer);
 });
         </script>
     </head>
@@ -175,6 +273,7 @@ $(document).ready(function() {
         <div class="getter">
             <input type="button" class="btn btn-default" value="Get bounding box from server" id="ButtonGetBoundBox"/>
             <input type="button" class="btn btn-default" value="Test draw point" id="TstDraw"/>
+            <input type="button" class="btn btn-default" value="Test draw grid" id="TstGrid"/>
         </div>
         <div class="informer">
                                 <em class="tempServerResponseTxt" style="color: red;">Server response:</em>
@@ -190,8 +289,8 @@ $(document).ready(function() {
             <table border="1" style="width: 200px;" id="pointTab">
                 <tr>
                     <th>name</th>
-                    <th>lon</th>
-                    <th>lat</th>
+                    <th>lat (x)</th>
+                    <th>lon (y)</th>
                 </tr>
                 <tr>
                     <td>A</td>
