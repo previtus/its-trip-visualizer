@@ -282,10 +282,10 @@ $(document).ready(function() {
         var powpow = 0.81;
         var del = 4;
         var off = -0.0001;
-        if (map.getZoom() > 12) {
-            var t = 17 - map.getZoom();
-            DIST = off + (DIST / Math.pow(powpow, t)) / del;
-        }
+        //if (map.getZoom() > 12) {
+        var t = 17 - map.getZoom();
+        DIST = off + (DIST / Math.pow(powpow, t)) / del;
+        //}
 
         var closeLayers = [];
         var ind = 0;
