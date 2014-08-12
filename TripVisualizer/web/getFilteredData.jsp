@@ -34,7 +34,12 @@
             System.out.print("|\n");
         }
     }
-
+    
+    // [additionalConditioning] will be added to all queries after WHERE ... <here>
+    StringBuilder additionalConditioning = new StringBuilder();
+    additionalConditioning.append("l.type <> 'TELEPORT'");
+    // next addition MUST contain ' AND ...' \\
+    
     // PREPARE STRUCTURE
     List<HashMap<String, String>> Trips = new ArrayList<HashMap<String, String>>();
 
@@ -237,6 +242,11 @@
                 String whereString = "";
                 if (addedAtLeastOneCondition) {
                     whereString = "WHERE "+whereCondition.toString();
+                    if (!additionalConditioning.equals("")) {
+                        whereString += " AND " + additionalConditioning.toString();
+                    }
+                } else if (!additionalConditioning.equals("")) {
+                    whereString += "WHERE " + additionalConditioning.toString();
                 }
                 String intersectionDeclarationString = "";
                 if (intersectionGeomAdded) {
@@ -289,10 +299,15 @@
                 PreparedStatement preparedCommonForTrip;
                 PreparedStatement preparedAllLegs;
                 if (!addedAtLeastOneCondition) {
+                    String specialWhereClause = "";
+                    if (!additionalConditioning.equals("")) {
+                        specialWhereClause += " WHERE " + additionalConditioning.toString();
+                    }
                     // No needs to add conditions...
                     preparedMainQuery = conn.prepareStatement("SELECT "
                         + "a.*, t.trip_id, l.end_time as l_end_time, l.start_time as l_start_time, l.type, ST_AsGeoJSON(ST_Multi(path)) as geojsonPath, t.end_time as t_end_time, t.start_time as t_start_time, t.from_activity, t.to_activity "
                         + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id"
+                        + specialWhereClause
                     );
                 } else {
                     String intersectionString = "";
@@ -310,13 +325,19 @@
                         intersectionString = ", ST_AsGeoJSON(ST_Multi( l.path )) AS geojsonPath ";
                     }
                     
+                    String whereString = "";
+                    whereString = "WHERE "+whereCondition.toString();
+                    if (!additionalConditioning.equals("")) {
+                        whereString += " AND " + additionalConditioning.toString();
+                    }
+                    
                     preparedMainQuery = conn.prepareStatement(
                           intersectionDeclarationString
                         + "SELECT "
                         + "a.*, t.trip_id, l.end_time as l_end_time, l.start_time as l_start_time, l.type, t.end_time as t_end_time, t.start_time as t_start_time, t.from_activity, t.to_activity "
                         + intersectionString
-                        + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id WHERE "
-                        + whereCondition.toString()
+                        + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id "
+                        + whereString
                     );
                     
                     for (int i = 1; i < valuesForConditions.size()+1; i++) {

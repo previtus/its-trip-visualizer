@@ -48,7 +48,7 @@ InitNamesForAgentProps.pt_discount_card = ["t","f"];
 initNames_forAgeCategories();
 
 var InitTypesForLegs = {};
-InitTypesForLegs.type = ["CAR","PT","TELEPORT","WALK"];
+InitTypesForLegs.type = ["CAR","PT","WALK"];
 
 var InitTypesForTrips = {};
 InitTypesForTrips.to_activity = ["SLEEP","WORK","SCHOOL","LEISURE","SHOP_DAILY","SHOP_LONG"];
