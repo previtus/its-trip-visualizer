@@ -129,14 +129,18 @@
 .custom-control-panel {
     background-color: white;
     border-radius: 4px;
-    padding: 3px 10px;
     
     font-size: 20px;
     min-height: 40px;
+    padding: 0 5px 0 10px;
 }
-.custom-control-panel .click-able-title {
-    padding: 8px 0px;
-}
-.custom-control-panel .toggle-part {
+.custom-control-panel .toggle-part, .custom-control-panel .shown-on-mouseover {
     display: none;
+}
+.v-align {
+    height: 55px;
+    margin:10px;
+    text-align: center;
+    display:table-cell;
+    vertical-align:middle;
 }

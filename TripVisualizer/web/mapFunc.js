@@ -1025,6 +1025,7 @@ $(document).ready(function() {
     var buttonStr = "<input type=\"button\" class=\"btn btn-default\" value=\"Redraw grid\" id=\"ButtonRedraw\"/>" +
                     "<input type=\"button\" class=\"btn btn-default\" value=\"Delete grid\" id=\"ButtonDeleteGrid\"/>";
     var openedControlPanel = false;
+/* <VARIANT A>
     $(".custom-control-panel").html("<span class=\"click-able-title\"><i class=\"fa fa-cog\"></i> Control panel</span> <span class=\"symbol\">&nbsp;</span> <span class=\"toggle-part\">"+buttonStr+"</span>");
     $(".custom-control-panel .click-able-title").toggle(
         function() {
@@ -1047,7 +1048,36 @@ $(document).ready(function() {
     $(".custom-control-panel .click-able-title").mouseout(function() {
         $(".custom-control-panel .symbol").html("&nbsp;");
     });
-    
+*/
+/* <VARIANT B> */
+//    $(".custom-control-panel").html("<table class=\"control-panel-tab\"><tr><td><span class=\"click-able-title\"><i class=\"fa fa-cog\"></i> <span class=\"shown-on-mouseover\">Control panel <span class=\"symbol\">&nbsp;</span></span></span> <span class=\"toggle-part\">"+buttonStr+"</span><td></tr></table>");
+    $(".custom-control-panel").html("<div class=\"v-align\"><span class=\"click-able-title\"><i class=\"fa fa-cog\"></i> <span class=\"shown-on-mouseover\">Control panel <span class=\"symbol\">&nbsp;</span></span></span></div> <div class=\"v-align\">&nbsp;<span class=\"toggle-part\">"+buttonStr+"</span></div>");
+    $(".custom-control-panel .v-align:first").toggle(
+        function() {
+            $(".custom-control-panel .toggle-part").show();
+            openedControlPanel = true;
+            $(".custom-control-panel .symbol").html("<i class=\"fa fa-angle-left\"></i>");
+        }, function() {
+            $(".custom-control-panel .toggle-part").hide();
+            openedControlPanel = false;
+            $(".custom-control-panel .symbol").html("<i class=\"fa fa-angle-right\"></i>");
+        }
+    );
+    $(".custom-control-panel").mouseover(function() {
+        //$(".custom-control-panel .shown-on-mouseover").html("<i class=\"fa fa-angle-left\"></i>");
+        $( ".custom-control-panel .shown-on-mouseover" ).show();
+        if (openedControlPanel) {
+            $(".custom-control-panel .symbol").html("<i class=\"fa fa-angle-left\"></i>");
+        } else {
+            $(".custom-control-panel .symbol").html("<i class=\"fa fa-angle-right\"></i>");
+        }
+    });
+    $(".custom-control-panel").mouseout(function() {
+        if (!openedControlPanel) {
+            $( ".custom-control-panel .shown-on-mouseover" ).hide();
+        }
+        $(".custom-control-panel .symbol").html("&nbsp;");
+    });
     
     // Button binding
     $("#ButtonRedraw").click(function() {
