@@ -489,16 +489,25 @@ $(document).ready(function() {
                 STATS.Trips[trip_id] = _.pick(trip, 'trip_id', 't_start_time', 't_end_time', 'from_activity', 'to_activity', 'agent_id');
                 STATS.Trips[trip_id].numberOfLegs = Object.keys(trip._legs).length;
 
-                //from_activity, to_activity
-                if (STATS.byTripProp.from_activity[ STATS.Trips[trip_id].from_activity ] == null) {
-                    STATS.byTripProp.from_activity[ STATS.Trips[trip_id].from_activity ] = 1;
-                } else {
-                    STATS.byTripProp.from_activity[ STATS.Trips[trip_id].from_activity ] += 1;
+                //from_activity, to_activity - compatible with multiple data separated by comma
+                var splitted_from_activity = (STATS.Trips[trip_id].from_activity + "").split(",");
+                var splitted_to_activity = (STATS.Trips[trip_id].to_activity + "").split(",");
+                
+                for (i = 0; i < splitted_from_activity.length; i++) {
+                    var act = splitted_from_activity[i];
+                    if (STATS.byTripProp.from_activity[ act ] == null) {
+                        STATS.byTripProp.from_activity[ act ] = 1;
+                    } else {
+                        STATS.byTripProp.from_activity[ act ] += 1;
+                    }
                 }
-                if (STATS.byTripProp.to_activity[ STATS.Trips[trip_id].to_activity ] == null) {
-                    STATS.byTripProp.to_activity[ STATS.Trips[trip_id].to_activity ] = 1;
-                } else {
-                    STATS.byTripProp.to_activity[ STATS.Trips[trip_id].to_activity ] += 1;
+                for (i = 0; i < splitted_to_activity.length; i++) {
+                    var act = splitted_to_activity[i];
+                    if (STATS.byTripProp.to_activity[ act ] == null) {
+                        STATS.byTripProp.to_activity[ act ] = 1;
+                    } else {
+                        STATS.byTripProp.to_activity[ act ] += 1;
+                    }
                 }
 
                 // 2.) save to STATS.Legs
