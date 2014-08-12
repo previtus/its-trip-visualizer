@@ -124,3 +124,19 @@
     
     display: none;
 }
+
+/* control panel toggle styling */
+.custom-control-panel {
+    background-color: white;
+    border-radius: 4px;
+    padding: 3px 10px;
+    
+    font-size: 20px;
+    min-height: 40px;
+}
+.custom-control-panel .click-able-title {
+    padding: 8px 0px;
+}
+.custom-control-panel .toggle-part {
+    display: none;
+}

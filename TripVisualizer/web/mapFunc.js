@@ -982,6 +982,47 @@ $(document).ready(function() {
         onChange();
     });
 
+    // Info panels in MAP region (must be before ButtonRedraw, ButtonDeleteGrid binding)
+    var MyControl = L.Control.extend({
+        options: {
+            position: 'bottomleft'
+        },
+        onAdd: function(map) {
+            // create the control container with a particular class name
+            var container = L.DomUtil.create('div', 'custom-control-panel');
+            return container;
+        }
+    });
+    map.addControl(new MyControl());
+    
+    var buttonStr = "<input type=\"button\" class=\"btn btn-default\" value=\"Redraw grid\" id=\"ButtonRedraw\"/>" +
+                    "<input type=\"button\" class=\"btn btn-default\" value=\"Delete grid\" id=\"ButtonDeleteGrid\"/>";
+    var openedControlPanel = false;
+    $(".custom-control-panel").html("<span class=\"click-able-title\"><i class=\"fa fa-cog\"></i> Control panel</span> <span class=\"symbol\">&nbsp;</span> <span class=\"toggle-part\">"+buttonStr+"</span>");
+    $(".custom-control-panel .click-able-title").toggle(
+        function() {
+            $(".custom-control-panel .toggle-part").show();
+            openedControlPanel = true;
+            $(".custom-control-panel .symbol").html("<i class=\"fa fa-angle-left\"></i>");
+        }, function() {
+            $(".custom-control-panel .toggle-part").hide();
+            openedControlPanel = false;
+            $(".custom-control-panel .symbol").html("<i class=\"fa fa-angle-right\"></i>");
+        }
+    );
+    $(".custom-control-panel .click-able-title").mouseover(function() {
+        if (openedControlPanel) {
+            $(".custom-control-panel .symbol").html("<i class=\"fa fa-angle-left\"></i>");
+        } else {
+            $(".custom-control-panel .symbol").html("<i class=\"fa fa-angle-right\"></i>");
+        }
+    });
+    $(".custom-control-panel .click-able-title").mouseout(function() {
+        $(".custom-control-panel .symbol").html("&nbsp;");
+    });
+    
+    
+    // Button binding
     $("#ButtonRedraw").click(function() {
         deleteGrid();
         drawGrid();
@@ -994,4 +1035,8 @@ $(document).ready(function() {
         onChange();
     });
     // #ButtonGenGraphsTMP in graphFunc.js
+    
+
+    
+
 });
