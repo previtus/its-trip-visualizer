@@ -49,6 +49,7 @@ $(document).ready(function() {
 
     var gridLayer = new L.layerGroup();
     var gridIsDrawn = false;
+    var popupIsOpened = false;
     //layerControl.addOverlay(gridLayer, 'Grid');
 
     // add permalink generation function
@@ -113,27 +114,32 @@ $(document).ready(function() {
 
                 var polygon = new L.Polygon(polygonPoints, defaultStyle);
                 polygon.on('click', function(e) {
-                    //alert('x: '+x+', y: '+y);
-                    //console.log( polygon.getBounds() );
-                    //console.log( polygon );
-                    this.setStyle({fillOpacity: 0, opacity: 0.1});
+                    if (popupIsOpened) {
+                        map.closePopup();
+                        popupIsOpened = false;
+                    } else {
+                        //alert('x: '+x+', y: '+y);
+                        //console.log( polygon.getBounds() );
+                        //console.log( polygon );
+                        this.setStyle({fillOpacity: 0, opacity: 0.1});
 
-                    //                var tmp = [];
-                    //                for (i = 0; i < 4; i++) {
-                    //                    console.log( this.toGeoJSON().geometry.coordinates[0][i] );
-                    //                    
-                    //                    tmp.push( this.toGeoJSON().geometry.coordinates[0][i] );
-                    //                }
+                        //                var tmp = [];
+                        //                for (i = 0; i < 4; i++) {
+                        //                    console.log( this.toGeoJSON().geometry.coordinates[0][i] );
+                        //                    
+                        //                    tmp.push( this.toGeoJSON().geometry.coordinates[0][i] );
+                        //                }
 
-                    //SelectedPolygons.push(tmp);
-                    SelectedPolygons.push(this.toGeoJSON().geometry.coordinates[0]);
-                    this.off('click');
+                        //SelectedPolygons.push(tmp);
+                        SelectedPolygons.push(this.toGeoJSON().geometry.coordinates[0]);
+                        this.off('click');
 
-                    onChange(null);
+                        onChange(null);
 
-                    //console.log(tmp);
-                    //console.log(SelectedPolygons);
-                    //console.log(this.toGeoJSON().geometry.coordinates);
+                        //console.log(tmp);
+                        //console.log(SelectedPolygons);
+                        //console.log(this.toGeoJSON().geometry.coordinates);
+                    }
                 });
                 gridLayer.addLayer(polygon);
             }
@@ -285,6 +291,7 @@ $(document).ready(function() {
     // map onclick processing
     function mapClicked(e) {
         unHighlightLast();
+        popupIsOpened = false;
         
         var clickPoint = e.latlng;
         var X = L.point(clickPoint.lat, clickPoint.lng);
@@ -391,6 +398,7 @@ $(document).ready(function() {
             popup.setLatLng(e.latlng)
                     .setContent(desc)
                     .openOn(map);
+            popupIsOpened = true;
 
             if (closeLayers.length > 3) {
                 // hide most of them
