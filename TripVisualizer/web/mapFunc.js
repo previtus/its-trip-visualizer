@@ -999,6 +999,7 @@ $(document).ready(function() {
         buttonClass: 'btn form-control',
         includeSelectAllOption: true,
         numberDisplayed: 2,
+        dropRight: true,
         onDropdownHide: function(element, checked) {
             onChange(element);
         }
@@ -1008,6 +1009,7 @@ $(document).ready(function() {
         buttonClass: 'btn btn-sm form-control',
         enableFiltering: true,
         maxHeight: 400,
+        dropRight: true,
         onDropdownHide: function(element, checked) {
             onChange(element);
 

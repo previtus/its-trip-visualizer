@@ -11,8 +11,15 @@ $(document).ready(function() {
     drawGraphs = function () {
         //console.log(STATS.byAgentProp);
         if (STATS.byAgentProp == null || STATS.byAgentProp.isEmpty) {
+            // Hide graph fields and show message
+            $(".graphMessage").show();
+            $(".graphDrawingArea").hide();
+            
             return;
         }
+        // else hide message and continue with the good work...
+        $(".graphMessage").hide();
+        $(".graphDrawingArea").show();
         
         /* in STATS.byAgentProp we have:
          * drivers_licence, economic_activity, education, gender, marital_status, pt_discount_card, age (in categories)

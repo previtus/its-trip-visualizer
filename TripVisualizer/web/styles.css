@@ -63,7 +63,7 @@ body {
     margin-left: 0;
     margin-right: -0.4em;
 }
-.filters label {
+.filters td:first-child label {
     font-weight: normal;
     font-size: 0.9em;
     color: #fff;
@@ -101,7 +101,7 @@ body {
 
 .filterPrediction {
     line-height: 2.2em;
-    background-color: #5682a2; /*LIGHTER COLOR*/
+    background-color: #83a4b9; /*EVEN-LIGHTER COLOR*/
     text-align: center;
     /*display: none;*/
     color: #fff;
@@ -111,12 +111,18 @@ body {
 .graphsTitle {
     color: #fff;
 }
+.graphMessage {
+    display: block;
+}
+.graphDrawingArea {
+    display: none;
+}
 
 .graphSection .container-fluid {
     padding-left: 5px;
     padding-right: 5px;
 }
-.graphSection .container-fluid div {
+.graphSection .container-fluid div div {
     /* this is graph <div> */
     /*background-color: rgba(86, 61, 124, 0.15);*/
     border: 1px solid rgba(86, 61, 124, 0.2);

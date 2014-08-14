@@ -110,7 +110,8 @@ function randRedColor(huehuehue) {
 //    }).toHexString();
 };
 function randBlueColor(huehuehue) {
-    var c = jQuery.Color( "blue" );
+    //var c = jQuery.Color( "blue" );
+    var c = jQuery.Color( "#407394" );
     var othercolor = jQuery.Color({
         hue: huehuehue,
         saturation: 0.9,
