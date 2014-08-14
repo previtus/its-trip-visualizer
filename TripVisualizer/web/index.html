@@ -109,160 +109,157 @@
             <div id="page-content-wrapper">
                 <div class="form-group filters">
                     <!-- --FILTER PANELS-- -->
-                    <!-- --filter by activity-- -->
-                    <div class="panel-heading-small">Filter by activity</div>
-                    <div class="panel-body">
-                        <table>
-                            <tr>
-                                <td><label for="from_act">from activity:</label></td>
-                                <td>
-                                    <select name="from_act" id="from_act" class="form-control input-sm multiselectCustom" multiple="multiple">
-                                        <option value="SLEEP">Sleep</option>
-                                        <option value="WORK">Work</option>
-                                        <option value="SCHOOL">School</option>
-                                        <option value="LEISURE">Leisure</option>
-                                        <option value="SHOP_DAILY">Shop daily</option>
-                                        <option value="SHOP_LONG">Shop long</option>
-                                        <option value="null">null</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><label for="to_act">to activity:</label></td>
-                                <td>
-                                    <select name="to_act" id="to_act" class="form-control input-sm multiselectCustom" multiple="multiple">
-                                        <option value="SLEEP">Sleep</option>
-                                        <option value="WORK">Work</option>
-                                        <option value="SCHOOL">School</option>
-                                        <option value="LEISURE">Leisure</option>
-                                        <option value="SHOP_DAILY">Shop daily</option>
-                                        <option value="SHOP_LONG">Shop long</option>
-                                        <option value="null">null</option>
-                                    </select>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                    <table>
+                        <!-- --filter by activity-- -->
+                        <tr>
+                            <th class="heading-row" colspan="2">Filter by activity</th>
+                        </tr>    
+                        <tr class="firstLine">
+                            <td><label for="from_act">from activity:</label></td>
+                            <td>
+                                <select name="from_act" id="from_act" class="form-control input-sm multiselectCustom" multiple="multiple">
+                                    <option value="SLEEP">Sleep</option>
+                                    <option value="WORK">Work</option>
+                                    <option value="SCHOOL">School</option>
+                                    <option value="LEISURE">Leisure</option>
+                                    <option value="SHOP_DAILY">Shop daily</option>
+                                    <option value="SHOP_LONG">Shop long</option>
+                                    <option value="null">null</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="lastLine">
+                            <td><label for="to_act">to activity:</label></td>
+                            <td>
+                                <select name="to_act" id="to_act" class="form-control input-sm multiselectCustom" multiple="multiple">
+                                    <option value="SLEEP">Sleep</option>
+                                    <option value="WORK">Work</option>
+                                    <option value="SCHOOL">School</option>
+                                    <option value="LEISURE">Leisure</option>
+                                    <option value="SHOP_DAILY">Shop daily</option>
+                                    <option value="SHOP_LONG">Shop long</option>
+                                    <option value="null">null</option>
+                                </select>
+                            </td>
+                        </tr>
+                        
+                        <!-- --filter by transport type-- -->
+                        <tr>
+                            <th class="heading-row" colspan="2">Filter by transport type</th>
+                        </tr>    
+                        <tr class="firstLine lastLine">
+                            <td style="padding-right: 10px;"><label for="trans_type">type:</label></td>
+                            <td>
+                                <select name="trans_type" id="trans_type" class="form-control input-sm multiselectCustom" multiple="multiple">
+                                    <option value="WALK">Walk</option>
+                                    <!--<option value="TELEPORT">Teleport</option>-->
+                                    <option value="PT">Public transport</option>
+                                    <option value="CAR">Car</option>
+                                </select>
+                            </td>
+                        </tr>
+                        
+                        <!-- --filter by agent information-- -->
+                        <tr>
+                            <th class="heading-row" colspan="2">Filter by agent information</th>
+                        </tr>
 
+                        <!-- --age-- -->
+                        <tr class="firstLine">
+                            <td><label for="age_from">age:</label></td>
+                            <td>
+                                <select name="age_from" id="age_from" class="multiselectAgesFrom">
+                                    <option value="-" selected="selected">/</option>
+                                    <option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="37">37</option><option value="38">38</option><option value="39">39</option><option value="40">40</option><option value="41">41</option><option value="42">42</option><option value="43">43</option><option value="44">44</option><option value="45">45</option><option value="46">46</option><option value="47">47</option><option value="48">48</option><option value="49">49</option><option value="50">50</option><option value="51">51</option><option value="52">52</option><option value="53">53</option><option value="54">54</option><option value="55">55</option><option value="56">56</option><option value="57">57</option><option value="58">58</option><option value="59">59</option><option value="60">60</option><option value="61">61</option><option value="62">62</option><option value="63">63</option><option value="64">64</option><option value="65">65</option><option value="66">66</option><option value="67">67</option><option value="68">68</option><option value="69">69</option><option value="70">70</option><option value="71">71</option><option value="72">72</option><option value="73">73</option><option value="74">74</option><option value="75">75</option><option value="76">76</option><option value="77">77</option><option value="78">78</option><option value="79">79</option><option value="80">80</option><option value="81">81</option><option value="82">82</option><option value="83">83</option><option value="84">84</option>
+                                </select>
+                                -
+                                <select name="age_to" id="age_to" class="multiselectAgesTo">
+                                    <option value="-" selected="selected">/</option>
+                                    <option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="37">37</option><option value="38">38</option><option value="39">39</option><option value="40">40</option><option value="41">41</option><option value="42">42</option><option value="43">43</option><option value="44">44</option><option value="45">45</option><option value="46">46</option><option value="47">47</option><option value="48">48</option><option value="49">49</option><option value="50">50</option><option value="51">51</option><option value="52">52</option><option value="53">53</option><option value="54">54</option><option value="55">55</option><option value="56">56</option><option value="57">57</option><option value="58">58</option><option value="59">59</option><option value="60">60</option><option value="61">61</option><option value="62">62</option><option value="63">63</option><option value="64">64</option><option value="65">65</option><option value="66">66</option><option value="67">67</option><option value="68">68</option><option value="69">69</option><option value="70">70</option><option value="71">71</option><option value="72">72</option><option value="73">73</option><option value="74">74</option><option value="75">75</option><option value="76">76</option><option value="77">77</option><option value="78">78</option><option value="79">79</option><option value="80">80</option><option value="81">81</option><option value="82">82</option><option value="83">83</option><option value="84">84</option>
+                                </select>
 
-                    <!-- --filter by transport type-- -->
-                    <div class="panel-heading-small">Filter by transport type</div>
-                    <div class="panel-body">
-                        <table>
-                            <tr>
-                                <td style="padding-right: 10px;"><label for="trans_type">type:</label></td>
-                                <td>
-                                    <select name="trans_type" id="trans_type" class="form-control input-sm multiselectCustom" multiple="multiple">
-                                        <option value="WALK">Walk</option>
-                                        <!--<option value="TELEPORT">Teleport</option>-->
-                                        <option value="PT">Public transport</option>
-                                        <option value="CAR">Car</option>
-                                    </select>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                            </td>
+                        </tr>
 
-                    <!-- --filter by agent information-- -->
-                    <div class="panel-heading-small">Filter by agent information</div>
-                    <div class="panel-body">
-                        <table>
-                            <!-- --age-- -->
-                            <tr>
-                                <td><label for="age_from">age:</label></td>
-                                <td>
-                                    <select name="age_from" id="age_from" class="multiselectAgesFrom">
-                                        <option value="-" selected="selected">/</option>
-                                        <option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="37">37</option><option value="38">38</option><option value="39">39</option><option value="40">40</option><option value="41">41</option><option value="42">42</option><option value="43">43</option><option value="44">44</option><option value="45">45</option><option value="46">46</option><option value="47">47</option><option value="48">48</option><option value="49">49</option><option value="50">50</option><option value="51">51</option><option value="52">52</option><option value="53">53</option><option value="54">54</option><option value="55">55</option><option value="56">56</option><option value="57">57</option><option value="58">58</option><option value="59">59</option><option value="60">60</option><option value="61">61</option><option value="62">62</option><option value="63">63</option><option value="64">64</option><option value="65">65</option><option value="66">66</option><option value="67">67</option><option value="68">68</option><option value="69">69</option><option value="70">70</option><option value="71">71</option><option value="72">72</option><option value="73">73</option><option value="74">74</option><option value="75">75</option><option value="76">76</option><option value="77">77</option><option value="78">78</option><option value="79">79</option><option value="80">80</option><option value="81">81</option><option value="82">82</option><option value="83">83</option><option value="84">84</option>
-                                    </select>
-                                    -
-                                    <select name="age_to" id="age_to" class="multiselectAgesTo">
-                                        <option value="-" selected="selected">/</option>
-                                        <option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="37">37</option><option value="38">38</option><option value="39">39</option><option value="40">40</option><option value="41">41</option><option value="42">42</option><option value="43">43</option><option value="44">44</option><option value="45">45</option><option value="46">46</option><option value="47">47</option><option value="48">48</option><option value="49">49</option><option value="50">50</option><option value="51">51</option><option value="52">52</option><option value="53">53</option><option value="54">54</option><option value="55">55</option><option value="56">56</option><option value="57">57</option><option value="58">58</option><option value="59">59</option><option value="60">60</option><option value="61">61</option><option value="62">62</option><option value="63">63</option><option value="64">64</option><option value="65">65</option><option value="66">66</option><option value="67">67</option><option value="68">68</option><option value="69">69</option><option value="70">70</option><option value="71">71</option><option value="72">72</option><option value="73">73</option><option value="74">74</option><option value="75">75</option><option value="76">76</option><option value="77">77</option><option value="78">78</option><option value="79">79</option><option value="80">80</option><option value="81">81</option><option value="82">82</option><option value="83">83</option><option value="84">84</option>
-                                    </select>
+                        <!-- --gender-- -->
+                        <tr>
+                            <td><label>gender:</label></td>
+                            <td>
+                                <div class="exclusionSelect">
+                                    <input type="radio" id="genderX" value="-" name="gender" checked="checked"><label for="genderX">All</label>
+                                    <input type="radio" id="genderF" value="F" name="gender"><label for="genderF">♀</label>
+                                    <input type="radio" id="genderM" value="M" name="gender"><label for="genderM">♂</label>
+                                </div>
+                            </td>
+                        </tr>
 
-                                </td>
-                            </tr>
+                        <!-- --education-- -->
+                        <tr>
+                            <td><label for="education">education:</label></td>
+                            <td>
+                                <select name="education" id="education" class="form-control input-sm multiselectCustom" multiple="multiple">
+                                    <option value="BASIC">Basic</option>
+                                    <option value="SECONDARY_WITHOUT_FINAL_EXAM">Secondary without final exam</option>
+                                    <option value="SECONDARY_WITH_FINAL_EXAM">Secondary with final exam</option>
+                                    <option value="UNIVERSITY">University</option>
+                                    <option value="HIGHER_PROFESSIONAL">Higher professional</option>
+                                    <option value="null">having "null"</option>
+                                </select>
+                            </td>
+                        </tr>
 
-                            <!-- --gender-- -->
-                            <tr>
-                                <td><label>gender:</label></td>
-                                <td>
-                                    <div class="exclusionSelect">
-                                        <input type="radio" id="genderX" value="-" name="gender" checked="checked"><label for="genderX">All</label>
-                                        <input type="radio" id="genderF" value="F" name="gender"><label for="genderF">♀</label>
-                                        <input type="radio" id="genderM" value="M" name="gender"><label for="genderM">♂</label>
-                                    </div>
-                                </td>
-                            </tr>
+                        <!-- --marital status-- -->
+                        <tr>
+                            <td><label for="maritalStatus">marital status:</label></td>
+                            <td>
+                                <select name="maritalStatus" id="maritalStatus" class="form-control input-sm multiselectCustom" multiple="multiple">
+                                    <option value="MARRIED">Married</option>
+                                    <option value="SINGLE">Single</option>
+                                    <option value="DIVORCED">Divorced</option>
+                                    <option value="WIDOWED">Widowed</option>
+                                </select>
+                            </td>
+                        </tr>
 
-                            <!-- --education-- -->
-                            <tr>
-                                <td><label for="education">education:</label></td>
-                                <td>
-                                    <select name="education" id="education" class="form-control input-sm multiselectCustom" multiple="multiple">
-                                        <option value="BASIC">Basic</option>
-                                        <option value="SECONDARY_WITHOUT_FINAL_EXAM">Secondary without final exam</option>
-                                        <option value="SECONDARY_WITH_FINAL_EXAM">Secondary with final exam</option>
-                                        <option value="UNIVERSITY">University</option>
-                                        <option value="HIGHER_PROFESSIONAL">Higher professional</option>
-                                        <option value="null">having "null"</option>
-                                    </select>
-                                </td>
-                            </tr>
+                        <!-- --economical activity-- -->
+                        <tr>
+                            <td><label for="economicalActivity">economical activity:</label></td>
+                            <td>
+                                <select name="economicalActivity" id="economicalActivity" class="form-control input-sm multiselectCustom" multiple="multiple">
+                                    <option value="WORKING">Working</option>
+                                    <option value="SECONDARY_SCHOOL">Secondary school</option>
+                                    <option value="UNIVERSITY_STUDENT">University student</option>
+                                    <option value="PRIMARY_SCHOOL">Primary school</option>
+                                </select>
+                            </td>
+                        </tr>
 
-                            <!-- --marital status-- -->
-                            <tr>
-                                <td><label for="maritalStatus">marital status:</label></td>
-                                <td>
-                                    <select name="maritalStatus" id="maritalStatus" class="form-control input-sm multiselectCustom" multiple="multiple">
-                                        <option value="MARRIED">Married</option>
-                                        <option value="SINGLE">Single</option>
-                                        <option value="DIVORCED">Divorced</option>
-                                        <option value="WIDOWED">Widowed</option>
-                                    </select>
-                                </td>
-                            </tr>
+                        <!-- --drivers licence-- -->
+                        <tr>
+                            <td><label>drivers licence:</label></td>
+                            <td>
+                                <div class="exclusionSelect">
+                                    <input type="radio" id="driveLicenceX" value="-" name="driveLicence" checked="checked"><label for="driveLicenceX">All</label>
+                                    <input type="radio" id="driveLicenceT" value="T" name="driveLicence"><label for="driveLicenceT">&#10003;</label>
+                                    <input type="radio" id="driveLicenceF" value="F" name="driveLicence"><label for="driveLicenceF">✗</label>
+                                </div>
+                            </td>
+                        </tr>
 
-                            <!-- --economical activity-- -->
-                            <tr>
-                                <td><label for="economicalActivity">economical activity:</label></td>
-                                <td>
-                                    <select name="economicalActivity" id="economicalActivity" class="form-control input-sm multiselectCustom" multiple="multiple">
-                                        <option value="WORKING">Working</option>
-                                        <option value="SECONDARY_SCHOOL">Secondary school</option>
-                                        <option value="UNIVERSITY_STUDENT">University student</option>
-                                        <option value="PRIMARY_SCHOOL">Primary school</option>
-                                    </select>
-                                </td>
-                            </tr>
+                        <!-- --discount card-- -->
+                        <tr class="lastLine">
+                            <td><label>public transport card:</label></td>
+                            <td>
+                                <div class="exclusionSelect">
+                                    <input type="radio" id="ptCardX" value="-" name="ptCard" checked="checked"><label for="ptCardX">All</label>
+                                    <input type="radio" id="ptCardT" value="T" name="ptCard"><label for="ptCardT">&#10003;</label>
+                                    <input type="radio" id="ptCardF" value="F" name="ptCard"><label for="ptCardF">✗</label>
+                                </div>
+                            </td>
+                        </tr>
 
-                            <!-- --drivers licence-- -->
-                            <tr>
-                                <td><label>drivers licence:</label></td>
-                                <td>
-                                    <div class="exclusionSelect">
-                                        <input type="radio" id="driveLicenceX" value="-" name="driveLicence" checked="checked"><label for="driveLicenceX">All</label>
-                                        <input type="radio" id="driveLicenceT" value="T" name="driveLicence"><label for="driveLicenceT">&#10003;</label>
-                                        <input type="radio" id="driveLicenceF" value="F" name="driveLicence"><label for="driveLicenceF">✗</label>
-                                    </div>
-                                </td>
-                            </tr>
+                    </table>
 
-                            <!-- --discount card-- -->
-                            <tr>
-                                <td><label>public transport card:</label></td>
-                                <td>
-                                    <div class="exclusionSelect">
-                                        <input type="radio" id="ptCardX" value="-" name="ptCard" checked="checked"><label for="ptCardX">All</label>
-                                        <input type="radio" id="ptCardT" value="T" name="ptCard"><label for="ptCardT">&#10003;</label>
-                                        <input type="radio" id="ptCardF" value="F" name="ptCard"><label for="ptCardF">✗</label>
-                                    </div>
-                                </td>
-                            </tr>
-
-                        </table>
-                    </div>
 
                     <!-- --hidden filter by shift-dragging selection-- -->
                     <!--        text <-> hidden  -->
