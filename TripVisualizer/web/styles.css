@@ -1,4 +1,8 @@
 /* Popup window styling */
+body {
+    background-color: #407394; /*MAIN COLOR*/
+}
+
 .tripDesc {
     text-align: left;
     padding-bottom: 2px;
@@ -30,21 +34,26 @@
 }
 
 .panel-heading-small {
-    background-color: #bfbfbf; /*#fff;*/
-
+    background-color: #38617d; /*DARK COLOR*/
+    font-weight: bold;
+    color: #fff;
+    
     /*border-bottom: 1px solid transparent;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;*/
 
     border: 0px;
 
-    padding: 5px 15px 2px 5px;
+    padding: 5px 15px 2px 5%;
 }
 .panel-body {
     border: 0px;
 
-    background-color: #f5f5f5;
-    padding: 5px 15px;
+    background-color: #407394; /*MAIN COLOR*/
+    font-weight: normal;
+    color: #fff;
+    
+    padding: 5px 15px 5px 8%;
 }
 
 .ui-button-text {
@@ -56,15 +65,36 @@
     margin-right: -0.4em;
 }
 .panel-body label {
-    font-weight: bold;
+    font-weight: normal;
     font-size: 0.9em;
+    color: #fff;
+}
+.btn-group {
+    margin-bottom: 1px;
 }
 
 .panel-body table td:first-child {
     padding-right: 10px;
+    min-width: 5em;
+}
+
+.panel-body table td {
+    vertical-align: middle;
+}
+
+.filterPrediction {
+    line-height: 2.2em;
+    background-color: #5682a2; /*LIGHTER COLOR*/
+    text-align: center;
+    /*display: none;*/
+    color: #fff;
 }
 
 /* Graph section styling */
+.graphsTitle {
+    color: #fff;
+}
+
 .graphSection .container-fluid {
     padding-left: 5px;
     padding-right: 5px;
@@ -85,11 +115,6 @@
     text-align: left;
 }
 /* etc */
-.filterPrediction {
-    text-align: center;
-    display: none;
-}
-
 #invisCheckbox {
     display: none;
 }
@@ -115,13 +140,13 @@
     top: 75%;
     left: 25px;
     z-index: 9999;
-    
+
     padding: 40px;
     background-color: white;
     border-radius: 4px;
-    
+
     color: red;
-    
+
     display: none;
 }
 
@@ -129,7 +154,7 @@
 .custom-control-panel {
     background-color: white;
     border-radius: 4px;
-    
+
     font-size: 20px;
     min-height: 40px;
     padding: 0 5px 0 10px;
@@ -143,4 +168,44 @@
     text-align: center;
     display:table-cell;
     vertical-align:middle;
+}
+
+/* MAIN PAGE LAYOUT STYLING - LOGIC */
+/* Sidebar layout settings */
+#wrapper {
+    padding-left: 0;
+}
+
+/* left side of screen - map region */
+#sidebar-wrapper {
+    z-index: 1000;
+    position: fixed;
+    left: 66%;
+    width: 0;
+    height: 100%;
+    margin-left: -66%;
+    overflow-y: auto;
+}
+
+/* right side of screen - filters and graphs */
+#page-content-wrapper {
+    width: 100%;
+}
+
+/* behaviour when we have enough space - keep yourself in two columns */
+@media(min-width:768px) {
+    #wrapper {
+        padding-left: 75%;
+    }
+
+    #sidebar-wrapper {
+        width: 75%;
+    }
+}
+/* ... otherwise force the linebreaking */
+@media(max-width:768px) {
+    #sidebar-wrapper {
+        position: relative;
+        width: 100%;
+    }
 }
