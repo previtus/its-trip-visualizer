@@ -371,7 +371,8 @@ $(document).ready(function() {
                 });
                 legInfo = legInfo.slice(0, -3);
 
-                var localDesc = "<div class='tripDesc' id='"+TripInfo.trip_id+"'><span class=\"symbol\">+</span> <span style='color: " + TripInfo._colorCoding + ";'>#" + TripInfo.trip_id + " <strong>" + TripInfo.agent_id + "</strong></span><br>"
+                var nameFromAgentId = "Citizen "+(TripInfo.agent_id+"").slice(7); //CitizenXYZ
+                var localDesc = "<div class='tripDesc' id='"+TripInfo.trip_id+"'><span class=\"symbol\">+</span> <span style='color: " + TripInfo._colorCoding + ";'><strong>" + nameFromAgentId + "</strong></span><br>"
                         + "<div class='tripDescDetails'>"
                         + "<strong>trip time:</strong> <small>" + msecToTime(TripInfo.t_start_time) + " to " + msecToTime(TripInfo.t_end_time) + "</small><br>"
                         + "<strong>trip dest:</strong> <small>" + TripInfo.from_activity.toLowerCase() + " -> " + TripInfo.to_activity.toLowerCase() + "</small><br>"
