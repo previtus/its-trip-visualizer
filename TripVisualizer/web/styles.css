@@ -139,11 +139,6 @@ body {
     text-align: left;
 }
 
-/* .exclusionSelect is line breaking in Firefox
-.exclusionSelect div, .exclusionSelect span {
-    display: inline;
-} */
-
 /* filter elements with the same width */
 .btn-group {
     width: 128px;
@@ -152,7 +147,7 @@ body {
     width: 57px; /* = (btn-group.width/2) - 7px*/
 }
 .exclusionSelect label {
-    width: 45px;
+    width: 44.3px;
 }
 
 /* etc */
