@@ -33,10 +33,6 @@ function countAgeCategoryFromAge(age) {
     return count;
 }
 
-//for (a = -5; a < 90; a++) {
-//    console.log("age: "+a+" -> cat: "+countAgeCategoryFromAge(a)+" -> str: "+catTostr(countAgeCategoryFromAge(a)));
-//}
-
 // selection of initial values (if we encounter new one, it will be added dynamicly); These values will be written out even if their value is 0 (by default)
 var InitNamesForAgentProps = {};
 InitNamesForAgentProps.gender = ["FEMALE","MALE"];
@@ -56,7 +52,6 @@ InitTypesForTrips.from_activity = InitTypesForTrips.to_activity;
 
 function catTostr(cat) {
     var catSize = (maxAge - minAge) / numberOfAgeCategories; //can i haz cat
-    //var str = (cat*catSize)+" to "+((cat+1)*catSize);
     var str = Math.floor(minAge + cat*catSize + 1)+"_to_"+Math.floor(minAge + (cat+1)*catSize);
     return str;
 }
@@ -66,21 +61,12 @@ function initNames_forAgeCategories () {
     var catSize = (maxAge - minAge) / numberOfAgeCategories; //cibet cat
     
     for (var a = 0; a < numberOfAgeCategories; a++) {
-        //InitNamesForAgentProps.age.push((i*catSize)+"to"+((i+1)*catSize));
-        //InitNamesForAgentProps.age.push(i);
         InitNamesForAgentProps.age.push( catTostr(a) );
     }
 }
 
-// dynamic age category changing
-//function minAgeSetTo(min) {
-//    minAge = min;
-//}
-//function maxAgeSetTo(max) {
-//    maxAge = max;
-//}
-
 // Time distribution statistics
+// -> for trips
 var minTime = 0000000;
 var maxTime = 86400000;
 var numberOfTimeCategories = 6; //6 is ok, 8 also
@@ -89,9 +75,7 @@ STATS.byTimeDist = {};
 initNames_forTimeCategories();
 
 function initNames_forTimeCategories () {
-//    console.log("STATS.byTimeDist <- "+numberOfTimeCategories+" categories");
     for (var a = 0; a < numberOfTimeCategories; a++) {
-//        console.log("STATS.byTimeDist["+a+"] is from "+(a*timeCatSize)+" to "+((a+1)*timeCatSize));
         STATS.byTimeDist[a] = 0;
     }
 }
@@ -111,8 +95,7 @@ function categoryNameFromCat(cat) {
     //return cat+"="+(cat*timeCatSize)+"_to_"+((cat+1)*timeCatSize);
 }
 
-// SPECIAL**
-// LEG TIME DISTRIBUTION
+// -> for legs
 var numberOfLegTimeCategories = 8;
 var timeLegCatSize = (maxTime - minTime) / numberOfLegTimeCategories;
 STATS.byLegTimeDist = {};

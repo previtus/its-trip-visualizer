@@ -19,20 +19,12 @@ body {
     overflow-y: scroll;
 }
 
-.filterPanel .filterDesc {
-    font-weight: bold;
-}
-
 /* multiselect aesthetics */
 .multiselect {
     overflow: hidden;
 }
 
 /* panel style setting */
-.panel {
-    margin-bottom: 3px;
-}
-
 .heading-row {
     background-color: #38617d; /*DARK COLOR*/
     font-weight: bold;
@@ -68,9 +60,6 @@ body {
     font-size: 0.9em;
     color: #fff;
     margin-bottom: 0px;
-}
-.btn-group {
-    margin-bottom: 1px;
 }
 
 .filters table {
@@ -141,6 +130,7 @@ body {
 
 /* filter elements with the same width */
 .btn-group {
+    margin-bottom: 1px;
     width: 128px;
 }
 .ageSpecialSelect .btn-group {
@@ -158,16 +148,6 @@ body {
 /* Well styling */
 .well {
     margin-bottom: 0px;
-}
-
-.mergeWithRight {
-    padding-right: 7px;
-    border-right-width: 0;
-}
-
-.mergeWithLeft {
-    padding-left: 7px;
-    border-left-width: 0;
 }
 
 /* loading icon */

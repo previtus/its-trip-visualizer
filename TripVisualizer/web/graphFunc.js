@@ -40,11 +40,6 @@ $(document).ready(function() {
         
         // box + time dist for Trips
         
-//        console.log("STATS.byTimeDist");
-//        console.log(STATS.byTimeDist);
-//        console.log("STATS.byLegTimeDist");
-//        console.log(STATS.byLegTimeDist);
-        
         prepForGraph = {};
         for (var i = 0; i < numberOfTimeCategories; i++) {
             prepForGraph[ categoryNameFromCat(i) ] = STATS.byTimeDist[i];
@@ -65,7 +60,6 @@ $(document).ready(function() {
         STATS.byLegTimeDist.prepLegTimeForGraph = prepLegTimeForGraph;
         drawGraphBar("timeLegTripGraph","byLegTimeDist","prepLegTimeForGraph", null, "Time distribution", 'Number of legs', "legs");
         
-        
         // WHISKER
         //STATS.Trips[trip_id].numerOfLegs
         var dataArr = []; // number of legs per trip
@@ -73,12 +67,9 @@ $(document).ready(function() {
             var trip = STATS.Trips[t];
             dataArr.push( trip.numberOfLegs );
         }
-        //console.log(dataArr);
-        //var dataArr = [1, 2, 3, 4, 1, 1];
         drawGraphWhisker("legsInTripWhiskerGraph",dataArr, "Number of legs", "Legs in trip");
         
         // same for trips
-        //console.log(STATS.byTripProp);
         drawGraphPie("fromActGraph","byTripProp","from_activity", null, "Starting activity", "Starting activity");
         drawGraphPie("toActGraph","byTripProp","to_activity", null, "Ending activity", "Ending activity");
         
@@ -137,23 +128,7 @@ $(document).ready(function() {
 	        tooltip: {
 	            headerFormat: '<em>{point.key}</em><br/>'
 	        }
-	    }/*, {
-	        name: 'Outlier',
-	        color: Highcharts.getOptions().colors[0],
-	        type: 'scatter',
-	        data: [ // x, y positions where 0 is the first category
-	            [0, 644],
-	            [0, 720]
-	        ],
-	        marker: {
-	            fillColor: 'white',
-	            lineWidth: 1,
-	            lineColor: Highcharts.getOptions().colors[0]
-	        },
-	        tooltip: {
-	            pointFormat: 'Observation: {point.y}'
-	        }
-	    }*/]
+	    }]
 	
 	};
         
@@ -245,48 +220,6 @@ $(document).ready(function() {
             }    
         }
         
-        var settingsHalfDonut = {
-            chart: {
-                plotBackgroundColor: null,
-                plotBorderWidth: 0,
-                plotShadow: false
-            },
-            title: {
-                text: graphName,
-                align: 'center',
-                verticalAlign: 'middle',
-                y: 55
-            },
-            tooltip: {
-                pointFormat: '{series.name}: <b>{point.y}</b>'
-            },
-            plotOptions: {
-                pie: {
-                    dataLabels: {
-                        enabled: true,
-                        distance: -50,
-                        style: {
-                            fontWeight: 'bold',
-                            color: 'white',
-                            textShadow: '0px 1px 2px black'
-                        }
-                    },
-                    startAngle: -90,
-                    endAngle: 90,
-                    center: ['50%', '75%']
-                    //colors: colors
-                    //colors:  ["#F7464A", "#464af7", "rgba(15,72,127,1)", "rgba(52,109,164,1)"]
-                    //colors: ["#F7464A", "#464af7"]
-                }
-            },
-            series: [{
-                type: 'pie',
-                name: popupname,
-                innerSize: '50%',
-                data: dataArr
-            }]
-        };
-        
         var settings = {
             chart: {
                 plotBackgroundColor: null,
@@ -295,9 +228,6 @@ $(document).ready(function() {
             },
             title: {
                 text: graphName,
-//                align: 'center',
-//                verticalAlign: 'middle',
-//                y: 55
             },
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.y}</b>'
@@ -306,22 +236,12 @@ $(document).ready(function() {
                 pie: {
                     dataLabels: {
                         enabled: true,
-//                        distance: -50,
-//                        style: {
-//                            fontWeight: 'bold',
-//                            color: 'white',
-//                            textShadow: '0px 1px 2px black'
-//                        }
                     },
-//                    startAngle: -90,
-//                    endAngle: 90,
-//                    center: ['50%', '75%']
                 }
             },
             series: [{
                 type: 'pie',
                 name: popupname,
-//                innerSize: '50%',
                 data: dataArr
             }]
         };
@@ -333,104 +253,4 @@ $(document).ready(function() {
         $('#'+idname).highcharts( settings );
 
     }
-
-    /*
-    function fooGraphs_STACKED_highcharts() {
-        $("#legTypeGraph").css("height","400px");
-        var assignmentByName = {"WALK":0,"TELEPORT":1,"PT":2,"CAR":3}
-        
-        var ArrLabels = [];
-        var ArrData = [[], [], [], []];
-        var i = 0;
-        for (var tripI in STATS.Legs) {
-            ArrLabels.push(tripI);
-            
-            var tripsLegs = STATS.Legs[tripI];
-            // init trip with zeros
-            for (var j = 0; j < 4; j++) {
-                ArrData[j][i]=0;
-            }
-            
-            for (var legI in tripsLegs) {
-                var leg = tripsLegs[legI];
-                
-                var increment = assignmentByName[ leg.type ];
-                ArrData[increment][i]++;
-            }
-            i++;
-        }
-        
-        console.log(ArrLabels);
-        console.log(ArrData);
-        
-        $('#legTypeGraph').highcharts({
-            chart: {
-                type: 'column'
-            },
-            title: {
-                text: 'Leg type distribution'
-            },
-            xAxis: {
-                categories: ArrLabels //['Apples', 'Oranges', 'Pears', 'Grapes', 'Bananas']
-                //, title: { text: 'Trip id' }
-            },
-            yAxis: {
-                min: 0,
-                title: {
-                    text: 'Number of legs in trip'
-                },
-                stackLabels: {
-                    enabled: true,
-                    style: {
-                        fontWeight: 'bold',
-                        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
-                    }
-                }
-            },
-            legend: {
-                align: 'right',
-                x: -70,
-                verticalAlign: 'top',
-                y: 20,
-                floating: true,
-                backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
-                borderColor: '#CCC',
-                borderWidth: 1,
-                shadow: false
-            },
-            tooltip: {
-                formatter: function() {
-                    return '<b>'+ this.x +'</b><br/>'+
-                        this.series.name +': '+ this.y +'<br/>'+
-                        'Total: '+ this.point.stackTotal;
-                }
-            },
-            plotOptions: {
-                column: {
-                    stacking: 'normal',
-                    dataLabels: {
-                        enabled: true,
-                        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
-                        style: {
-                            textShadow: '0 0 3px black, 0 0 3px black'
-                        }
-                    }
-                }
-            },
-            series: [{
-                name: 'Walk',
-                data: ArrData[0]
-            }, {
-                name: 'Teleport',
-                data: ArrData[1]
-            }, {
-                name: 'Public transport',
-                data: ArrData[2]
-            }, {
-                name: 'Car',
-                data: ArrData[3]
-            }]
-        });
-    }
-    */
 });

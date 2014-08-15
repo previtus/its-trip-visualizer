@@ -32,7 +32,7 @@ $(document).ready(function() {
     // MAPBOX MAPS
     var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
             '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-            'Imagery © <a href="http://mapbox.com">Mapbox</a>';
+            'Imagery Â© <a href="http://mapbox.com">Mapbox</a>';
     var mbUrl = 'https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png';
 
     var grayscale = L.tileLayer(mbUrl, {id: 'examples.map-20v6611k', attribution: mbAttr});
@@ -57,19 +57,6 @@ $(document).ready(function() {
 
     map.attributionControl.setPrefix('');
     map.boxZoom.disable();
-
-    // resizeable
-    $(".BOX_FILTERS").resizable({handles: 's'});
-    $(".BOX_GRAPHS").resizable({handles: 's'});
-//    $("#map").resizable({
-//        stop: function( event, ui ) {
-//            //console.log(ui.size);
-//            //ui.size.height ui.size.width
-//            $("#map").css("height",ui.size.height);
-//            $("#map").css("width",ui.size.width);
-//            map.invalidateSize();
-//        }
-//    });
 
     // GRID OVERLAY
     // grid settings
@@ -118,27 +105,11 @@ $(document).ready(function() {
                         map.closePopup();
                         popupIsOpened = false;
                     } else {
-                        //alert('x: '+x+', y: '+y);
-                        //console.log( polygon.getBounds() );
-                        //console.log( polygon );
                         this.setStyle({fillOpacity: 0, opacity: 0.1});
-
-                        //                var tmp = [];
-                        //                for (i = 0; i < 4; i++) {
-                        //                    console.log( this.toGeoJSON().geometry.coordinates[0][i] );
-                        //                    
-                        //                    tmp.push( this.toGeoJSON().geometry.coordinates[0][i] );
-                        //                }
-
-                        //SelectedPolygons.push(tmp);
                         SelectedPolygons.push(this.toGeoJSON().geometry.coordinates[0]);
                         this.off('click');
 
                         onChange(null);
-
-                        //console.log(tmp);
-                        //console.log(SelectedPolygons);
-                        //console.log(this.toGeoJSON().geometry.coordinates);
                     }
                 });
                 gridLayer.addLayer(polygon);
@@ -193,7 +164,6 @@ $(document).ready(function() {
         var layer = getLayerByTripId(tripId);
         if (layer != null) {
 //            console.log("highlighting "+layer._tripProperties.trip_id);
-//            console.log(layer);
             layer.bringToFront();
             var tmpStyle_L1 = window.mouseOverStyle;
             tmpStyle_L1.color = layer._tripProperties._highlightColor;
@@ -206,8 +176,6 @@ $(document).ready(function() {
         var layer = getLayerByTripId(tripId);
         if (layer != null) {
 //            console.log("de-highlighting "+layer._tripProperties.trip_id);
-//            console.log(layer);
-            
             layer.bringToBack();
             var styleDefault_L1 = window.defaultStyle;
             styleDefault_L1.color = layer._tripProperties._colorCoding;
@@ -268,8 +236,6 @@ $(document).ready(function() {
     
     function highlightOverEffect(e) {
         // cannot point to global variables or Leaflet onMouseOver event handling shall be broken ... O-o
-        //var id = e.layer.feature.properties.trip_id;
-        //console.log("in ? persistent, id: "+id);
         var Layer1 = e.target._pointerToLayer1_main;
         Layer1.bringToFront();
         var tmpStyle_L1 = window.mouseOverStyle;
@@ -297,14 +263,12 @@ $(document).ready(function() {
         var X = L.point(clickPoint.lat, clickPoint.lng);
         var DIST = 0.001;
 
-        // zoom and distance acomondation
+        // zoom and distance acomondation, magical formula:
         var powpow = 0.81;
         var del = 4;
         var off = -0.0001;
-        //if (map.getZoom() > 12) {
         var t = 17 - map.getZoom();
         DIST = off + (DIST / Math.pow(powpow, t)) / del;
-        //}
 
         var closeLayers = [];
         var ind = 0;
@@ -391,7 +355,6 @@ $(document).ready(function() {
                 }
             };
             
-//            highlightEndId(closeLayers[0]._tripProperties.trip_id);
             highlightById(closeLayers[wasHigh]._tripProperties.trip_id);
             closeLayers[wasHigh].bringToFront();
             
@@ -451,8 +414,7 @@ $(document).ready(function() {
 
             //console.log(debugStr);
         }
-    }
-    ;
+    };
     map.on('click', mapClicked);
 
     //processing
@@ -652,6 +614,7 @@ $(document).ready(function() {
                         }
 
                         // here we could build back-pointers to agents with these properties
+                        /*
                         var propNameGroup = propName + "_pointers";
 
                         if (STATS.byAgentProp[propNameGroup] == null) {
@@ -663,6 +626,7 @@ $(document).ready(function() {
                         } else {
                             pointerArr[value].push(agent_id);
                         }
+                        */
                         // \ end of that ... we probably won't use it anyway ...
                     });
 
@@ -754,7 +718,6 @@ $(document).ready(function() {
                 
                 /* ende-STATS */
 
-                //var multiPointArray = "["; // store only first and last coordinate segment
                 var lineStrArr = "["; // store all coordinates to form MultiLine
 
                 // Random offset with random string seed
@@ -763,12 +726,10 @@ $(document).ready(function() {
 
                 var FirstSegment = jQuery.parseJSON(trip._legs.leg0.geojsonpath).coordinates[0];
                 FirstSegment = offsetArrayOfPoints(FirstSegment, offset);
-                //multiPointArray += "[" + FirstSegment[0] + "],"
 
                 $.each(trip._legs, function(j, leg) {
                     // <offset?>
                     var coordinates = jQuery.parseJSON(leg.geojsonpath).coordinates[0];
-                    // coordinates is array of points
                     coordinates = offsetArrayOfPoints(coordinates, offset);
 
                     lineStrArr += JSON.stringify(coordinates) + ",";
@@ -791,9 +752,6 @@ $(document).ready(function() {
             });
 
             //console.log(STATS.Agents);
-            //console.log(STATS.byAgentProp);
-            //console.log(STATS.Legs);
-            //console.log(STATS.byTimeDist);
         }
     }
 
@@ -838,11 +796,8 @@ $(document).ready(function() {
         
         xhr = $.post("getFilteredData.jsp", dataToBeSent)
                 .done(function(data) {
-                    //clear map
-                    //if ($("#autoReset").is(':checked')) {
-                        clearMap();
-                    //}
-                    //
+                    clearMap();
+            
                     //recieve response
                     //$(".tempServerResponseTxt").show();
                     //$(".tempServerResponse").show();
@@ -913,8 +868,6 @@ $(document).ready(function() {
     function collectDataFromForm(isExploratory) {
         //prepare data
         var dataToBeSent = {};
-//         setIfNotEmpty(dataToBeSent, "agent_id", $("#agent_id").val());
-//         setIfNotEmpty(dataToBeSent, "trip_id", $("#trip_id").val());
         // by activity
         setIfSelected(dataToBeSent, "from_act", $("#from_act").val());
         setIfSelected(dataToBeSent, "to_act", $("#to_act").val());
@@ -974,13 +927,8 @@ $(document).ready(function() {
 
     // Bind (Isaac) form change onto function
     function onChange(e) {
-        //console.log(e);
         //alert("Something changed ... i can smell it in the water!\n"+e);
-
-        // CALL SCRIPT THAT WILL EVALUATE THE NUMBER OF Trips/Agents/Legs AFFECTED
-        // call small script - only explore
-        //collectDataFromForm(true);
-        // call the whole Behemoth with all drawing ...
+        // call the whole Behemoth with all trip-drawing ...
         collectDataFromForm(false);
     }
 
@@ -1044,32 +992,7 @@ $(document).ready(function() {
     var buttonStr = "<input type=\"button\" class=\"btn btn-default\" value=\"Redraw grid\" id=\"ButtonRedraw\"/>" +
                     "<input type=\"button\" class=\"btn btn-default\" value=\"Delete grid\" id=\"ButtonDeleteGrid\"/>";
     var openedControlPanel = false;
-/* <VARIANT A>
-    $(".custom-control-panel").html("<span class=\"click-able-title\"><i class=\"fa fa-cog\"></i> Control panel</span> <span class=\"symbol\">&nbsp;</span> <span class=\"toggle-part\">"+buttonStr+"</span>");
-    $(".custom-control-panel .click-able-title").toggle(
-        function() {
-            $(".custom-control-panel .toggle-part").show();
-            openedControlPanel = true;
-            $(".custom-control-panel .symbol").html("<i class=\"fa fa-angle-left\"></i>");
-        }, function() {
-            $(".custom-control-panel .toggle-part").hide();
-            openedControlPanel = false;
-            $(".custom-control-panel .symbol").html("<i class=\"fa fa-angle-right\"></i>");
-        }
-    );
-    $(".custom-control-panel .click-able-title").mouseover(function() {
-        if (openedControlPanel) {
-            $(".custom-control-panel .symbol").html("<i class=\"fa fa-angle-left\"></i>");
-        } else {
-            $(".custom-control-panel .symbol").html("<i class=\"fa fa-angle-right\"></i>");
-        }
-    });
-    $(".custom-control-panel .click-able-title").mouseout(function() {
-        $(".custom-control-panel .symbol").html("&nbsp;");
-    });
-*/
-/* <VARIANT B> */
-//    $(".custom-control-panel").html("<table class=\"control-panel-tab\"><tr><td><span class=\"click-able-title\"><i class=\"fa fa-cog\"></i> <span class=\"shown-on-mouseover\">Control panel <span class=\"symbol\">&nbsp;</span></span></span> <span class=\"toggle-part\">"+buttonStr+"</span><td></tr></table>");
+
     $(".custom-control-panel").html("<div class=\"v-align\"><span class=\"click-able-title\"><i class=\"fa fa-cog\"></i> <span class=\"shown-on-mouseover\">Control panel <span class=\"symbol\">&nbsp;</span></span></span></div> <div class=\"v-align\">&nbsp;<span class=\"toggle-part\">"+buttonStr+"</span></div>");
     $(".custom-control-panel .v-align:first").toggle(
         function() {
@@ -1112,7 +1035,4 @@ $(document).ready(function() {
     });
     // #ButtonGenGraphsTMP in graphFunc.js
     
-
-    
-
 });

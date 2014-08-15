@@ -6,11 +6,10 @@
         <title>TripVisualizer v0.0.0f</title>
 
         <!-- --LEAFLET-- -->
-        <!-- delete -src -->
         <!--<link rel="stylesheet" href="leaflet/leaflet-0.7.3/leaflet.css" />
         <script src="leaflet/leaflet-0.7.3/leaflet-src.js" type="text/javascript"></script>-->
         <link rel="stylesheet" href="leaflet/leaflet-0.8-dev-master/leaflet.css" />
-        <script type="text/javascript" src="leaflet/leaflet-0.8-dev-master/leaflet-src.js"></script>
+        <script type="text/javascript" src="leaflet/leaflet-0.8-dev-master/leaflet.js"></script> <!-- -src toggle the minified version -->
         <!-- 0.8 dev is faster in Chrome, but requires small hack in order for Google.js to work -->
         <script type="text/javascript" src="leaflet/plugins/leaflet-hack-google.js"></script>
 
@@ -82,25 +81,6 @@
                             </div>
                         </td>
                     </tr>
-                    <!--<tr style="height: 60px;">
-                        <td>
-                            <div class="well well-sm">
-                                </!-- --FOOTER-- --/>
-                                <strong>Control panel:</strong><br>
-                                <input type="button" class="btn btn-default" value="Clear map" id="ButtonClearMap"/>
-                                <input type="button" class="btn btn-default" value="Redraw grid" id="ButtonRedraw"/>
-                                <input type="button" class="btn btn-default" value="Delete grid" id="ButtonDeleteGrid"/>
-                                </!--<input type="button" class="btn btn-default" value="Generate graphs from current filters" id="ButtonGenGraphsTMP"/>--/>
-
-                                
-                                <br>
-                                <em class="tempServerResponseTxt" style="color: red; display: none;">Temporary server response (accepted request parameters):</em>
-                                <pre class="tempServerResponse" style="border: red solid 1px; display: none;">
-    (server response)
-                                </pre>
-                            </div>
-                        </td>
-                    </tr>-->
                 </table>
             </div>
             <!-- /#sidebar-wrapper -->
