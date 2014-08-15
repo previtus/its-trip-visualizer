@@ -67,6 +67,7 @@ body {
     font-weight: normal;
     font-size: 0.9em;
     color: #fff;
+    margin-bottom: 0px;
 }
 .btn-group {
     margin-bottom: 1px;
@@ -137,6 +138,23 @@ body {
 .ui-accordion .ui-accordion-content h4 {
     text-align: left;
 }
+
+/* .exclusionSelect is line breaking in Firefox
+.exclusionSelect div, .exclusionSelect span {
+    display: inline;
+} */
+
+/* filter elements with the same width */
+.btn-group {
+    width: 128px;
+}
+.ageSpecialSelect .btn-group {
+    width: 57px; /* = (btn-group.width/2) - 7px*/
+}
+.exclusionSelect label {
+    width: 45px;
+}
+
 /* etc */
 #invisCheckbox {
     display: none;
@@ -230,5 +248,15 @@ body {
     #sidebar-wrapper {
         position: relative;
         width: 100%;
+        height: 95%;
+        display: block;
+    }
+}
+
+/* mobile / tablet */
+@media only screen and (max-device-width: 480px) {
+    #sidebar-wrapper {
+        position: relative;
+        width: 90%;
     }
 }
