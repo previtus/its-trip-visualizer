@@ -1012,26 +1012,15 @@ $(document).ready(function() {
         dropRight: true,
         onDropdownHide: function(element, checked) {
             onChange(element);
-
-            //alert( $('.multiselectAgesFrom').val() );
-            //$(".multiselectAgesTo").children().prop('disabled', false);
-            //$(".multiselectAgesTo").children().slice(0, $('.multiselectAgesFrom').val() ).prop('disabled', true);
-            //$(".multiselectAgesTo").children().each(function(){
-            //    $(this).prop('disabled', true);
-            //});
-            //minAgeSetTo($('.multiselectAgesFrom').val());
         }
     });
     $(".multiselectAgesTo").multiselect({
         buttonClass: 'btn btn-sm form-control',
         enableFiltering: true,
         maxHeight: 400,
+        dropRight: true,
         onDropdownHide: function(element, checked) {
             onChange(element);
-
-            //$(".multiselectAgesFrom").children().attr("disabled", "enabled");
-            //$(".multiselectAgesFrom").children().slice( $('.multiselectAgesFrom').val() ).attr("disabled", "disabled");
-            //maxAgeSetTo($('.multiselectAgesTo').val());
         }
     });
 
