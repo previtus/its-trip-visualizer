@@ -1,3 +1,7 @@
+<%/*
+    File representing server side of this project. Is called by AJAX with filtration criteria in POST. 
+    Uses this data to create query to PostgreSQL + PostGIS database and finally formates its output in JSON data object.
+*/%>
 <%@page import="java.util.Arrays"%>
 <%@page import="tripVisualizerPkg.connection"%>
 <%@page import="java.io.IOException"%>
@@ -11,6 +15,9 @@
 <%@page import="java.sql.*"%>
 <%@page import="org.json.simple.JSONObject"%>
 <%
+    /*
+        Establishing connection and required data
+    */
     boolean error = false;
     boolean debug_output_request = false; // does interfere with client-server interaction
     boolean debug_output_query = true; // can be running with correct client-server interaction
@@ -236,6 +243,10 @@
                 System.out.print(whereCondition.toString());
                 System.out.print("|\n\n");
             }
+            
+            /*
+                Assembles the final query and sends it to database.
+            */
             if (isExploratory) {
                 // only exploring how many agents/trips/legs will be affected
                 //out.println(whereCondition.toString());
@@ -288,6 +299,9 @@
                 ResultSet res = preparedAgregation.executeQuery();
                 res.next();
                 
+                /*
+                    Handle database response. Simplified query - only exploratory (only fetching number of affected agents, trips, legs).
+                */
                 JSONObject json = new JSONObject();
                 json.put("agents", res.getString(1));
                 json.put("trips", res.getString(2));
@@ -397,6 +411,10 @@
                 int distinct_trips = 0;
                 ArrayList<String> distinct_agent_ids = new ArrayList<String>();
                 
+                /*
+                    Handle database response.
+                */
+                
                 while (result_common.next()) {
                     rows++;
                     HashMap<String, String> row = new HashMap();
@@ -476,6 +494,9 @@
             out.flush();  
         }
     }
+    /*
+        Adding statistic relevant data.
+    */
     if (!error && !isExploratory) {
         
         JSONObject json = new JSONObject();
