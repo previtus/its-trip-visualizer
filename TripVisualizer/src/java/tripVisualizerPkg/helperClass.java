@@ -1,7 +1,13 @@
 package tripVisualizerPkg;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 public class helperClass {
@@ -78,7 +84,42 @@ public class helperClass {
     
     public static boolean executeQuery(Connection conn, String q) {
         System.out.println("<QUERY> "+q);
-        return true;
+        try {
+            Statement st = conn.createStatement();
+            st.executeUpdate(q);
+            return true;
+        } catch (SQLException ex) {
+            System.out.println("Query exection error; E:\n"+ex.getMessage());
+            return false;
+        }
     }
     
+    public static String tableToOutput(Connection conn, String tableName) {
+        String OUTPUT_STR = "";
+        try {
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery("SELECT * FROM " + tableName + ";");
+
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columns = rsmd.getColumnCount();
+            OUTPUT_STR += "<table border='1'><tr><th>row</th>";
+            for (int col = 0; col < columns; col++) {
+                OUTPUT_STR += "<th>" + rsmd.getColumnName(col + 1) + "</th>";
+            }
+            OUTPUT_STR += "</tr>";
+            int rows = 0;
+            while (rs.next()) {
+                rows++;
+                OUTPUT_STR += "<tr><td>"+rows+"</td>";
+                for (int col = 0; col < columns; col++) {
+                    OUTPUT_STR += "<td>" + rs.getString(col + 1) + "</td>";
+                }
+                OUTPUT_STR += "<tr>";
+            }
+            OUTPUT_STR += "</table>";
+        } catch (SQLException ex) {
+            OUTPUT_STR = "Error:\n"+ex.getMessage();
+        }
+        return OUTPUT_STR;
+    }
 }

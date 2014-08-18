@@ -3,7 +3,6 @@
 <%@page import="tripVisualizerPkg.helperClass"%>
 <%@page import="java.sql.*"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<pre>
 <%
     /*
         Establish connection
@@ -23,16 +22,22 @@
         Connection conn = DriverManager.getConnection(URL, USER, PASS);
         Statement st = conn.createStatement();
 
-        int trip_id = 1;
-        //ResultSet rs = st.executeQuery("SELECT * FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id WHERE t.trip_id='"+trip_id+"'");
         ResultSet rs = st.executeQuery("SELECT * FROM public.config;");
         
+%>
+<h1>Before</h1>
+<%
+        out.print( helperClass.tableToOutput(conn, "public.config") );
+%>
+<h1>Refreshing ...</h1>
+<%
         ResultSetMetaData rsmd = rs.getMetaData();
         int columns = rsmd.getColumnCount();
         int rows = 0;
         HashMap<String, HashMap> Data = new HashMap<String, HashMap>();
-        
+        out.print("<pre>");
         while (rs.next()) {
+            out.println("-------------- ROW "+rows+" --------------");
             /*
                 For each row:
             */
@@ -88,22 +93,9 @@
             out.println("min_time => "+min);
             out.println("max_time => "+max);
             
-            // Perform changes:
-            StringBuilder changes = new StringBuilder();
-            for (String attr : CHANGE.keySet()) {
-                String val = CHANGE.get(attr);
-                //|<attr>='<val>', |
-                changes.append(attr+"='"+val+"', ");
-            }
-            changes.setLength(changes.length()-2); // remove last |, |
-            
-            String queryToPerform = "UPDATE public.config SET "+changes.toString()+" WHERE table_name='"+tableName+"';";
-            out.println("\n"+queryToPerform+"\n");
-            helperClass.executeQuery(conn, queryToPerform);
-            
             /* <]---<GRID SETTINGS>---[> */
             //map_center_x, map_center_y, grid_step_x, grid_step_y, grid_repetition_x, grid_repetition_y
-/*
+
             Statement st_grid = conn.createStatement();
             ResultSet rs_grid = st_grid.executeQuery("SELECT "
                 +"ST_X((foo).geom), ST_Y((foo).geom) "
@@ -124,30 +116,85 @@
             rs_grid.next();
             String d_x = rs_grid.getString(1);
             String d_y = rs_grid.getString(2);
-*/
+
             /*MANUAL HAX*/
-String a_x="16.558416999999999"; String a_y="49.165300999999999";
+/*String a_x="16.558416999999999"; String a_y="49.165300999999999";
 String b_x="16.558416999999999"; String b_y="49.245753999999998";
 String c_x="16.669551999999999"; String c_y="49.245753999999998";
-String d_x="16.669551999999999"; String d_y="49.165300999999999";
-            out.println(a_x+" "+a_y);
-            out.println(b_x+" "+b_y);
-            out.println(c_x+" "+c_y);
-            out.println(d_x+" "+d_y);
+String d_x="16.669551999999999"; String d_y="49.165300999999999";*/
+            out.println("A: "+a_x+" "+a_y);
+            out.println("B: "+b_x+" "+b_y);
+            out.println("C: "+c_x+" "+c_y);
+            out.println("D: "+d_x+" "+d_y);
             
-            // {"type":"Polygon","coordinates":[[[16.558417,49.165301],[16.558417,49.245754],[16.669552,49.245754],[16.669552,49.165301],[16.558417,49.165301]]]}
-            //String gridConvex = "{\"type\":\"Polygon\",\"coordinates\":[[[16.558417,49.165301],[16.558417,49.245754],[16.669552,49.245754],[16.669552,49.165301],[16.558417,49.165301]]]}";
+            double[] a = {Double.parseDouble(a_x), Double.parseDouble(a_y)};
+            double[] b = {Double.parseDouble(b_x), Double.parseDouble(b_y)};
+            double[] c = {Double.parseDouble(c_x), Double.parseDouble(c_y)};
+            double[] d = {Double.parseDouble(d_x), Double.parseDouble(d_y)};
             
-            //out.println("gridConvex:");
-            //out.println(gridConvex);
-        }
-        
-        out.print("<br>"+OUTPUT_STR);
+            // central point
+            double[] center = new double[2];
+            center[0] = (a[0]+b[0]+c[0]+d[0])/4;
+            center[1] = (a[1]+b[1]+c[1]+d[1])/4;
+            
+            int m = 100000;
+            center[0] = ((double)Math.round(center[0]*m))/m;
+            center[1] = ((double)Math.round(center[1]*m))/m;
+            
+            CHANGE.put("map_center_x", center[0]+"");
+            CHANGE.put("map_center_y", center[1]+"");
+            
+            out.println("CENTER: "+center[0]+" "+center[1]);
+            
+            // predefined values for step_x/y
+            double step_x = 0.0108;
+            double step_y = 0.03;
+            CHANGE.put("grid_step_x", step_x+"");
+            CHANGE.put("grid_step_y", step_y+"");
 
+            // counting repetition times == GridSettings.x/y_times
+            double distance_x = Math.abs(c[1] - center[1]);
+            double distance_y = Math.abs(c[0] - center[0]);
+            
+            double offset_x = 0;
+            double offset_y = 0;
+            
+            int repetition_x = (int) Math.ceil( (distance_x + offset_x)/step_x );
+            int repetition_y = (int) Math.ceil( (distance_y + offset_y)/step_y );
+            out.println("REPEAT: "+repetition_x+" "+repetition_y);
+
+            CHANGE.put("grid_repetition_x", repetition_x+"");
+            CHANGE.put("grid_repetition_y", repetition_y+"");
+
+            
+            // Perform changes:
+            StringBuilder changes = new StringBuilder();
+            for (String attr : CHANGE.keySet()) {
+                String val = CHANGE.get(attr);
+                //|<attr>='<val>', |
+                changes.append(attr+"='"+val+"', ");
+            }
+            changes.setLength(changes.length()-2); // remove last |, |
+            
+            String queryToPerform = "UPDATE public.config SET "+changes.toString()+" WHERE table_name='"+tableName+"';";
+            out.println("\n"+queryToPerform);
+            boolean boo = helperClass.executeQuery(conn, queryToPerform);
+            if (boo) { out.println("OK"); } else { out.println("ERROR"); };
+            out.println(" -------------- * --------------");
+        }
+        out.print("<br>"+OUTPUT_STR);
+        out.print("</pre>");
+%>
+<h1>After</h1>
+<%
+        out.print( helperClass.tableToOutput(conn, "public.config") );
+        
         conn.close();
     } catch (SQLException es) {
         out.print("Connection error; E:\n"+es.getMessage());
         es.printStackTrace();
     }
+// restart sql:    
+// UPDATE public.config SET map_center_y='0', grid_step_x='0', grid_step_y='0', map_center_x='0', grid_repetition_x='0', max_time='0', grid_repetition_y='0', min_time='0' WHERE table_name='only_brno_extracted';
+// UPDATE public.config SET map_center_y='0', grid_step_x='0', grid_step_y='0', map_center_x='0', grid_repetition_x='0', max_time='0', grid_repetition_y='0', min_time='0' WHERE table_name='only_brno_extracted_copy';
 %>
-</pre>

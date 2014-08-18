@@ -1,15 +1,16 @@
 /* FUNCTIONS USED AFTER DOCUMENT LOADED */
 /* Most of map functionality is stored in this file. */
-
+var map;
+var globalGridHandler;
 $(document).ready(function() {
     var debug = true;
 
-    // default for Brno > [16.6142195, 49.205567]
-    var map_center_x = 49.205567;
-    var map_center_y = 16.6142195;
+    // default for Brno > [16.61398, 49.20553];
+    var map_center_x = 49.20553;
+    var map_center_y = 16.61398;
 
     // INITIALIZATION:
-    var map = L.map('map', {
+    map = L.map('map', {
         center: [map_center_x, map_center_y],
         zoom: 13
     });
@@ -62,7 +63,7 @@ $(document).ready(function() {
     // GRID OVERLAY
     // grid settings
     var SelectedPolygons = [];
-    var gridCenter = [16.6142195, 49.205567];
+    var gridCenter = [16.61398, 49.20553];
     var GridSettings = {
         start_x: gridCenter[1],
         start_y: gridCenter[0],
@@ -71,8 +72,22 @@ $(document).ready(function() {
         x_times: 4,
         y_times: 2
     }; // x - north<->south; y - east<->west
+    
+    globalGridHandler = {
+        setConfig : function() {
+            GridSettings.start_x = parseFloat(CONFIG.map_center_y);
+            GridSettings.start_y = parseFloat(CONFIG.map_center_x);
+            GridSettings.x_step  = parseFloat(CONFIG.grid_step_x);
+            GridSettings.y_step  = parseFloat(CONFIG.grid_step_y);
+            GridSettings.x_times = parseFloat(CONFIG.grid_repetition_x);
+            GridSettings.y_times = parseFloat(CONFIG.grid_repetition_y);
+        },
+        draw : function() {drawGrid();}
+    }
 
     function drawGrid() {
+        console.log(GridSettings);
+        
         if (gridIsDrawn) {
             deleteGrid();
         }
@@ -130,7 +145,7 @@ $(document).ready(function() {
     }
 
     map.addLayer(gridLayer);
-    drawGrid();
+    //drawGrid();
 
     // visualization
     function getLayerByTripId(tripId) {
