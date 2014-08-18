@@ -36,7 +36,7 @@ function countAgeCategoryFromAge(age) {
 // selection of initial values (if we encounter new one, it will be added dynamicly); These values will be written out even if their value is 0 (by default)
 var InitNamesForAgentProps = {};
 InitNamesForAgentProps.gender = ["FEMALE","MALE"];
-InitNamesForAgentProps.education = ["SECONDARY_WITHOUT_FINAL_EXAM","SECONDARY_WITH_FINAL_EXAM","BASIC","UNIVERSITY","null","HIGHER_PROFESSIONAL"];
+InitNamesForAgentProps.education = ["SECONDARY_WITHOUT_FINAL_EXAM","SECONDARY_WITH_FINAL_EXAM","BASIC","UNIVERSITY","NONE","HIGHER_PROFESSIONAL"];
 InitNamesForAgentProps.marital_status = ["MARRIED","SINGLE","DIVORCED","WIDOWED"];
 InitNamesForAgentProps.economic_activity = ["WORKING","SECONDARY_SCHOOL","UNIVERSITY_STUDENT","PRIMARY_SCHOOL"];
 InitNamesForAgentProps.drivers_licence = ["t","f"];
@@ -47,7 +47,7 @@ var InitTypesForLegs = {};
 InitTypesForLegs.type = ["CAR","PT","WALK"];
 
 var InitTypesForTrips = {};
-InitTypesForTrips.to_activity = ["SLEEP","WORK","SCHOOL","LEISURE","SHOP_DAILY","SHOP_LONG"];
+InitTypesForTrips.to_activity = ["SLEEP","WORK","SCHOOL","LEISURE","SHOP_DAILY","SHOP_LONG","NONE"];
 InitTypesForTrips.from_activity = InitTypesForTrips.to_activity;
 
 function catTostr(cat) {

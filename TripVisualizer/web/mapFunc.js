@@ -4,8 +4,9 @@
 $(document).ready(function() {
     var debug = true;
 
-    var map_center_x = 49.198;
-    var map_center_y = 16.62;
+    // default for Brno > [16.6142195, 49.205567]
+    var map_center_x = 49.205567;
+    var map_center_y = 16.6142195;
 
     // INITIALIZATION:
     var map = L.map('map', {
@@ -61,7 +62,7 @@ $(document).ready(function() {
     // GRID OVERLAY
     // grid settings
     var SelectedPolygons = [];
-    var gridCenter = [16.6142195, 49.205567]
+    var gridCenter = [16.6142195, 49.205567];
     var GridSettings = {
         start_x: gridCenter[1],
         start_y: gridCenter[0],
@@ -331,14 +332,16 @@ $(document).ready(function() {
                 var TripInfo = tripLayer._tripProperties;
                 var legInfo = "";
                 $.each(TripInfo._legs, function(j, leg) {
-                    legInfo += leg.type + " | ";
+                    var legTime = msecToTimePeriod( (leg.l_end_time-leg.l_start_time) );
+                    legInfo += "<span title='duration: "+legTime+"'>" + leg.type + "</span> | ";
                 });
                 legInfo = legInfo.slice(0, -3);
 
                 var nameFromAgentId = "Citizen "+(TripInfo.agent_id+"").slice(7); //CitizenXYZ
+                var timePeriod = msecToTimePeriod( (TripInfo.t_end_time-TripInfo.t_start_time) );
                 var localDesc = "<div class='tripDesc' id='"+TripInfo.trip_id+"'><span class=\"symbol\">+</span> <span style='color: " + TripInfo._colorCoding + ";'><strong>" + nameFromAgentId + "</strong></span><br>"
                         + "<div class='tripDescDetails'>"
-                        + "<strong>trip time:</strong> <small>" + msecToTime(TripInfo.t_start_time) + " to " + msecToTime(TripInfo.t_end_time) + "</small><br>"
+                        + "<strong>trip time:</strong> <small>" + msecToTime(TripInfo.t_start_time) + " to " + msecToTime(TripInfo.t_end_time) + " ("+timePeriod+")</small><br>"
                         + "<strong>trip dest:</strong> <small>" + TripInfo.from_activity.toLowerCase() + " -> " + TripInfo.to_activity.toLowerCase() + "</small><br>"
                         + "<div class='agentInfoBar'>"
                             + "<strong>gender:</strong> "+ genderToStr(TripInfo.gender) + " <strong>age:</strong> "+ TripInfo.age + "<br>"

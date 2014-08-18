@@ -88,6 +88,22 @@ function msecToTimeHM(milliseconds) {
     var str = date.getUTCHours() + ":" + minTwoDigits(date.getUTCMinutes());
     return str;
 }
+function msecToTimePeriod(milliseconds) {
+    var date = new Date(new Number(milliseconds));
+    var str = "";
+    if (date.getUTCHours() > 1) {
+        str += date.getUTCHours() + " hours, "
+    } else if (date.getUTCHours() > 0) {
+        str += date.getUTCHours() + " hour, "
+    }
+    if (date.getUTCMinutes() > 0) {
+        str += minTwoDigits(date.getUTCMinutes()) + " min"
+    }
+    if (str == "") {
+        str = "less than minute";
+    }
+    return str;
+}
 
 function randRedColor(huehuehue) {
     var c = jQuery.Color( "red" );

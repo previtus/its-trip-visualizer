@@ -100,7 +100,9 @@ $(document).ready(function() {
     function addLine(coordX, coordY, desc) {
         $('#pointTab tr:last').after('<tr><td>'+desc+'</td> <td>'+coordX+'</td> <td>'+coordY+'</td></tr>');
     }
-    
+    function addLineB(coordX, coordY, desc) {
+        $('#pointTab tr:last').after('<tr style="font-weight: bold"><td>'+desc+'</td> <td>'+coordX+'</td> <td>'+coordY+'</td></tr>');
+    }
     function processBoundingBoxCoordsFromJSON(jsonObj) {
         var coords = jsonObj.coordinates[0];
         console.log(coords);
@@ -141,7 +143,8 @@ $(document).ready(function() {
         
         console.log(ab);
         createPoint(s[0],s[1],"s");
-        addLine(s[1],s[0],"grid settings start_x/y = s");
+        addLineB(s[1],s[0],"grid settings start_x/y = s");
+        addLineB(GridSettings.y_step,GridSettings.x_step,"grid settings step_x/y");
         GridSettings.start_x = s[1];
         GridSettings.start_y = s[0];
         
@@ -155,8 +158,8 @@ $(document).ready(function() {
         addLine(distance_x,distance_y,"distances");
         
         // do we need to add offset?
-        var offset_x = 0.001;
-        var offset_y = 0.001;
+        var offset_x = 0;
+        var offset_y = 0;
         createPoint(( parseFloat(a[0]) - offset_y ),( parseFloat(a[1]) - offset_x ),"a+off");
         createPoint(( parseFloat(b[0]) - offset_y ),( parseFloat(b[1]) + offset_x ),"b+off");
         createPoint(( parseFloat(c[0]) + offset_y ),( parseFloat(c[1]) + offset_x ),"a+off");
@@ -172,7 +175,7 @@ $(document).ready(function() {
         
         var x_times = Math.ceil( (distance_x + offset_x)/x_step );
         var y_times = Math.ceil( (distance_y + offset_y)/y_step );
-        addLine(x_times,y_times,"grid settings x/y_times");
+        addLineB(x_times,y_times,"grid settings x/y_times");
         GridSettings.x_times = x_times;
         GridSettings.y_times = y_times;
     }

@@ -44,7 +44,7 @@
     
     // [additionalConditioning] will be added to all queries after WHERE ... <here>
     StringBuilder additionalConditioning = new StringBuilder();
-    additionalConditioning.append("l.type <> 'TELEPORT'");
+    //additionalConditioning.append("l.type <> 'TELEPORT'");
     // next addition MUST contain ' AND ...' \\
     
     // PREPARE STRUCTURE
@@ -253,10 +253,10 @@
                 String whereString = "";
                 if (addedAtLeastOneCondition) {
                     whereString = "WHERE "+whereCondition.toString();
-                    if (!additionalConditioning.equals("")) {
+                    if (additionalConditioning.length() > 0) {
                         whereString += " AND " + additionalConditioning.toString();
                     }
-                } else if (!additionalConditioning.equals("")) {
+                } else if (additionalConditioning.length() > 0) {
                     whereString += "WHERE " + additionalConditioning.toString();
                 }
                 String intersectionDeclarationString = "";
@@ -314,7 +314,7 @@
                 PreparedStatement preparedAllLegs;
                 if (!addedAtLeastOneCondition) {
                     String specialWhereClause = "";
-                    if (!additionalConditioning.equals("")) {
+                    if (additionalConditioning.length() > 0) {
                         specialWhereClause += " WHERE " + additionalConditioning.toString();
                     }
                     // No needs to add conditions...
@@ -341,7 +341,7 @@
                     
                     String whereString = "";
                     whereString = "WHERE "+whereCondition.toString();
-                    if (!additionalConditioning.equals("")) {
+                    if (additionalConditioning.length() > 0) {
                         whereString += " AND " + additionalConditioning.toString();
                     }
                     

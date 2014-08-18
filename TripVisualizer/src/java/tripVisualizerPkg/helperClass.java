@@ -1,5 +1,6 @@
 package tripVisualizerPkg;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 
@@ -41,6 +42,7 @@ public class helperClass {
                     comp = "LIKE";
                 }
                 
+                whereCondition.append("(");
                 for (int i=0; i<var_array.length; i++) {
                     whereCondition.append(tableName).append(" ").append(comp).append(" ? OR ");
                     if (like) {
@@ -52,7 +54,7 @@ public class helperClass {
                     types.add(helperClass.VarTypes.StrVar);
                 }
                 whereCondition.setLength(whereCondition.length()-3); // delete last "OR "
-                whereCondition.append("AND ");
+                whereCondition.append(") AND ");
                 return true;
             }
             return false;
@@ -72,6 +74,11 @@ public class helperClass {
             }
         }
         return Mordor;
+    }
+    
+    public static boolean executeQuery(Connection conn, String q) {
+        System.out.println("<QUERY> "+q);
+        return true;
     }
     
 }
