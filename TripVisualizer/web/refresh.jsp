@@ -3,6 +3,34 @@
 <%@page import="tripVisualizerPkg.helperClass"%>
 <%@page import="java.sql.*"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Configuration refreasher for TripVisualizer</title>
+        <style type="text/css">
+            body {
+                background-color: #407394; /*MAIN COLOR*/
+                color: white;
+            }
+            h1 {
+                color: white;
+            }
+            
+            pre {
+                color: #C1D2DC;
+                margin-left: 50px;
+                overflow-x: scroll;
+                width: 90%;
+            }
+            
+            table {
+                background-color: white;
+                color: #000;
+                border: 1px solid rgba(86, 61, 124, 0.2);
+                border-radius: 4px;
+            }
+        </style>
+    </head>
 <%
     /*
         Establish connection
