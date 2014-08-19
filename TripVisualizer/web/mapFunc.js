@@ -2,6 +2,7 @@
 /* Most of map functionality is stored in this file. */
 var map;
 var globalGridHandler;
+var globalChangeHandler;
 $(document).ready(function() {
     var debug = true;
 
@@ -908,12 +909,6 @@ $(document).ready(function() {
         setIfSelected(dataToBeSent, "driveLicence", $('input[name=driveLicence]:checked').val());
         setIfSelected(dataToBeSent, "ptCard", $('input[name=ptCard]:checked').val());
 
-        // add rectangle selection filter
-        setIfNotEmpty(dataToBeSent, "bound_a_lat", $("#BoundA_lat").val());
-        setIfNotEmpty(dataToBeSent, "bound_a_lon", $("#BoundA_lon").val());
-        setIfNotEmpty(dataToBeSent, "bound_b_lat", $("#BoundB_lat").val());
-        setIfNotEmpty(dataToBeSent, "bound_b_lon", $("#BoundB_lon").val());
-
         // add time period filter
         // default values: min: 2262200, max: 85944980
         if ($("#timeRange_slider").slider("values", 0) > 2262200) {
@@ -924,6 +919,9 @@ $(document).ready(function() {
         }
 
         dataToBeSent.isExploratory = isExploratory;
+
+        // add source for data from currently selected city
+        dataToBeSent.source = "only_brno_extracted";
 
         if (gridIsDrawn) {
             //dataToBeSent.boundaries = JSON.stringify(SelectedPolygons);
@@ -944,11 +942,13 @@ $(document).ready(function() {
     });
 
     // Bind (Isaac) form change onto function
+    
     function onChange(e) {
         //alert("Something changed ... i can smell it in the water!\n"+e);
         // call the whole Behemoth with all trip-drawing ...
         collectDataFromForm(false);
     }
+    globalChangeHandler = function () { onChange() };
 
     $("select").change(function(e) {
         if (e.originalEvent) { // filter only user interaction
@@ -961,23 +961,40 @@ $(document).ready(function() {
         }
     });
 
+    var flagValueHasBeenChanged = false;
     $(".multiselectCustom").multiselect({
         buttonClass: 'btn form-control',
         includeSelectAllOption: true,
         numberDisplayed: 2,
         dropRight: true,
-        onDropdownHide: function(element, checked) {
-            onChange(element);
+        onDropdownShow: function(event) {
+            flagValueHasBeenChanged = false;
+        },
+        onChange: function(element, checked) {
+            flagValueHasBeenChanged = true;
+        },
+        onDropdownHide: function(event) {
+            if (flagValueHasBeenChanged) {
+                onChange(event);
+            }
+            flagValueHasBeenChanged = false;
         }
     });
 
+    var fromValue = "";
+    var toValue = "";
     $(".multiselectAgesFrom").multiselect({
         buttonClass: 'btn btn-sm form-control',
         enableFiltering: true,
         maxHeight: 400,
         dropRight: true,
-        onDropdownHide: function(element, checked) {
-            onChange(element);
+        onDropdownShow: function(event) {
+            fromValue = $(".multiselectAgesFrom").val();
+        },
+        onDropdownHide: function(event) {
+            if ($(".multiselectAgesFrom").val() != fromValue) {
+                onChange(event);
+            }
         }
     });
     $(".multiselectAgesTo").multiselect({
@@ -985,14 +1002,19 @@ $(document).ready(function() {
         enableFiltering: true,
         maxHeight: 400,
         dropRight: true,
-        onDropdownHide: function(element, checked) {
-            onChange(element);
+        onDropdownShow: function(event) {
+            toValue = $(".multiselectAgesTo").val();
+        },
+        onDropdownHide: function(event) {
+            if ($(".multiselectAgesTo").val() != toValue) {
+                onChange(event);
+            }
         }
     });
 
-    $(window).load(function() {
-        onChange();
-    });
+//    $(window).load(function() {
+//        onChange();
+//    });
 
     // Info panels in MAP region (must be before ButtonRedraw, ButtonDeleteGrid binding)
     var MyControl = L.Control.extend({
