@@ -70,7 +70,7 @@ $(document).ready(function() {
     // bind only once
     $('.selectpicker').on('change', function(){
         var val = $(this).val();
-        console.log(val);
+        //console.log(val);
         selectedValue = val;
         loadConfig(val);
     });

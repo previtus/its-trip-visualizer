@@ -17,19 +17,12 @@ $(document).ready(function() {
     });
 
     var baseLayers =
-            ['OpenStreetMap.BlackAndWhite', 'OpenStreetMap.Mapnik', 'OpenStreetMap.HOT',
-                'OpenMapSurfer.Roads',
-                'MapQuestOpen.OSM', 'Stamen.Toner',
-                'Esri.WorldImagery', 'HERE.hybridDay',
-                'MapBox.previtus.iplk86k9'
-            ],
-            overlays = [
-                /*'OpenWeatherMap.Clouds', 'OpenWeatherMap.PrecipitationClassic',
-                 'OpenWeatherMap.PressureContour','OpenWeatherMap.Temperature',*/
-                'OpenMapSurfer.AdminBounds', 'Hydda.RoadsAndLabels'
+            ['OpenStreetMap.BlackAndWhite', 'OpenStreetMap.HOT',
+                'Stamen.Toner',
+                'Esri.WorldImagery'
             ];
 
-    var layerControl = L.control.layers.provided(baseLayers, overlays).addTo(map);
+    var layerControl = L.control.layers.provided(baseLayers).addTo(map);
 
     // adding by hand
     // MAPBOX MAPS
@@ -42,13 +35,6 @@ $(document).ready(function() {
     var color = L.tileLayer(mbUrl, {id: 'examples.map-i86knfo3', attribution: mbAttr});
 
     layerControl.addBaseLayer(grayscale, 'Mapbox grayscale');
-    layerControl.addBaseLayer(color, 'Mapbox color');
-    // GOOGLE MAPS
-    var googleMap = new L.Google();
-    var googleTerrain = new L.Google('TERRAIN');
-
-    layerControl.addBaseLayer(googleMap, 'Google');
-    layerControl.addBaseLayer(googleTerrain, 'Google Terrain');
 
     var gridLayer = new L.layerGroup();
     var gridIsDrawn = false;
@@ -954,7 +940,8 @@ $(document).ready(function() {
         }
     });
     $("input").change(function(e) {
-        if (e.originalEvent) {
+        // filtration of map layer selection
+        if (e.originalEvent && ($(this).attr("class") != "leaflet-control-layers-selector")) {
             onChange(e);
         }
     });
