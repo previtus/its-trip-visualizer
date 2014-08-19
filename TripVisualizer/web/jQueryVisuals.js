@@ -22,21 +22,21 @@ $(document).ready(function() {
     });
 
     // slider input TripId
-    $("#tripId_slider").slider({
-        range: true,
-        min: 0,
-        max: 283,
-        values: [10, 20],
-        slide: function(event, ui) {
-            $("#tripIdRange").val(ui.values[ 0 ] + " - " + ui.values[ 1 ]);
-        }
-    });
-    $("#tripIdRange").val($("#tripId_slider").slider("values", 0) + " - " + $("#tripId_slider").slider("values", 1));
-
+//    $("#tripId_slider").slider({
+//        range: true,
+//        min: 0,
+//        max: 283,
+//        values: [10, 20],
+//        slide: function(event, ui) {
+//            $("#tripIdRange").val(ui.values[ 0 ] + " - " + ui.values[ 1 ]);
+//        }
+//    });
+//    $("#tripIdRange").val($("#tripId_slider").slider("values", 0) + " - " + $("#tripId_slider").slider("values", 1));
+    
     $("#timeRange_slider").slider({
         range: true,
         min: 0000000,
-        max: 86400000,
+        max: 86400000, //1day = 86400000
         values: [0000000, 86400000-1],
         slide: function(event, ui) {
             $("#timeRange").val(msecToTime(ui.values[0]) + " - " + msecToTime(ui.values[1]));

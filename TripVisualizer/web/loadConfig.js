@@ -18,10 +18,18 @@ $(document).ready(function() {
                 globalGridHandler.setConfig();
                 globalGridHandler.draw();
                 
+                // slider min/max
+                $('#timeRange_slider').slider( "option", "min", parseFloat(CONFIG.min_time) );
+                $('#timeRange_slider').slider( "option", "max", parseFloat(CONFIG.max_time) );
+                $('#slider-range').slider( "option", "value", [0, parseFloat(CONFIG.max_time)-1]);
+                
                 // create city selector
                 
                 // make sure next data is loaded from new table!
                 
+                
+                // after all, reload drawn data
+                globalChangeHandler();
             });
     }
 });

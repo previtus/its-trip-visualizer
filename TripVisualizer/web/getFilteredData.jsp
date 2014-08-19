@@ -80,6 +80,25 @@
             ArrayList<String> valuesForConditions = new ArrayList<String>();
             Boolean addedAtLeastOneCondition = false;
 
+            // load permited values for table name (determined by selected city) from config
+            String tableName = request.getParameter("source");
+            
+            Statement st_permit = conn.createStatement();
+            ResultSet rs_permit = st_permit.executeQuery("SELECT table_name FROM public.config;");
+            ArrayList<String> permitedTableNames = new ArrayList<String>();
+            while (rs_permit.next()) {
+                permitedTableNames.add( rs_permit.getString(1) );
+            }
+            if (!permitedTableNames.contains(tableName)) {
+                System.out.print("ILLEGAL TABLE VALUE!!! "+tableName);
+                tableName = permitedTableNames.get(0);
+                System.out.println(" == set to ==> "+tableName);
+            }
+            /*System.out.println("permited:");
+            for (int i = 0; i < permitedTableNames.size(); i++) {
+                System.out.println(""+permitedTableNames.get(i));
+            }*/
+            
             // FILTERING BY ACTIVITY (trip)
             addedAtLeastOneCondition = helperClass.MultiselectMacro(R, "from_act[]", "t.from_activity", true, whereCondition,valuesForConditions, types) || addedAtLeastOneCondition;
             addedAtLeastOneCondition = helperClass.MultiselectMacro(R, "to_act[]", "t.to_activity", true, whereCondition,valuesForConditions, types) || addedAtLeastOneCondition;
