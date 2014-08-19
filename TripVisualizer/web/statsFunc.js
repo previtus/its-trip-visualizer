@@ -70,7 +70,7 @@ function initNames_forAgeCategories () {
 var minTime = 0000000;
 var maxTime = 86400000;
 var numberOfTimeCategories = 6; //6 is ok, 8 also
-var timeCatSize = (maxTime - minTime) / numberOfTimeCategories;
+var timeCatSize = Math.abs(maxTime - minTime) / numberOfTimeCategories;
 STATS.byTimeDist = {};
 initNames_forTimeCategories();
 
@@ -82,6 +82,7 @@ function initNames_forTimeCategories () {
 
 function timeCategoryFromTime(time) {
     var count = -1;
+    time -= minTime;
     while (time > 0) {
         time -= timeCatSize;
         count ++;
@@ -91,13 +92,14 @@ function timeCategoryFromTime(time) {
 
 function categoryNameFromCat(cat) {
     //return msecToTime(cat*timeCatSize)+"_to_"+msecToTime((cat+1)*timeCatSize);
-    return msecToTimeHM(cat*timeCatSize)+"_to_"+msecToTimeHM((cat+1)*timeCatSize -1);
+    return "from_"+msecToTimeHM((Number(cat*timeCatSize) + Number(minTime)));
+    //return msecToTimeHM(cat*timeCatSize + minTime)+"_to_"+msecToTimeHM((cat+1)*timeCatSize + minTime -1);
     //return cat+"="+(cat*timeCatSize)+"_to_"+((cat+1)*timeCatSize);
 }
 
 // -> for legs
-var numberOfLegTimeCategories = 8;
-var timeLegCatSize = (maxTime - minTime) / numberOfLegTimeCategories;
+var numberOfLegTimeCategories = 6;
+var timeLegCatSize = Math.abs(maxTime - minTime) / numberOfLegTimeCategories;
 STATS.byLegTimeDist = {};
 initNames_forLegTimeCategories();
 function initNames_forLegTimeCategories () {
@@ -108,6 +110,7 @@ function initNames_forLegTimeCategories () {
 
 function timeLegCategoryFromTime(time) {
     var count = -1;
+    time -= minTime;
     while (time > 0) {
         time -= timeLegCatSize;
         count ++;
@@ -115,5 +118,7 @@ function timeLegCategoryFromTime(time) {
     return count;
 }
 function categoryNameFromLegCat(cat) {
-    return msecToTimeHM(cat*timeLegCatSize)+"_to_"+msecToTimeHM((cat+1)*timeLegCatSize -1);
+    return "from_"+msecToTimeHM((Number(cat*timeLegCatSize) + Number(minTime)));
+    //return msecToTimeWithDay(cat*timeLegCatSize + minTime)+"_to_"+msecToTimeWithDay((cat+1)*timeLegCatSize + minTime -1);
+    //return msecToTimeHM(cat*timeLegCatSize + minTime)+"_to_"+msecToTimeHM((cat+1)*timeLegCatSize + minTime -1);
 }

@@ -17,7 +17,17 @@ $(document).ready(function() {
                 // init drawing of grid
                 globalGridHandler.setConfig();
                 globalGridHandler.draw();
-                
+
+                //statistics min/max time globals:
+                minTime = CONFIG.min_time;
+                maxTime = CONFIG.max_time;
+                timeCatSize = Math.abs(maxTime - minTime) / numberOfTimeCategories;
+                timeLegCatSize = Math.abs(maxTime - minTime) / numberOfLegTimeCategories;
+                STATS.byTimeDist = {};
+                initNames_forTimeCategories();
+                STATS.byLegTimeDist = {};
+                initNames_forLegTimeCategories();
+
                 // slider min/max
                 var minDate = new Date(new Number(CONFIG.min_time));
                 dayOne = minDate.getUTCDay();
