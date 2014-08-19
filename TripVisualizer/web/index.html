@@ -1,28 +1,29 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
     <head>
-        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>TripVisualizer</title>
 
-        <!-- --LEAFLET-- -->
-        <!--<link rel="stylesheet" href="leaflet/leaflet-0.7.3/leaflet.css" />
+        <!-- LEAFLET -->
+        <!--<link rel="stylesheet" href="leaflet/leaflet-0.7.3/leaflet.css">
         <script src="leaflet/leaflet-0.7.3/leaflet-src.js" type="text/javascript"></script>-->
-        <link rel="stylesheet" href="leaflet/leaflet-0.8-dev-master/leaflet.css" />
+        <link rel="stylesheet" href="leaflet/leaflet-0.8-dev-master/leaflet.css">
         <script type="text/javascript" src="leaflet/leaflet-0.8-dev-master/leaflet.js"></script> <!-- -src toggle the minified version -->
         <!-- 0.8 dev is faster in Chrome -->
 
-        <!-- --CSS-- -->
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css" type="text/css" />
-        <link rel="stylesheet" href="jquery/custom_theme.css" type="text/css" />
-        <link rel="stylesheet" href="jquery/bootstrap-multiselect.css" type="text/css" />
-        <link rel="stylesheet" href="boot/css/bootstrap.min.css" type="text/css" />
-        <link rel="stylesheet" href="boot/css/grid.css" type="text/css" />
-        <link rel="stylesheet" href="styles.css" type="text/css" />
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" type="text/css" />
-        <link rel="stylesheet" href="boot/css/bootstrap-select.css" type="text/css" />
+        <!-- CSS -->
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css" type="text/css">
+        <link rel="stylesheet" href="jquery/custom_theme.css" type="text/css">
+        <link rel="stylesheet" href="jquery/bootstrap-multiselect.css" type="text/css">
+        <link rel="stylesheet" href="boot/css/bootstrap.min.css" type="text/css">
+        <link rel="stylesheet" href="boot/css/grid.css" type="text/css">
+        <link rel="stylesheet" href="styles.css" type="text/css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" type="text/css">
+        <link rel="stylesheet" href="boot/css/bootstrap-select.css" type="text/css">
         
-        <!-- --JS-- -->
+        <!-- JS -->
         <script type="text/javascript" src="leaflet/leaflet-providers.js"></script>
         <script type="text/javascript" src="leaflet/plugins/Permalink.js"></script>
         <script type="text/javascript" src="leaflet/plugins/Permalink.Layer.js"></script>
@@ -63,7 +64,7 @@
                     <tr style="height: 60px;">
                         <td>
                             <div class="well well-sm" style="padding-left: 15px; padding-right: 15px;">
-                                <!-- --TIME FILTER-- -->
+                                <!-- TIME FILTER -->
                                 <label for="timeRange">Time period:</label> 
                                 <input type="text" id="timeRange" readonly style="border:0; color:#f6931f; font-weight:bold; background-color: #f5f5f5;" size="35"> 
                                 <div id="timeRange_slider"></div>
@@ -72,11 +73,11 @@
                     </tr>
                     <tr>
                         <td>
-                            <!-- --MAP-- -->
+                            <!-- MAP -->
                             <div id="map" style="height: 100%;"></div>
                             <div class="loadingIcon">
                                 <!--<i class="fa fa-refresh fa-spin"></i>-->
-                                <img src="imgs/ajax-loader.gif" alt="loading"/>
+                                <img src="imgs/ajax-loader.gif" alt="loading">
                             </div>
                         </td>
                     </tr>
@@ -92,9 +93,9 @@
                             <option value="only_brno_extracted">Brno</option>
                         </select>
                     </div>
-                    <!-- --FILTER PANELS-- -->
+                    <!-- FILTER PANELS -->
                     <table>
-                        <!-- --filter by activity-- -->
+                        <!-- filter by activity -->
                         <tr>
                             <th class="heading-row" colspan="2">Filter by activity</th>
                         </tr>    
@@ -127,7 +128,7 @@
                             </td>
                         </tr>
                         
-                        <!-- --filter by transport type-- -->
+                        <!-- filter by transport type -->
                         <tr>
                             <th class="heading-row" colspan="2">Filter by transport type</th>
                         </tr>    
@@ -143,12 +144,12 @@
                             </td>
                         </tr>
                         
-                        <!-- --filter by agent information-- -->
+                        <!-- filter by agent information -->
                         <tr>
                             <th class="heading-row" colspan="2">Filter by agent information</th>
                         </tr>
 
-                        <!-- --age-- -->
+                        <!-- age -->
                         <tr class="firstLine ageSpecialSelect">
                             <td><label for="age_from">age:</label></td>
                             <td>
@@ -164,7 +165,7 @@
                             </td>
                         </tr>
 
-                        <!-- --gender-- -->
+                        <!-- gender -->
                         <tr>
                             <td><label>gender:</label></td>
                             <td>
@@ -176,7 +177,7 @@
                             </td>
                         </tr>
 
-                        <!-- --education-- -->
+                        <!-- education -->
                         <tr>
                             <td><label for="education">education:</label></td>
                             <td>
@@ -191,7 +192,7 @@
                             </td>
                         </tr>
 
-                        <!-- --marital status-- -->
+                        <!-- marital status -->
                         <tr>
                             <td><label for="maritalStatus">marital status:</label></td>
                             <td>
@@ -204,7 +205,7 @@
                             </td>
                         </tr>
 
-                        <!-- --economical activity-- -->
+                        <!-- economical activity -->
                         <tr>
                             <td><label for="economicalActivity">economical activity:</label></td>
                             <td>
@@ -217,7 +218,7 @@
                             </td>
                         </tr>
 
-                        <!-- --drivers licence-- -->
+                        <!-- drivers licence -->
                         <tr>
                             <td><label>drivers licence:</label></td>
                             <td>
@@ -229,7 +230,7 @@
                             </td>
                         </tr>
 
-                        <!-- --discount card-- -->
+                        <!-- discount card -->
                         <tr class="lastLine">
                             <td><label>public transport card:</label></td>
                             <td>
@@ -243,22 +244,7 @@
 
                     </table>
 
-
-                    <!-- --hidden filter by shift-dragging selection-- -->
-                    <!--        text <-> hidden  -->
-                    <input type="hidden" name="BoundA_lat" id="BoundA_lat" value="" />
-                    <input type="hidden" name="BoundA_lon" id="BoundA_lon" value="" />
-                    <input type="hidden" name="BoundB_lat" id="BoundB_lat" value="" />
-                    <input type="hidden" name="BoundB_lon" id="BoundB_lon" value="" />
-
-                    <!--
-                    <div style="text-align: center; font-size: x-large;">
-                        ▷► <input style="font-size: x-large;" class="btn btn-primary" type="button" value="SHOW" id="ButtonFilteredData"/> ◄◁
-                    </div>
-                    <input type="checkbox" name="autoReset" id="autoReset" value="ON" checked="checked" class="panelCheckbox" />
-                    <label for="autoReset">automatic cleaning</label>
-                    -->
-                    <input type="checkbox" name="invisCheckbox" id="invisCheckbox" value="ON" checked="checked" />
+                    <input type="checkbox" name="invisCheckbox" id="invisCheckbox" value="ON" checked="checked">
                     <!-- end of filters -->
                     <div class="filterPrediction">
                         Trips: <span id="tripCount">0</span>, 
