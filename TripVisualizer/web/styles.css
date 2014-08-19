@@ -38,6 +38,10 @@ body {
 .citySelector .selectpicker .filter-option {
     text-align: center !important;
 }
+.citySelector div option {
+    /* option without <select> as its parent */
+    display: none;
+}
 
 /* panel style setting */
 .heading-row {
