@@ -22,6 +22,10 @@
                 overflow-x: scroll;
                 width: 90%;
             }
+            span.p {
+                color: #C1D2DC;
+                font-family: Consolas,monospace;
+            }
             
             table {
                 background-color: white;
@@ -71,6 +75,11 @@
     <input type="hidden" name="REFRESH" value="confirmed" />
     <input type="submit" value="Refresh values" />
 </form>
+<div>
+    <h2>How to add data from new table?</h2>
+    <p>Add new row to the <span class="p">public.config</span> table in DB. Only value in column <span class="p">table_name</span> is requiered, the rest will be generated automatically.</p>
+    <p>You should specify human-readable name in <span class="p">output_string</span>. If different dimensions of grid segments than the default values are required, prefill desired values into <span class="p">grid_step_x</span> and <span class="p">grid_step_y</span> before generation.</p>
+</div>
 <%
         } else {
 %>
@@ -198,8 +207,24 @@
                 out.println("CENTER: "+center[0]+" "+center[1]);
 
                 // predefined values for step_x/y
+                String step_x_str = row.get("grid_step_x");
+                String step_y_str = row.get("grid_step_y");
+
                 double step_x = 0.0108;
                 double step_y = 0.03;
+                if (step_x_str == null) {
+                    out.println("using default value for 'grid_step_x' = "+step_x+" (if you wanted different value, please change it directly in database)");
+                } else {
+                    step_x = Double.parseDouble(step_x_str);
+                    out.println("using loaded value for 'grid_step_x' = "+step_x+" (if you wanted different value, please change it directly in database)");
+                }
+                if (step_y_str == null) {
+                    out.println("using default value for 'grid_step_y' = "+step_y+" (if you wanted different value, please change it directly in database)");
+                } else {
+                    step_y = Double.parseDouble(step_y_str);
+                    out.println("using loaded value for 'grid_step_y' = "+step_y+" (if you wanted different value, please change it directly in database)");
+                }
+
                 CHANGE.put("grid_step_x", step_x+"");
                 CHANGE.put("grid_step_y", step_y+"");
 

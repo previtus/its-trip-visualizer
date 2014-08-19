@@ -99,11 +99,14 @@ function msecToTimePeriod(milliseconds) {
     var date = new Date(new Number(milliseconds));
     var str = "";
     if (date.getUTCHours() > 1) {
-        str += date.getUTCHours() + " hours, "
+        str += date.getUTCHours() + " hours"
     } else if (date.getUTCHours() > 0) {
-        str += date.getUTCHours() + " hour, "
+        str += date.getUTCHours() + " hour"
     }
     if (date.getUTCMinutes() > 0) {
+        if (str != "") {
+            str += ", ";
+        }
         str += minTwoDigits(date.getUTCMinutes()) + " min"
     }
     if (str == "") {

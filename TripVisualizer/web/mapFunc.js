@@ -908,11 +908,10 @@ $(document).ready(function() {
         setIfSelected(dataToBeSent, "ptCard", $('input[name=ptCard]:checked').val());
 
         // add time period filter
-        // default values: min: 2262200, max: 85944980
-        if ($("#timeRange_slider").slider("values", 0) > 2262200) {
+        if ($("#timeRange_slider").slider("values", 0)) {
             dataToBeSent.time_start = $("#timeRange_slider").slider("values", 0);
         }
-        if ($("#timeRange_slider").slider("values", 1) < 85944980) {
+        if ($("#timeRange_slider").slider("values", 1)) {
             dataToBeSent.time_end = $("#timeRange_slider").slider("values", 1);
         }
 
