@@ -19,19 +19,51 @@ $(document).ready(function() {
                 globalGridHandler.draw();
                 
                 // slider min/max
-                $('#timeRange_slider').slider( "option", "min", parseFloat(CONFIG.min_time) );
-                $('#timeRange_slider').slider( "option", "max", parseFloat(CONFIG.max_time) );
-                $('#slider-range').slider( "option", "value", [0, parseFloat(CONFIG.max_time)-1]);
+                var minDate = new Date(new Number(CONFIG.min_time));
+                dayOne = minDate.getUTCDay();
                 
-                // create city selector
+                $('#timeRange_slider').slider( "option", {
+                    min: parseFloat(CONFIG.min_time),
+                    max: parseFloat(CONFIG.max_time),
+                    values: [0, parseFloat(CONFIG.max_time)-1] 
+                });
+                refreshTime();
+                //$("#timeRange").val(msecToTimeWithDay($("#timeRange_slider").slider("values", 0)) + " - " + msecToTimeWithDay($("#timeRange_slider").slider("values", 1)));
+                
+                // add options in <select> .citySelector .selectpicker
+                $('.citySelector .originalSelect')
+                    .find('option')
+                    .remove();
+                
+                for (i = 0; i < CONFIG.cityNames.length; i++) {
+                    var txt = CONFIG.cityNames[i];
+                    var val = CONFIG.tableNames[i];
+                    $('.citySelector .originalSelect').append('<option value="'+val+'">'+txt+'</option>')
+                };
+                $('.citySelector .originalSelect').val(selectedValue);
+                $('.selectpicker').selectpicker('refresh');
                 
                 // make sure next data is loaded from new table!
-                
+                // \is done by reading value of selector in mapFunc.js -> $('.citySelector .originalSelect').val();
                 
                 // after all, reload drawn data
                 globalChangeHandler();
             });
     }
+    
+    var selectedValue = "only_brno_extracted";
+    $('.selectpicker').selectpicker({
+        size: 4,
+        width: "100%",
+        style: "kekeke"
+    });
+    // bind only once
+    $('.selectpicker').on('change', function(){
+        var val = $(this).val();
+        console.log(val);
+        selectedValue = val;
+        loadConfig(val);
+    });
 });
 
 /* data comes in this form:

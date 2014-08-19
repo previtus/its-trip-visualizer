@@ -289,7 +289,7 @@
                         + "count(DISTINCT A.agent_id), count(DISTINCT A.trip_id), count(A.trip_id) "
                         + "FROM ( "
                         + "SELECT a.agent_id, t.trip_id "
-                        + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id "
+                        + "FROM ("+tableName+".agents as a JOIN "+tableName+".trips as t ON a.agent_id = t.agent_id) JOIN "+tableName+".legs as l ON t.trip_id = l.trip_id "
                         + whereString
                         + ") as A");
                 for (int i = 1; i < valuesForConditions.size()+1; i++) {
@@ -339,7 +339,7 @@
                     // No needs to add conditions...
                     preparedMainQuery = conn.prepareStatement("SELECT "
                         + "a.*, t.trip_id, l.end_time as l_end_time, l.start_time as l_start_time, l.type, ST_AsGeoJSON(ST_Multi(path)) as geojsonPath, t.end_time as t_end_time, t.start_time as t_start_time, t.from_activity, t.to_activity "
-                        + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id"
+                        + "FROM ("+tableName+".agents as a JOIN "+tableName+".trips as t ON a.agent_id = t.agent_id) JOIN "+tableName+".legs as l ON t.trip_id = l.trip_id"
                         + specialWhereClause
                     );
                 } else {
@@ -369,7 +369,7 @@
                         + "SELECT "
                         + "a.*, t.trip_id, l.end_time as l_end_time, l.start_time as l_start_time, l.type, t.end_time as t_end_time, t.start_time as t_start_time, t.from_activity, t.to_activity "
                         + intersectionString
-                        + "FROM (only_brno_extracted.agents as a JOIN only_brno_extracted.trips as t ON a.agent_id = t.agent_id) JOIN only_brno_extracted.legs as l ON t.trip_id = l.trip_id "
+                        + "FROM ("+tableName+".agents as a JOIN "+tableName+".trips as t ON a.agent_id = t.agent_id) JOIN "+tableName+".legs as l ON t.trip_id = l.trip_id "
                         + whereString
                     );
                     

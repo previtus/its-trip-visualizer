@@ -87,8 +87,6 @@ $(document).ready(function() {
     }
 
     function drawGrid() {
-        console.log(GridSettings);
-        
         if (gridIsDrawn) {
             deleteGrid();
         }
@@ -921,7 +919,8 @@ $(document).ready(function() {
         dataToBeSent.isExploratory = isExploratory;
 
         // add source for data from currently selected city
-        dataToBeSent.source = "only_brno_extracted";
+        dataToBeSent.source = $('.citySelector .originalSelect').val();
+        //alert("loading from "+dataToBeSent.source);
 
         if (gridIsDrawn) {
             //dataToBeSent.boundaries = JSON.stringify(SelectedPolygons);

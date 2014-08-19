@@ -131,6 +131,12 @@
                 rs_minMax.next();
                 long min = Long.parseLong( rs_minMax.getString("min") );
                 long max = Long.parseLong( rs_minMax.getString("max") );
+                
+                // floor and ceil miliseconds acording to hour (optional - in the case we don't want this, comment code)                
+                int hours_min = (int) (min / (1000*60*60));
+                int hours_max = (int) (max / (1000*60*60)) + 1;
+                min = (hours_min)*60*60*1000;
+                max = (hours_max)*60*60*1000;
 
                 //String queryToPerform = "UPDATE public.config SET min_time='"+min+"', max_time='"+max+"' WHERE table_name='"+tableName+"';";
                 CHANGE.put("min_time", min+"");

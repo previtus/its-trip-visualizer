@@ -78,6 +78,12 @@ function median(values) {
 }
 
 // slider input time period
+var dayOne = 0;
+function msecToTimeWithDay(milliseconds) {
+    var date = new Date(new Number(milliseconds));
+    var str = "day "+(date.getUTCDay()-dayOne+1)+ ", " + date.getUTCHours() + ":" + minTwoDigits(date.getUTCMinutes()) + ":" + minTwoDigits(date.getUTCSeconds());
+    return str;
+}
 function msecToTime(milliseconds) {
     var date = new Date(new Number(milliseconds));
     var str = date.getUTCHours() + ":" + minTwoDigits(date.getUTCMinutes()) + ":" + minTwoDigits(date.getUTCSeconds());
