@@ -39,14 +39,24 @@ $(document).ready(function() {
         max: 86400000, //1day = 86400000
         values: [0000000, 86400000-1],
         slide: function(event, ui) {
-            $("#timeRange").val(msecToTimeWithDay(ui.values[0]) + " - " + msecToTimeWithDay(ui.values[1]));
+            if ((maxTime-minTime) > 86400000) {
+                $("#timeRange").val(msecToTimeWithDay(ui.values[0]) + " - " + msecToTimeWithDay(ui.values[1]));
+            } else {
+                $("#timeRange").val(msecToTime(ui.values[0]) + " - " + msecToTime(ui.values[1]));
+            }
             //$("#timeRange").val(ui.values[0] + " - " + ui.values[1]);
         },
         stop: function(event, ui) {
             $("#invisCheckbox").trigger('click');
         }
     });
-    refreshTime = function() { $("#timeRange").val(msecToTimeWithDay($("#timeRange_slider").slider("values", 0)) + " - " + msecToTimeWithDay($("#timeRange_slider").slider("values", 1))); };
+    refreshTime = function() {
+        if ((maxTime-minTime) > 86400000) {
+            $("#timeRange").val(msecToTimeWithDay($("#timeRange_slider").slider("values", 0)) + " - " + msecToTimeWithDay($("#timeRange_slider").slider("values", 1)));
+        } else {
+            $("#timeRange").val(msecToTime($("#timeRange_slider").slider("values", 0)) + " - " + msecToTime($("#timeRange_slider").slider("values", 1)));
+        }
+    };
     
     // filter panels toggle and enabling
     $(".filterPanel .panelControl input[name='toggleButton']").click(function() {
