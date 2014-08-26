@@ -333,7 +333,7 @@ $(document).ready(function() {
                 var legInfo = "";
                 $.each(TripInfo._legs, function(j, leg) {
                     var legTime = msecToTimePeriod( (leg.l_end_time-leg.l_start_time) );
-                    legInfo += "<span title='duration: "+legTime+"'>" + leg.type + "</span> | ";
+                    legInfo += "<span title='"+msecToTime(leg.l_start_time)+" to "+msecToTime(leg.l_end_time)+" ("+legTime+")'>" + leg.type + "</span> | ";
                 });
                 legInfo = legInfo.slice(0, -3);
 
@@ -797,15 +797,40 @@ $(document).ready(function() {
             xhr.abort();
         }
         
-        xhr = $.post("getFilteredData.jsp", dataToBeSent)
+        xhr = $.ajax({
+            type: "POST",
+            url: "getFilteredData.jsp",
+            data: dataToBeSent,
+            headers : {'Accept-Encoding' : 'gzip'},
+            dataType : 'text'
+        })
+        //xhr = $.post("getFilteredData.jsp", dataToBeSent)
                 .done(function(data) {
+                    /* parse as Int and decompress data */
+                    var str = ($.trim(data))+"";
+                    str = str.substring(1,str.length-1);
+                    var array = str.split(',');
+                    for(var i=0; i<array.length; i++) { array[i] = parseInt(array[i]); } 
+                    
+                    var data_decompressed = LZW.decompress(array);
+                    
+//                    
+//                    //var compressedJSON = JSONC.pack( data );
+//                    //console.log(compressedJSON);
+//                    var json = JSONC.unpack( data );
+//                    //var json = JSONC.encode( data );
+//                    //var json = JSONC.unpack( $.trim(data) );
+//                    console.log(json);
+//                    
+//                    //console.log( JXG.decompress(data) );
+                    
                     clearMap();
             
                     //recieve response
                     //$(".tempServerResponseTxt").show();
                     //$(".tempServerResponse").show();
                     //$(".tempServerResponse").text($.trim(data));
-                    var jsonData = jQuery.parseJSON(data);
+                    var jsonData = jQuery.parseJSON(data_decompressed);
                     processMultipleTripsData(jsonData);
                     processMultipleTripsDataExploration(jsonData);
                     drawGraphs();
@@ -814,6 +839,7 @@ $(document).ready(function() {
                     xhr = null;
                 });
     }
+    
     function getMultipleTripsExplore(dataToBeSent) {
         $.post("getFilteredData.jsp", dataToBeSent)
                 .done(function(data) {

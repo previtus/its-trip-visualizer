@@ -1,5 +1,8 @@
 package tripVisualizerPkg;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -8,7 +11,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import sun.misc.BASE64Encoder;
 
 public class helperClass {
     public static enum VarTypes {

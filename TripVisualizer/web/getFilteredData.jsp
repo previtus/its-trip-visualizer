@@ -1,3 +1,6 @@
+<%@page import="tripVisualizerPkg.lzw"%>
+<%@page import="org.apache.commons.io.IOUtils"%>
+<%@page import="java.util.zip.Inflater"%>
 <%/*
     File representing server side of this project. Is called by AJAX with filtration criteria in POST. 
     Uses this data to create query to PostgreSQL + PostGIS database and finally formates its output in JSON data object.
@@ -530,7 +533,38 @@
         json.put("trips", stats[1]);
         json.put("legs", stats[2]);
         
-        out.print(json);
+/*
+        //out.print(json);
+        
+        //out.print( helperClass.compressBase64(json.toString()) );
+        
+        // best is gzip, then base64
+        //out.print( helperClass.compressBase64(helperClass.compressGzip(json.toString())) );
+        //out.print( helperClass.compressGzip(json.toString()) );
+    //response.setContentType("application/json");
+    //response.setCharacterEncoding("UTF-8");
+        //request.addHeader("Content-Encoding", "gzip");
+        //out.print( helperClass.compressGzip(json.toString()) );
+        
+        //String comp = helperClass.compressString( json.toString() ) ;
+        //String uncomp = helperClass.uncompressString(comp);
+        
+        byte[] t = json.toString().getBytes();
+        byte[] comp = helperClass.compress( t );
+        byte[] decomp = helperClass.decompress( comp );
+        
+        
+        String comp_str = IOUtils.toString(comp);
+        String decomp_str = IOUtils.toString(decomp);
+        
+        //out.print(json);
+        out.print(comp_str);
+        //out.print(decomp_str);
+*/
+        
+        List<Integer> compressed = lzw.compress(json.toString());
+        out.print(compressed);
+        //out.print(json);
         out.flush();
     }
 %>

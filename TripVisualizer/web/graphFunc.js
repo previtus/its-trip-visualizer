@@ -26,6 +26,7 @@ $(document).ready(function() {
          */
         var redBlue = ["#F7464A", "#464af7"]; 
         var greenRed = ["#0ed209", "#d2090e"];
+        var oneColor = ["#555555"];
         // PIE
         drawGraphPie("genderGraph","byAgentProp","gender", redBlue, "Gender", "Gender");
         drawGraphPie("driversGraph","byAgentProp","drivers_licence", greenRed, "Driver's<br>licence", "Driver's licence");
@@ -46,7 +47,7 @@ $(document).ready(function() {
         }
         STATS.byTimeDist.prepForGraph = prepForGraph;
         //console.log(STATS.byTimeDist.prepForGraph);
-        drawGraphBar("timeTripGraph","byTimeDist","prepForGraph", null, "Time distribution", 'Number of trips', "trips");
+        drawGraphBar("timeTripGraph","byTimeDist","prepForGraph", oneColor, "Time distribution", 'Number of trips', "trips");
         // BTW: muze vykreslovat 1 u kategorie, ktera je jiz mimo casovy usek a to tehdy, kdyz existuje leg, ktery se ve filtrovanem casovem useku vyskytuje
         //      jelikoz tento graf bere v potaz cely casovy zacatek a konec TRIPu, staci i leg nekdy ze zacatku aby byla vyplnena kategorie jina
         // BTW2: soucet sloupcu grafu muze byt vetsi nez pocet vykreslenych tripu a to tehdy, kdyz jeden trip nalezi do vice casovych intervalu
@@ -58,7 +59,7 @@ $(document).ready(function() {
             prepLegTimeForGraph[ categoryNameFromLegCat(i) ] = STATS.byLegTimeDist[i];
         }
         STATS.byLegTimeDist.prepLegTimeForGraph = prepLegTimeForGraph;
-        drawGraphBar("timeLegTripGraph","byLegTimeDist","prepLegTimeForGraph", null, "Time distribution", 'Number of legs', "legs");
+        drawGraphBar("timeLegTripGraph","byLegTimeDist","prepLegTimeForGraph", oneColor, "Time distribution", 'Number of legs', "legs");
         
         // WHISKER
         //STATS.Trips[trip_id].numerOfLegs
@@ -207,8 +208,11 @@ $(document).ready(function() {
             
             var lowName = capitaliseFirstLetter( makeLowerCase(propertyName) );
             lowName = lowName.replaceAll("_"," ");
+            if (lowName.length > 8) {
+                lowName = lowName.replace(/ /g, "<br>");
+            }
             
-            var dataSlice = [lowName, propertyValue]
+            var dataSlice = ["<span style='text-align: center;'>"+lowName+"<span>", propertyValue]
             dataArr.push(dataSlice);
         }
         
@@ -227,7 +231,7 @@ $(document).ready(function() {
                 plotShadow: false
             },
             title: {
-                text: graphName,
+                text: null,
             },
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.y}</b>'
