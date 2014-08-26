@@ -139,6 +139,11 @@ body {
     padding-top: 15px;
 }
 
+.highcharts-tooltip {
+    color: red;
+    text-align: center;
+}
+
 .ui-accordion .ui-accordion-content {
     padding: 1em 0em; /*1em 2.2em;*/
 }

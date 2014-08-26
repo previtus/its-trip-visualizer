@@ -212,7 +212,7 @@ $(document).ready(function() {
                 lowName = lowName.replace(/ /g, "<br>");
             }
             
-            var dataSlice = ["<span style='text-align: center;'>"+lowName+"<span>", propertyValue]
+            var dataSlice = ["<span style='text-align: center;'>"+lowName+"</span>", propertyValue]
             dataArr.push(dataSlice);
         }
         
@@ -234,13 +234,22 @@ $(document).ready(function() {
                 text: null,
             },
             tooltip: {
-                pointFormat: '{series.name}: <b>{point.y}</b>'
+                pointFormat: '{series.name}: <b>{point.y}</b>',
+                formatter: function() {
+                    return '<strong>' + this.point.y + '</strong> (' + this.point.percentage.toFixed(2) + '%)' ;
+                    //return '<b>'+ this.point.name +'</b>: '+ this.point.y + '(' + this.percentage + ')' ;
+                }
             },
             plotOptions: {
                 pie: {
                     dataLabels: {
                         enabled: true,
-                    },
+                        formatter:  function() {
+                            return this.point.name+"</strong><br>("+Math.round(this.percentage*100)/100 + '%)';
+                            //return "<div style='text-align: center;'><strong>"+this.point.name+"</strong><br>"+Math.round(this.percentage*100)/100 + '%</div>';
+                        },
+                        align: 'center'
+                    }
                 }
             },
             series: [{
