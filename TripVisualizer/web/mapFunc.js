@@ -809,7 +809,8 @@ $(document).ready(function() {
         //xhr = $.post("getFilteredData.jsp", dataToBeSent)
                 .done(function(data) {
                     clearMap();
-            
+                    //console.log(data);
+                    
                     //recieve response
                     //$(".tempServerResponseTxt").show();
                     //$(".tempServerResponse").show();
