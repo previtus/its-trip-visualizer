@@ -16,7 +16,11 @@ $(document).ready(function() {
                 
                 // init drawing of grid
                 globalGridHandler.setConfig();
-                globalGridHandler.draw();
+                if (CONFIG.grid_on_start == 't') {
+                    globalGridHandler.draw();
+                } else {
+                    globalGridHandler.delete();
+                }
 
                 //statistics min/max time globals:
                 minTime = CONFIG.min_time;

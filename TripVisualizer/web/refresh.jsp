@@ -153,6 +153,13 @@
                 out.println("min_time => "+min);
                 out.println("max_time => "+max);
 
+                String gridOnStart = row.get("grid_on_start");
+
+                /* <]---<output_string>---[> */
+                if (gridOnStart == null) {
+                    CHANGE.put("grid_on_start", "TRUE");
+                }
+                
                 /* <]---<GRID SETTINGS>---[> */
                 //map_center_x, map_center_y, grid_step_x, grid_step_y, grid_repetition_x, grid_repetition_y
 

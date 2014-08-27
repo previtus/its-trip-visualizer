@@ -69,7 +69,8 @@ $(document).ready(function() {
             GridSettings.x_times = parseFloat(CONFIG.grid_repetition_x);
             GridSettings.y_times = parseFloat(CONFIG.grid_repetition_y);
         },
-        draw : function() {drawGrid();}
+        draw : function() {drawGrid();},
+        delete : function() {deleteGrid();}
     }
 
     function drawGrid() {
@@ -802,35 +803,18 @@ $(document).ready(function() {
             url: "getFilteredData.jsp",
             data: dataToBeSent,
             headers : {'Accept-Encoding' : 'gzip'},
+            //dataType: 'json'
             dataType : 'text'
         })
         //xhr = $.post("getFilteredData.jsp", dataToBeSent)
                 .done(function(data) {
-                    /* parse as Int and decompress data */
-                    var str = ($.trim(data))+"";
-                    str = str.substring(1,str.length-1);
-                    var array = str.split(',');
-                    for(var i=0; i<array.length; i++) { array[i] = parseInt(array[i]); } 
-                    
-                    var data_decompressed = LZW.decompress(array);
-                    
-//                    
-//                    //var compressedJSON = JSONC.pack( data );
-//                    //console.log(compressedJSON);
-//                    var json = JSONC.unpack( data );
-//                    //var json = JSONC.encode( data );
-//                    //var json = JSONC.unpack( $.trim(data) );
-//                    console.log(json);
-//                    
-//                    //console.log( JXG.decompress(data) );
-                    
                     clearMap();
             
                     //recieve response
                     //$(".tempServerResponseTxt").show();
                     //$(".tempServerResponse").show();
                     //$(".tempServerResponse").text($.trim(data));
-                    var jsonData = jQuery.parseJSON(data_decompressed);
+                    var jsonData = jQuery.parseJSON(data);
                     processMultipleTripsData(jsonData);
                     processMultipleTripsDataExploration(jsonData);
                     drawGraphs();
@@ -1040,7 +1024,7 @@ $(document).ready(function() {
     });
     map.addControl(new MyControl());
     
-    var buttonStr = "<input type=\"button\" class=\"btn btn-default\" value=\"Redraw grid\" id=\"ButtonRedraw\"/>" +
+    var buttonStr = "<input type=\"button\" class=\"btn btn-default\" value=\"Draw grid\" id=\"ButtonRedraw\"/>" +
                     "<input type=\"button\" class=\"btn btn-default\" value=\"Delete grid\" id=\"ButtonDeleteGrid\"/>";
     var openedControlPanel = false;
 

@@ -26,7 +26,7 @@
         String PASS = connection.PASS;
         Connection conn = DriverManager.getConnection(URL, USER, PASS);
         //SELECT min_time, max_time, map_center_x, map_center_y, grid_step_x, grid_step_y, grid_repetition_x, grid_repetition_y FROM public.config WHERE table_name='only_brno_extracted'
-        PreparedStatement prepQuery = conn.prepareStatement("SELECT min_time, max_time, map_center_x, map_center_y, grid_step_x, grid_step_y, grid_repetition_x, grid_repetition_y FROM public.config WHERE table_name=?");
+        PreparedStatement prepQuery = conn.prepareStatement("SELECT min_time, max_time, map_center_x, map_center_y, grid_step_x, grid_step_y, grid_repetition_x, grid_repetition_y, grid_on_start FROM public.config WHERE table_name=?");
         prepQuery.setString(1, cityName);
         ResultSet rs = prepQuery.executeQuery();
 
@@ -40,7 +40,7 @@
         }
         
         Statement st = conn.createStatement();
-        ResultSet rs_out = st.executeQuery("SELECT output_string, table_name FROM public.config;");
+        ResultSet rs_out = st.executeQuery("SELECT output_string, table_name FROM public.config ORDER BY output_string;");
         while (rs_out.next()) {
             outputList.add(rs_out.getString(1));
             tableNamesList.add(rs_out.getString(2));

@@ -62,6 +62,7 @@
         out.flush();
     }
     Boolean isExploratory = Boolean.parseBoolean(request.getParameter("isExploratory"));
+    if (isExploratory == null) isExploratory=false;
     int[] stats = new int[3]; // stats - agents, trips, legs
 
     if (!error) {
@@ -85,14 +86,18 @@
             String tableName = request.getParameter("source");
             
             Statement st_permit = conn.createStatement();
-            ResultSet rs_permit = st_permit.executeQuery("SELECT table_name FROM public.config;");
+            ResultSet rs_permit = st_permit.executeQuery("SELECT table_name FROM public.config ORDER BY output_string;");
             ArrayList<String> permitedTableNames = new ArrayList<String>();
             while (rs_permit.next()) {
                 permitedTableNames.add( rs_permit.getString(1) );
             }
             if (!permitedTableNames.contains(tableName)) {
-                System.out.print("ILLEGAL TABLE VALUE!!! "+tableName);
-                tableName = permitedTableNames.get(0);
+                System.out.print("ILLEGAL TABLE VALUE!!! |"+tableName+"|");
+                if (permitedTableNames.contains("only_brno_extracted")) {
+                    tableName = "only_brno_extracted";
+                } else {
+                    tableName = permitedTableNames.get(0);
+                }
                 System.out.println(" == set to ==> "+tableName);
             }
             /*System.out.println("permited:");
@@ -530,10 +535,15 @@
         json.put("agents", stats[0]);
         json.put("trips", stats[1]);
         json.put("legs", stats[2]);
-            
+        
+        /* EXPERIMENTAL LZW COMPRESSION - not really needed thanks to GZIP
+        // LZW compression
         List<Integer> compressed = lzw.compress(json.toString());
         out.print(compressed);
-        //out.print(json);
+        */    
+        
+        // is gzip compressed by Tomcat server
+        out.print(json);
         out.flush();
     }
 %>
